@@ -1,13 +1,14 @@
 #ifndef UNNAMING_CONSTVALUE_H_
 #define UNNAMING_CONSTVALUE_H_
-const int kMapWidth = 16;
-const int kMapHeight = 16;
+const int kMapWidth = 32;
+const int kMapHeight = 32;
 const int kMinRoomWidth = 3;
 const int kMinRoomHeight = 3;
-const int kMaxRoomWidth = 15;
-const int kMaxRoomHeight = 15;
+const int kMaxRoomWidth = 8;
+const int kMaxRoomHeight = 8;
 enum BlockType {
   kBlockEmpty,
-  kBlockWall
+  kBlockWall,
+  kBlockGround
 };
 #endif

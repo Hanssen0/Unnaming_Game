@@ -8,9 +8,9 @@
 #include <ctime>
 #include <queue>
 #include <stack>
-inline int random_in(int start, int end) {
+inline int RandomIn(int start, int end) {
   if (start > end) std::swap(start, end);
   if (end - start > RAND_MAX) return -1;
-  return rand() % (end - start + 1) + start;
+  return (rand() % (end - start + 1)) + start;
 }
 #endif
