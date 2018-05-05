@@ -21,14 +21,11 @@ class GameMap {
       for (int i = 0; i < kMapWidth; ++i) {
         switch (data_[i][j]) {
          case kBlockWall:
-          std::cout << "O";
+          std::cout << " ";
           break;
          case kBlockGround:
-          std::cout << ".";
+          std::cout << "0";
           break;
-         case kBlockEmpty:
-          std::cout << " ";
-         break;
         }
       }
       std::cout << "\n";
@@ -63,8 +60,9 @@ class GameMapBuilder {
 };
 inline Rect GameMapBuilder::RandomRoomRect() {
   Rect ret;
-  ret.w = RandomIn(kMinRoomWidth, try_to_make.w);
-  ret.h = RandomIn(kMinRoomHeight, try_to_make.h);
+  //Need some space to prevent room adhesion
+  ret.w = RandomIn(kMinRoomWidth + 2, kMaxRoomWidth + 2);
+  ret.h = RandomIn(kMinRoomHeight + 2, kMaxRoomHeight + 2);
   return ret;
 }
 inline const Rect & GameMapBuilder::max(const Rect & a, const Rect & b) {

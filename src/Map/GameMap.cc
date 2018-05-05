@@ -2,7 +2,7 @@
 void GameMapBuilder::CleanMap(GameMap * game_map) {
   for (int i = 0; i < kMapWidth; ++i) {
     for (int j = 0; j < kMapHeight; ++j) {
-      game_map -> data_[i][j] = kBlockEmpty;
+      game_map -> data_[i][j] = kBlockWall;
     }
   }
   try_to_make.w = kMaxRoomWidth;
@@ -68,10 +68,8 @@ bool GameMapBuilder::BuildRoom(GameMap * game_map) {
   }
   for (int i = 0; i < new_room.w; ++i) {
     for (int j = 0; j < new_room.h; ++j) {
-      if (i == 0 || j == 0 || i == new_room.w - 1 || j == new_room.h - 1) {
-        game_map -> data_[new_room.left_top.x + i][new_room.left_top.y + j] =
-            kBlockWall;
-      }else {
+      //Won't cause room adhesion
+      if (!(i == 0 || j == 0 || i == new_room.w - 1 || j == new_room.h - 1)) {
         game_map -> data_[new_room.left_top.x + i][new_room.left_top.y + j] =
             kBlockGround;
       }
@@ -120,8 +118,6 @@ bool GameMapBuilder::IsRectEmpty(const GameMap * game_map,
     if (!is_max_w && now.w != rect_for_check.w) {
       for (int i = 0; i < now.h; ++i) {
         if (game_map -> data_[rect_l_t.x + now.w][rect_l_t.y + i] !=
-            kBlockEmpty &&
-            game_map -> data_[rect_l_t.x + now.w][rect_l_t.y + i] !=
             kBlockWall) {
           is_max_w = true; //Oops, can't expand anymore
           --now.w; //Keep width
@@ -134,8 +130,6 @@ bool GameMapBuilder::IsRectEmpty(const GameMap * game_map,
     if (!is_max_h && now.h != rect_for_check.h) {
       for (int i = 0; i < now.w; ++i) {
         if (game_map -> data_[rect_l_t.x + i][rect_l_t.y + now.h] !=
-            kBlockEmpty &&
-            game_map -> data_[rect_l_t.x + i][rect_l_t.y + now.h] !=
             kBlockWall) {
           is_max_h = true; //Oops, can't expand anymore
           --now.h; //Keep height
