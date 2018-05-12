@@ -19,6 +19,8 @@
 #include "../Map/GameMap.h"
 #include "cstdint"
 #include <vector>
+#include <map>
+#include <iostream>
 enum LivingThingsRace {
   kLivingThingsHuman,
   kLivingThingsMax
@@ -26,6 +28,12 @@ enum LivingThingsRace {
 const uint32_t kSquareRootOfINT64MAX = 3037000499;
 class LivingThings {
  public:
+  struct MemoryOfMap {
+    Point left_top;
+    Point right_bottom; 
+    bool is_seen[kMapWidth][kMapHeight];
+    GameMap detail;
+  };
   inline void set_race(const LivingThingsRace & r) {race_ = r;}
   inline LivingThingsRace race() const {return race_;}
   inline void set_now_map(GameMap * map) {now_map_ = map;}
@@ -59,18 +67,23 @@ class LivingThings {
   inline void set_see_through_able(const BlockType & t, const bool & s) {
     see_through_able_[t] = s;
   }
+  inline MemoryOfMap * GetMemory() {
+    return &memories_of_map_[now_map_];
+  }
   inline void GoTo(const Point & des) {
     if (IsAValidMove(des)) {
       now_pos_ = des;
     }
   }
   void UpdateViewAble(const Point & now);
+  inline bool ViewPosToRealPos(const Point & view_pos, Point * ret) const;
   LivingThings();
  private:
   bool IsAValidMove(const Point & des);
   void UpdateViewAbleOnALine(const Point & now, 
                              const int64_t end_x,
                              const int64_t end_y);
+  void UpdateMemery();
   LivingThingsRace race_;
   GameMap * now_map_;
   Point now_pos_;
@@ -78,5 +91,21 @@ class LivingThings {
   bool see_through_able_[kBlockMax];
   uint32_t view_dis_;
   std::vector< std::vector< bool > > viewable_;
+  std::map< GameMap *, MemoryOfMap > memories_of_map_;
 };
+inline bool LivingThings::ViewPosToRealPos(const Point & view_pos,
+                                           Point * ret) const {
+  uint64_t tmp;
+  tmp = now_pos_.x;
+  tmp += view_pos.x;
+  if (tmp < view_dis_) return false;
+  tmp -= view_dis_;
+  ret -> x = tmp;
+  tmp = now_pos_.y;
+  tmp += view_pos.y;
+  if (tmp < view_dis_) return false;
+  tmp -= view_dis_;
+  ret -> y = tmp;
+  return true;
+}
 #endif  // UNNAMING_GAME_SRC_OBJECT_LIVINGTHING_H_

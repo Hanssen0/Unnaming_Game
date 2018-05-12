@@ -60,6 +60,7 @@ int main() {
   main_renderer.set_exterior_of_block('+', kBlockGround);
   main_renderer.set_exterior_of_race('@', kLivingThingsHuman);
   bool renderer_map = false;
+  LivingThings::MemoryOfMap * mem;
   do {
     switch (com) {
      case 'w':
@@ -83,10 +84,11 @@ int main() {
     main_role.UpdateViewAble(init_pos);
     system("clear");
     if (renderer_map) {
-      main_renderer.RenderGameMap(&test_map);
+      mem = main_role.GetMemory();
+      main_renderer.RenderMemory(*mem);
       renderer_map = false;
     } else {
-      main_renderer.RenderLivingThingsView(&main_role);
+      main_renderer.RenderLivingThingsView(main_role);
     }
     std::cout << std::flush;
     com = std::cin.get();

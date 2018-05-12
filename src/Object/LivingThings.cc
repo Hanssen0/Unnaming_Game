@@ -42,6 +42,18 @@ inline bool IsAPlusBBiggerThanC(uint64_t a, uint64_t b, uint64_t c) {
 inline int64_t UnsignedMinus(uint32_t a, uint32_t b) {
   return static_cast< int64_t >(a) - static_cast< int64_t >(b);
 }
+inline uint32_t NoNegitiveMinus(uint32_t a, uint32_t b) {
+  if (a < b) {
+    return 0;
+  } else {
+    return a - b;
+  }
+}
+inline uint32_t NoOverflowPlus(uint32_t a, uint32_t b, uint32_t up_limit) {
+  if (a > up_limit || b > up_limit) return up_limit;
+  if (a > up_limit - b) return up_limit;
+  return a + b;
+}
 bool LivingThings::IsAValidMove(const Point & des) {
   if (des.x < 0 || des.y < 0 ||
       des.x >= kMapWidth || des.y >= kMapHeight) {
@@ -161,6 +173,7 @@ void LivingThings::UpdateViewAble(const Point & now) {
     UpdateViewAbleOnALine(now, UnsignedMinus(tmp.x, view_dis_),
                                UnsignedMinus(tmp.y, view_dis_));
   }
+  UpdateMemery();
 }
 void LivingThings::UpdateViewAbleOnALine(const Point & now,
                                          const int64_t end_x, const int64_t end_y) {
@@ -194,9 +207,7 @@ void LivingThings::UpdateViewAbleOnALine(const Point & now,
       if (!see_through_able_[now_map_ -> data(
                                              TempPoint(now.x + min_one,
                                                  now.y + k))]) break;
-    }
-  }
-}
+    } } }
 LivingThings::LivingThings() {
   now_pos_.x = 0;
   now_pos_.y = 0;
@@ -209,4 +220,42 @@ LivingThings::LivingThings() {
     moveable_[i] = false;
   }
 }
-
+void LivingThings::UpdateMemery() {
+  MemoryOfMap * now;
+  if (memories_of_map_.count(now_map_) == 0) {
+    now = &memories_of_map_[now_map_];
+    now -> left_top = TempPoint(kMapWidth, kMapHeight);
+    now -> right_bottom = TempPoint(0, 0);
+    for (uint32_t i = 0; i < kMapWidth; ++i) {
+      for (uint32_t j = 0; j < kMapHeight; ++j) {
+        now -> is_seen[i][j] = false;
+      }
+    }
+  } else {
+    now = &memories_of_map_[now_map_];
+  }
+  now -> left_top = TempPoint(std::min(now -> left_top.x,
+                                       NoNegitiveMinus(now_pos_.x, view_dis_)),
+                              std::min(now -> left_top.y,
+                                       NoNegitiveMinus(now_pos_.y, view_dis_)));
+  now -> right_bottom = TempPoint(std::max(now -> right_bottom.x,
+                                           NoOverflowPlus(now_pos_.x,
+                                                          view_dis_,
+                                                          kMapWidth - 1)),
+                                  std::max(now -> right_bottom.y,
+                                           NoOverflowPlus(now_pos_.y,
+                                                          view_dis_,
+                                                          kMapHeight - 1)));
+  for (size_t i = NoNegitiveMinus(view_dis_, now_pos_.x); i < viewable_.size(); ++i) {
+    for (size_t j = NoNegitiveMinus(view_dis_, now_pos_.y); j < viewable_.size(); ++j) {
+      if (viewable_[i][j]) {
+        Point writing_point;
+        ViewPosToRealPos(TempPoint(i, j), &writing_point);
+        if (!now -> is_seen[writing_point.x][writing_point.y]) {
+          now -> detail.set_data(writing_point, now_map_ -> data(writing_point));
+          now -> is_seen[writing_point.x][writing_point.y] = true;
+        }
+      }
+    }
+  }
+}

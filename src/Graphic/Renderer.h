@@ -29,8 +29,9 @@ class Renderer {
                             const LivingThingsRace & type) {
     exterior_of_race_[type] = exterior;
   }
-  void RenderLivingThingsView(const LivingThings *);
-  void RenderGameMap(const GameMap *);
+  void RenderLivingThingsView(const LivingThings &) const;
+  void RenderGameMap(const GameMap &) const;
+  void RenderMemory(const LivingThings::MemoryOfMap &) const;
  private:
   char exterior_of_block_[kBlockMax];
   char exterior_of_race_[kLivingThingsMax];

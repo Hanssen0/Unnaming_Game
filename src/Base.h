@@ -19,6 +19,7 @@
 #include <climits>
 #include <cstdlib>
 #include <algorithm>
+#include <cstdint>
 class RandomGenerater {
  public:
   inline void set_seed_of_random(uint32_t a) {seed_of_random_ = a % UINT_MAX;}

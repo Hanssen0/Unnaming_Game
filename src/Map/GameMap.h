@@ -42,6 +42,7 @@ const uint32_t kMinRoomHeight = 3;
 const uint32_t kMaxRoomWidth = 8;
 const uint32_t kMaxRoomHeight = 8;
 enum BlockType {
+  kBlockEmpty,
   kBlockWall,
   kBlockGround,
   kBlockPath,
