@@ -8,6 +8,8 @@ const int kMaxRoomWidth = 8;
 const int kMaxRoomHeight = 8;
 enum BlockType {
   kBlockWall,
-  kBlockGround
+  kBlockGround,
+  kBlockPath,
+  kBlockMax
 };
 #endif
