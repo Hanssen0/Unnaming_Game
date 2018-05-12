@@ -32,14 +32,6 @@ int main() {
     }
     if (init_able) break;
   }
-  for (int i = 0; i < kMapWidth; ++i) {
-    for (int j = 0; j < kMapHeight; ++j) {
-      Point tmp;
-      tmp.x = i;
-      tmp.y = j;
-      main_role.set_viewable(tmp, false);
-    }
-  }
   main_role.set_now_pos(init_pos);
   main_role.UpdateViewAble(init_pos);
   char com;
@@ -62,11 +54,33 @@ int main() {
     init_pos = main_role.now_pos();
     main_role.UpdateViewAble(init_pos);
     system("clear");
-    for (int j = 0; j < kMapHeight; ++j) {
-      for (int i = 0; i < kMapWidth; ++i) {
+    for (int j = 0; j < (main_role.view_dis() << 1) + 1; ++j) {
+      for (int i = 0; i < (main_role.view_dis() << 1) + 1; ++i) {
         Point tmp;
         tmp.x = i;
         tmp.y = j;
+        std::cout << main_role.viewable(tmp);
+      }
+      std::cout << '\n';
+    }
+    std::cin.get();
+    for (int j = 0; j < kMapHeight; ++j) {
+      if (j < main_role.now_pos().y - main_role.view_dis() ||
+          j > main_role.now_pos().y + main_role.view_dis()) {
+        std::cout << '\n';
+        continue;
+      }
+      for (int i = 0; i < kMapWidth; ++i) {
+        if (i < main_role.now_pos().x - main_role.view_dis()) {
+          std::cout << ' ';
+          continue;
+        }
+        if (i > main_role.now_pos().x + main_role.view_dis()) {
+          break;
+        }
+        Point tmp;
+        tmp.x = main_role.view_dis() - main_role.now_pos().x + i;
+        tmp.y = main_role.view_dis() - main_role.now_pos().y + j;
         if (!main_role.viewable(tmp)) {
           std::cout << " ";
           continue;
@@ -76,7 +90,7 @@ int main() {
         }else {
           switch (test_map.data(i, j)) {
            case kBlockWall:
-            std::cout << " ";
+            std::cout << "#";
             break;
            case kBlockPath:
             std::cout << ".";
