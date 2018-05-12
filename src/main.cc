@@ -8,8 +8,9 @@ int main() {
   GameMap test_map;
   GameMapBuilder builder;
   builder.set_random_gen(&main_random);
-  builder.CleanMap(&test_map);
-  builder.BuildRoomsAndPath(&test_map);
+  builder.set_target_map(&test_map);
+  builder.CleanMap();
+  builder.BuildRoomsAndPath();
   LivingThings main_role;
   main_role.set_now_map(&test_map);
   main_role.set_moveable(kBlockWall, false);
@@ -21,9 +22,9 @@ int main() {
   main_role.set_view_dis(6);
   Point init_pos;
   bool init_able = false;
-  for (int i = 0; i < kMapWidth; ++i) {
-    for (int j = 0; j < kMapHeight; ++j) {
-      if (!init_able && test_map.data(i, j) == kBlockGround) {
+  for (uint32_t i = 0; i < kMapWidth; ++i) {
+    for (uint32_t j = 0; j < kMapHeight; ++j) {
+      if (!init_able && test_map.data(TempPoint(i, j)) == kBlockGround) {
         init_pos.x = i;
         init_pos.y = j;
         init_able = true;
@@ -56,22 +57,18 @@ int main() {
     system("clear");
     for (int j = 0; j < (main_role.view_dis() << 1) + 1; ++j) {
       for (int i = 0; i < (main_role.view_dis() << 1) + 1; ++i) {
-        Point tmp;
-        tmp.x = i;
-        tmp.y = j;
-        std::cout << main_role.viewable(tmp);
+        std::cout << main_role.viewable(TempPoint(i, j));
       }
       std::cout << '\n';
     }
-    std::cin.get();
     for (int j = 0; j < kMapHeight; ++j) {
-      if (j < main_role.now_pos().y - main_role.view_dis() ||
+      if (j + main_role.view_dis() < main_role.now_pos().y ||
           j > main_role.now_pos().y + main_role.view_dis()) {
         std::cout << '\n';
         continue;
       }
       for (int i = 0; i < kMapWidth; ++i) {
-        if (i < main_role.now_pos().x - main_role.view_dis()) {
+        if (i + main_role.view_dis() < main_role.now_pos().x) {
           std::cout << ' ';
           continue;
         }
@@ -88,7 +85,7 @@ int main() {
         if (i == main_role.now_pos().x && j == main_role.now_pos().y) {
           std::cout << "@";
         }else {
-          switch (test_map.data(i, j)) {
+          switch (test_map.data(TempPoint(i, j))) {
            case kBlockWall:
             std::cout << "#";
             break;
@@ -97,6 +94,8 @@ int main() {
             break;
            case kBlockGround:
             std::cout << "+";
+            break;
+           default:
             break;
           }
         }

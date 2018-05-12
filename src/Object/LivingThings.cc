@@ -1,21 +1,48 @@
 #include "LivingThings.h"
 #include "../CPP.h"
+inline uint32_t GetDifference(uint32_t a, uint32_t b) {
+  if (a > b) {
+    return a - b;
+  } else {
+    return b - a;
+  }
+}
+inline uint64_t Square(uint32_t a) {
+  uint64_t ret = abs(a);
+  ret *= ret;
+  return ret;
+}
+// Prevent overflow
+inline bool IsAPlusBBiggerThanC(uint64_t a, uint64_t b, uint64_t c) {
+  if (a > c && b > c) {
+    return true;
+  }
+  if (a < c) {
+    return b > (c - a);
+  } else {
+    return a > (c - b);
+  }
+}
+inline int64_t UnsignedMinus(uint32_t a, uint32_t b) {
+  return static_cast< int64_t >(a) - static_cast< int64_t >(b);
+}
 bool LivingThings::IsAValidMove(const Point & des) {
   if (des.x < 0 || des.y < 0 ||
-      des.x > kMapWidth - 1 || des.y > kMapHeight - 1) {
+      des.x >= kMapWidth || des.y >= kMapHeight) {
     return false;
   }
-  if (!moveable_[now_map_ -> data(des.x, des.y)]) return false;
-  if (abs(des.x - now_pos_.x) + abs(des.y - now_pos_.y) <= 1) {
+  if (!moveable_[now_map_ -> data(des)]) return false;
+  if (GetDifference(des.x, now_pos_.x) + GetDifference(des.y, now_pos_.y)
+      <= 1) {
     return true;
   } else {
     return false;
   }
 }
 // a / b
-int RoundingOfDivide(int a, int b) {
-  if (b == 0) {
-    return INT_MAX;
+int64_t RoundingOfAMulBDivideC(int64_t a, int64_t b, int64_t c) {
+  if (c == 0) {
+    return INT64_MAX;
   }
   bool is_positive = true;
   if (a < 0) {
@@ -26,87 +53,109 @@ int RoundingOfDivide(int a, int b) {
     is_positive = !is_positive;
     b = -b;
   }
-  long long tmp = a * 10;
-  tmp /= b;
-  if (tmp % 10 < 5) {
-    return (is_positive ? 1 : -1) * tmp / 10;
-  } else {
-    return (is_positive ? 1 : -1) * ((tmp / 10) + 1);
+  if (c < 0) {
+    is_positive = !is_positive;
+    c = -c;
   }
+  uint64_t tmp = a * 10;
+  tmp *= b;
+  tmp /= c;
+  if (tmp % 10 < 5) {
+    tmp /= 10;
+  } else {
+    tmp /= 10;
+    tmp += 1;
+  }
+  return (is_positive ? 1 : -1) * tmp;
 }
 void LivingThings::UpdateViewAble(const Point & now) {
-  long long square_view_dis = view_dis_ * view_dis_;
-  int dis_array_size = (view_dis_ << 1) + 1;
+  size_t dis_array_size = (view_dis_ << 1) + 1;
   std::vector< std::vector< bool > > is_tested(dis_array_size, 
                                                std::vector< bool >(
                                                    dis_array_size,
                                                    false));
   std::queue< Point > waiting;
-  {
-    Point tmp;
-    tmp.x = view_dis_;
-    tmp.y = view_dis_;
-    is_tested[tmp.x][tmp.y] = true;
-    waiting.push(tmp);
-  }
-  for (int i = 0; i < dis_array_size; ++i) {
-    for (int j = 0; j < dis_array_size; ++j) {
+  is_tested[view_dis_][view_dis_] = true;
+  waiting.push(TempPoint(view_dis_, view_dis_));
+  for (size_t i = 0; i < dis_array_size; ++i) {
+    for (size_t j = 0; j < dis_array_size; ++j) {
       viewable_[i][j] = false;
     }
   }
   viewable_[view_dis_][view_dis_] = true;
-  int min_x = std::max(0, view_dis_ - now.x);
-  int min_y = std::max(0, view_dis_ - now.y);
-  int max_x = std::min(dis_array_size - 1, view_dis_ + (kMapWidth  - 1 - now.x));
-  int max_y = std::min(dis_array_size - 1, view_dis_ + (kMapHeight - 1 - now.y));
+  // Prevent additional computation
+  size_t min_x;
+  if (now.x < view_dis_) {
+    min_x = view_dis_ - now.x; 
+  } else {
+    min_x = 0;
+  }
+  size_t min_y;
+  if (now.y < view_dis_) {
+    min_y = view_dis_ - now.y; 
+  } else {
+    min_y = 0;
+  }
+  size_t max_x;
+  if (now.x + view_dis_ >= kMapWidth) {
+    max_x = view_dis_ + (kMapWidth - 1 - now.x); 
+  } else {
+    max_x = dis_array_size - 1;
+  }
+  size_t max_y;
+  if (now.y + view_dis_ >= kMapHeight) {
+    max_y = view_dis_ + (kMapHeight - 1 - now.y); 
+  } else {
+    max_y = dis_array_size - 1;
+  }
+  uint64_t square_view_dis = Square(view_dis_);
   while (!waiting.empty()) {
     Point tmp = waiting.front();
-    Point origin_is_now;
-    origin_is_now.x = tmp.x - view_dis_;
-    origin_is_now.y = tmp.y - view_dis_;
     waiting.pop();
-    if (static_cast<long long>(origin_is_now.x) * (origin_is_now.x) +
-        static_cast<long long>(origin_is_now.y) * (origin_is_now.y) >
-        square_view_dis) {
+    if (IsAPlusBBiggerThanC(Square(GetDifference(tmp.x, view_dis_)),
+                            Square(GetDifference(tmp.y, view_dis_)),
+                            square_view_dis)) {
       continue;
     }
-    --tmp.x;
-    if (tmp.x >= min_x && !is_tested[tmp.x][tmp.y]) {
+    //Four directions
+    if (tmp.x >= min_x + 1&& !is_tested[tmp.x - 1][tmp.y]) {
+      --tmp.x;
       waiting.push(tmp);
       is_tested[tmp.x][tmp.y] = true;
+      ++tmp.x;
     }
-    ++tmp.x;
-    --tmp.y;
-    if (tmp.y >= min_y && !is_tested[tmp.x][tmp.y]) {
+    if (tmp.y >= min_y + 1&& !is_tested[tmp.x][tmp.y - 1]) {
+      --tmp.y;
       waiting.push(tmp);
       is_tested[tmp.x][tmp.y] = true;
+      ++tmp.y;
     }
-    ++tmp.y;
-    ++tmp.x;
-    if (tmp.x <= max_x && !is_tested[tmp.x][tmp.y]) {
+    if (tmp.x + 1 <= max_x && !is_tested[tmp.x + 1][tmp.y]) {
+      ++tmp.x;
       waiting.push(tmp);
       is_tested[tmp.x][tmp.y] = true;
+      --tmp.x;
     }
-    --tmp.x;
-    ++tmp.y;
-    if (tmp.y <= max_y && !is_tested[tmp.x][tmp.y]) {
+    if (tmp.y + 1 <= max_y && !is_tested[tmp.x][tmp.y + 1]) {
+      ++tmp.y;
       waiting.push(tmp);
       is_tested[tmp.x][tmp.y] = true;
+      --tmp.y;
     }
-    --tmp.y;
-    UpdateViewAbleOnALine(now, origin_is_now);
+    UpdateViewAbleOnALine(now, UnsignedMinus(tmp.x, view_dis_),
+                               UnsignedMinus(tmp.y, view_dis_));
   }
 }
 void LivingThings::UpdateViewAbleOnALine(const Point & now,
-                                         const Point & end_when_origin_is_now) {
-  int max_det;
+                                         const int64_t end_x, const int64_t end_y) {
+  int64_t max_det;
   bool is_postive;
   bool is_x_bigger;
-  if (abs(end_when_origin_is_now.x) > abs(end_when_origin_is_now.y)) {
-    max_det = end_when_origin_is_now.x;
+  if (abs(end_x) > abs(end_y)) {
+    max_det = end_x;
     is_x_bigger = true;
   } else {
-    max_det = end_when_origin_is_now.y;
+    max_det = end_y;
     is_x_bigger = false;
   }
   if (max_det < 0) {
@@ -114,19 +163,34 @@ void LivingThings::UpdateViewAbleOnALine(const Point & now,
   } else {
     is_postive = true;
   }
-  for (int k = (is_postive ? 1 : -1); k != (max_det + (is_postive ? 1 : -1));
+  for (int64_t k = (is_postive ? 1 : -1); k != (max_det + (is_postive ? 1 : -1));
        k += is_postive ? 1 : -1) {
-    int min_one;
+    int64_t min_one;
     if (is_x_bigger) {
-      min_one = RoundingOfDivide(k * end_when_origin_is_now.y, end_when_origin_is_now.x);
-      viewable_[view_dis_ + k][view_dis_ + min_one] = true;
-      if (!see_through_able_[now_map_ -> data(now.x + k,
-                                              now.y + min_one)]) break;
+      min_one = RoundingOfAMulBDivideC(k , end_y, end_x);
+      viewable_[static_cast< int64_t >(view_dis_) + k][static_cast< int64_t >(view_dis_) + min_one] = true;
+      if (!see_through_able_[now_map_ -> data(
+                                             TempPoint(now.x + k,
+                                                 now.y + min_one))]) break;
     }else {
-      min_one = RoundingOfDivide(k * end_when_origin_is_now.x, end_when_origin_is_now.y);
-      viewable_[view_dis_ + min_one][view_dis_ + k] = true;
-      if (!see_through_able_[now_map_ -> data(now.x + min_one, 
-                                              now.y + k)]) break;
+      min_one = RoundingOfAMulBDivideC(k , end_x, end_y);
+      viewable_[static_cast< int64_t >(view_dis_) + min_one][static_cast< int64_t >(view_dis_) + k] = true;
+      if (!see_through_able_[now_map_ -> data(
+                                             TempPoint(now.x + min_one,
+                                                 now.y + k))]) break;
     }
   }
 }
+LivingThings::LivingThings() {
+  now_pos_.x = 0;
+  now_pos_.y = 0;
+  now_map_ = nullptr;
+  view_dis_ = 0;
+  for (uint32_t i = 0; i < kBlockMax; ++i) {
+    see_through_able_[i] = false;
+  }
+  for (uint32_t i = 0; i < kBlockMax; ++i) {
+    moveable_[i] = false;
+  }
+}
+
