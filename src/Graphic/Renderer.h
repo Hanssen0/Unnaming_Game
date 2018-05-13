@@ -16,10 +16,10 @@
 //    Email: handsome0hell@gmail.com
 #ifndef UNNAMING_GAME_SRC_GRAPHIC_RENDERER_H_
 #define UNNAMING_GAME_SRC_GRAPHIC_RENDERER_H_
-#include "../CPP.h"
-#include "../ConstValue.h"
 #include "../Map/GameMap.h"
 #include "../Object/LivingThings.h"
+#include <iostream>
+#include <cstdint>
 class Renderer {
  public:
   void set_exterior_of_block(const char exterior, const BlockType & type) {

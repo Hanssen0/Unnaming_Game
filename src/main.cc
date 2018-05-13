@@ -15,10 +15,10 @@
 //
 //    Email: handsome0hell@gmail.com
 #include "Map/GameMap.h"
-#include "ConstValue.h"
-#include "CPP.h"
+#include "Base.h"
 #include "Object/LivingThings.h"
 #include "Graphic/Renderer.h"
+#include <iostream>
 int main() {
   RandomGenerater main_random;
   main_random.set_seed_of_random(time(0));

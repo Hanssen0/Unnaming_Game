@@ -15,6 +15,9 @@
 //
 //    Email: handsome0hell@gmail.com
 #include "GameMap.h"
+inline bool operator==(const Point & a, const Point & b) {
+  return a.x == b.x && a.y == b.y;
+}
 void GameMapBuilder::CleanMap() {
   for (uint32_t i = 0; i < kMapWidth; ++i) {
     for (uint32_t j = 0; j < kMapHeight; ++j) {
@@ -200,7 +203,7 @@ std::list< Point > PathFinder::FindShortestPath(const Point & from,
                                                 const Point & to) {
   for (uint32_t i = 0; i < kMapWidth; ++i) {
     for (uint32_t j = 0; j < kMapHeight; ++j) {
-      walked_dis_[i][j] = -1;
+      is_first_check[i][j] = true;
     }
   }
   for (uint32_t i = 0; i < kMapWidth; ++i) {
@@ -210,7 +213,7 @@ std::list< Point > PathFinder::FindShortestPath(const Point & from,
   }
   evaulate_to = to;
   walked_dis_[from.x][from.y] = value_[target_map_ -> data_[from.x][from.y]];;
-  father[from.x][from.y].x = -1;
+  father[from.x][from.y] = from;
   searching_list.push_back(from);
   Point min_dis;
   while (!searching_list.empty()) {
@@ -225,7 +228,7 @@ std::list< Point > PathFinder::FindShortestPath(const Point & from,
   Point backer;
   if (min_dis.x == to.x && min_dis.y == to.y) {
     backer = to;
-    while (backer.x != -1) {
+    while (!(backer == father[backer.x][backer.y])) {
       shortest_path.push_front(backer);
       backer = father[backer.x][backer.y];
     }
@@ -276,15 +279,13 @@ void PathFinder::UpdateNearby(const Point & now) {
     --tmp.y;
   }
 }
-inline bool operator==(const Point & a, const Point & b) {
-  return a.x == b.x && a.y == b.y;
-}
 bool PathFinder::TryAPoint(const BlockType type, uint32_t walked_dis,
                            const Point & now) {
   if (!walked_[now.x][now.y] && value_[type] >= 0) {
-    if (walked_dis_[now.x][now.y] == -1) {
+    if (is_first_check[now.x][now.y] == true) {
       walked_dis_[now.x][now.y] = walked_dis + value_[type];
       PushPointToAstarList(now);
+      is_first_check[now.x][now.y] = false;
       return true;
     }
     if (walked_dis_[now.x][now.y] > walked_dis + value_[type]) {

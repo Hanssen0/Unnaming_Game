@@ -15,7 +15,7 @@
 //
 //    Email: handsome0hell@gmail.com
 #include "LivingThings.h"
-#include "../CPP.h"
+#include "cstdint"
 inline uint32_t GetDifference(uint32_t a, uint32_t b) {
   if (a > b) {
     return a - b;

@@ -17,6 +17,8 @@
 #ifndef UNNAMING_GAME_SRC_OBJECT_LIVINGTHING_H_
 #define UNNAMING_GAME_SRC_OBJECT_LIVINGTHING_H_
 #include "../Map/GameMap.h"
+#include "cstdint"
+#include <vector>
 enum LivingThingsRace {
   kLivingThingsHuman,
   kLivingThingsMax

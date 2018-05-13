@@ -16,9 +16,11 @@
 //    Email: handsome0hell@gmail.com
 #ifndef UNNAMING_GAME_SRC_MAP_GAMEMAP_H_
 #define UNNAMING_GAME_SRC_MAP_GAMEMAP_H_
-#include "../CPP.h"
-#include "../ConstValue.h"
-#include "cstdint"
+#include "../Base.h"
+#include <cstdint>
+#include <list>
+#include <algorithm>
+#include <queue>
 struct Point {
   uint32_t x, y;
 };
@@ -32,6 +34,18 @@ struct Rect {
 struct RectWithPos {
   Point left_top;
   uint32_t w, h;
+};
+const uint32_t kMapWidth = 32;
+const uint32_t kMapHeight = 32;
+const uint32_t kMinRoomWidth = 3;
+const uint32_t kMinRoomHeight = 3;
+const uint32_t kMaxRoomWidth = 8;
+const uint32_t kMaxRoomHeight = 8;
+enum BlockType {
+  kBlockWall,
+  kBlockGround,
+  kBlockPath,
+  kBlockMax
 };
 class GameMap {
  public:
@@ -92,6 +106,7 @@ class PathFinder {
   // A star data
   bool walked_[kMapWidth][kMapHeight];
   uint32_t walked_dis_[kMapWidth][kMapHeight];
+  bool is_first_check[kMapWidth][kMapHeight];
   Point father[kMapWidth][kMapHeight];
   std::list< Point > searching_list;
   GameMap * target_map_;
