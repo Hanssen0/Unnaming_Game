@@ -18,6 +18,7 @@
 #include "ConstValue.h"
 #include "CPP.h"
 #include "Object/LivingThings.h"
+#include "Graphic/Renderer.h"
 int main() {
   RandomGenerater main_random;
   main_random.set_seed_of_random(time(0));
@@ -29,6 +30,7 @@ int main() {
   builder.BuildRoomsAndPath();
   LivingThings main_role;
   main_role.set_now_map(&test_map);
+  main_role.set_race(kLivingThingsHuman);
   main_role.set_moveable(kBlockWall, false);
   main_role.set_moveable(kBlockPath, true);
   main_role.set_moveable(kBlockGround, true);
@@ -51,7 +53,13 @@ int main() {
   }
   main_role.set_now_pos(init_pos);
   main_role.UpdateViewAble(init_pos);
-  char com;
+  char com = ' ';
+  Renderer main_renderer;
+  main_renderer.set_exterior_of_block('#', kBlockWall);
+  main_renderer.set_exterior_of_block('.', kBlockPath);
+  main_renderer.set_exterior_of_block('+', kBlockGround);
+  main_renderer.set_exterior_of_race('@', kLivingThingsHuman);
+  bool renderer_map = false;
   do {
     switch (com) {
      case 'w':
@@ -66,58 +74,22 @@ int main() {
      case 'd':
       ++init_pos.x;
       break;
+     case 'm':
+      renderer_map = true;
+      break;
     }
     main_role.GoTo(init_pos);
     init_pos = main_role.now_pos();
     main_role.UpdateViewAble(init_pos);
     system("clear");
-    for (int j = 0; j < (main_role.view_dis() << 1) + 1; ++j) {
-      for (int i = 0; i < (main_role.view_dis() << 1) + 1; ++i) {
-        std::cout << main_role.viewable(TempPoint(i, j));
-      }
-      std::cout << '\n';
-    }
-    for (int j = 0; j < kMapHeight; ++j) {
-      if (j + main_role.view_dis() < main_role.now_pos().y ||
-          j > main_role.now_pos().y + main_role.view_dis()) {
-        std::cout << '\n';
-        continue;
-      }
-      for (int i = 0; i < kMapWidth; ++i) {
-        if (i + main_role.view_dis() < main_role.now_pos().x) {
-          std::cout << ' ';
-          continue;
-        }
-        if (i > main_role.now_pos().x + main_role.view_dis()) {
-          break;
-        }
-        Point tmp;
-        tmp.x = main_role.view_dis() - main_role.now_pos().x + i;
-        tmp.y = main_role.view_dis() - main_role.now_pos().y + j;
-        if (!main_role.viewable(tmp)) {
-          std::cout << " ";
-          continue;
-        }
-        if (i == main_role.now_pos().x && j == main_role.now_pos().y) {
-          std::cout << "@";
-        }else {
-          switch (test_map.data(TempPoint(i, j))) {
-           case kBlockWall:
-            std::cout << "#";
-            break;
-           case kBlockPath:
-            std::cout << ".";
-            break;
-           case kBlockGround:
-            std::cout << "+";
-            break;
-           default:
-            break;
-          }
-        }
-      }
-      std::cout << '\n';
+    if (renderer_map) {
+      main_renderer.RenderGameMap(&test_map);
+      renderer_map = false;
+    } else {
+      main_renderer.RenderLivingThingsView(&main_role);
     }
     std::cout << std::flush;
-  } while ((com = std::cin.get()) != 'q');
+    com = std::cin.get();
+    std::cin.get();
+  } while (com != 'q');
 }

@@ -18,16 +18,18 @@
 #define UNNAMING_GAME_SRC_OBJECT_LIVINGTHING_H_
 #include "../Map/GameMap.h"
 enum LivingThingsRace {
-  kLivingThingsHuman
+  kLivingThingsHuman,
+  kLivingThingsMax
 };
 const uint32_t kSquareRootOfINT64MAX = 3037000499;
 class LivingThings {
  public:
-  inline LivingThingsRace race() {return race_;}
   inline void set_race(const LivingThingsRace & r) {race_ = r;}
+  inline LivingThingsRace race() const {return race_;}
   inline void set_now_map(GameMap * map) {now_map_ = map;}
+  inline GameMap * now_map() const {return now_map_;}
   inline void set_now_pos(const Point & pos) {now_pos_ = pos;}
-  inline Point now_pos() {return now_pos_;}
+  inline Point now_pos() const {return now_pos_;}
   inline void set_moveable(const BlockType & t, const bool & s) {
     moveable_[t] = s;
   }
@@ -40,17 +42,18 @@ class LivingThings {
     view_dis_ = d;
     return true;
   }
-  inline uint32_t view_dis() {return view_dis_;}
+  inline uint32_t view_dis() const {return view_dis_;}
   inline void set_viewable(const Point & pos, const bool & s) {
     viewable_[pos.x][pos.y] = s;
   }
-  inline bool viewable(const Point & pos) {
+  inline bool viewable(const Point & pos) const {
     if (pos.x < viewable_.size() && pos.y < viewable_.size()) {
       return viewable_[pos.x][pos.y];
     } else {
       return false;
     }
   }
+  inline size_t viewable_size() const {return viewable_.size();}
   inline void set_see_through_able(const BlockType & t, const bool & s) {
     see_through_able_[t] = s;
   }
