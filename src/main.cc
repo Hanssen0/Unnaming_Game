@@ -18,79 +18,105 @@
 #include "Base.h"
 #include "Object/LivingThings.h"
 #include "Graphic/Renderer.h"
+#include "Map/World.h"
+#include <list>
 #include <iostream>
+RandomGenerater kMainThreadRandom;
+LivingThings kMainRole;
+Renderer kMainRenderer;
+void Init() {
+  kMainThreadRandom.set_seed_of_random(time(0));
+  kMainRole.set_race(kLivingThingsHuman);
+  kMainRole.set_moveable(kBlockEmpty, false);
+  kMainRole.set_moveable(kBlockWall, false);
+  kMainRole.set_moveable(kBlockPath, true);
+  kMainRole.set_moveable(kBlockGround, true);
+  kMainRole.set_see_through_able(kBlockEmpty, true);
+  kMainRole.set_see_through_able(kBlockWall, false);
+  kMainRole.set_see_through_able(kBlockPath, true);
+  kMainRole.set_see_through_able(kBlockGround, true);
+  kMainRole.set_view_dis(6);
+  kMainRenderer.set_exterior_of_block('#', kBlockWall);
+  kMainRenderer.set_exterior_of_block('.', kBlockPath);
+  kMainRenderer.set_exterior_of_block('+', kBlockGround);
+  kMainRenderer.set_exterior_of_race('@', kLivingThingsHuman);
+}
 int main() {
-  RandomGenerater main_random;
-  main_random.set_seed_of_random(time(0));
-  GameMap test_map;
+  Init();
+  World main_world;
   GameMapBuilder builder;
-  builder.set_random_gen(&main_random);
-  builder.set_target_map(&test_map);
-  builder.CleanMap();
-  builder.BuildRoomsAndPath();
-  LivingThings main_role;
-  main_role.set_now_map(&test_map);
-  main_role.set_race(kLivingThingsHuman);
-  main_role.set_moveable(kBlockWall, false);
-  main_role.set_moveable(kBlockPath, true);
-  main_role.set_moveable(kBlockGround, true);
-  main_role.set_see_through_able(kBlockWall, false);
-  main_role.set_see_through_able(kBlockPath, true);
-  main_role.set_see_through_able(kBlockGround, true);
-  main_role.set_view_dis(6);
-  Point init_pos;
-  bool init_able = false;
-  for (uint32_t i = 0; i < kMapWidth; ++i) {
-    for (uint32_t j = 0; j < kMapHeight; ++j) {
-      if (!init_able && test_map.data(TempPoint(i, j)) == kBlockGround) {
-        init_pos.x = i;
-        init_pos.y = j;
-        init_able = true;
-        break;
-      }
-    }
-    if (init_able) break;
-  }
-  main_role.set_now_pos(init_pos);
-  main_role.UpdateViewAble(init_pos);
+  builder.set_random_gen(&kMainThreadRandom);
+  main_world.set_builder(&builder);
+  main_world.set_random_gen(&kMainThreadRandom);
+  GameMap * active_map = main_world.NewMap();
+  bool is_new_map = true;
   char com = ' ';
-  Renderer main_renderer;
-  main_renderer.set_exterior_of_block('#', kBlockWall);
-  main_renderer.set_exterior_of_block('.', kBlockPath);
-  main_renderer.set_exterior_of_block('+', kBlockGround);
-  main_renderer.set_exterior_of_race('@', kLivingThingsHuman);
   bool renderer_map = false;
   LivingThings::MemoryOfMap * mem;
+  Point now_pos = active_map -> PickARandomPointInGroundOrPath(&kMainThreadRandom);
+  GameMap * last_map = nullptr;
   do {
     switch (com) {
      case 'w':
-      --init_pos.y;
+      --now_pos.y;
       break;
      case 'a':
-      --init_pos.x;
+      --now_pos.x;
       break;
      case 's':
-      ++init_pos.y;
+      ++now_pos.y;
       break;
      case 'd':
-      ++init_pos.x;
+      ++now_pos.x;
       break;
      case 'm':
       renderer_map = true;
       break;
+     case ' ':
+      if (active_map -> building(kMainRole.now_pos()) == kBuildingPortal) {
+        auto tmp = main_world.GetTarget(active_map, kMainRole.now_pos());
+        GameMap * tmp_map = tmp -> target_map;
+        now_pos = tmp -> target_pos;
+        main_world.Left(active_map);
+        active_map = tmp_map;
+        is_new_map = true;
+      }
+      break;
+     case 'r':
+      main_world.Arrive(active_map);
+      if (last_map != nullptr) {
+        main_world.Left(last_map);
+      }
+      last_map = active_map;
+      break;
+     case 'c':
+      if (active_map -> building(kMainRole.now_pos()) == kBuildingPortal) {
+        GameMap::TargetInMap tmp;
+        tmp.target_map = last_map;
+        tmp.target_pos = last_map -> PickARandomPointInGroundOrPath(&kMainThreadRandom);
+        active_map -> set_portal_target(kMainRole.now_pos(), tmp);
+      }
+      break;
     }
-    main_role.GoTo(init_pos);
-    init_pos = main_role.now_pos();
-    main_role.UpdateViewAble(init_pos);
+    if (is_new_map) {
+      kMainRole.set_now_map(active_map);
+      kMainRole.set_now_pos(now_pos);
+      main_world.Arrive(active_map);
+      is_new_map = false;
+    }
+    kMainRole.GoTo(now_pos);
+    now_pos = kMainRole.now_pos();
+    kMainRole.UpdateViewAble();
     system("clear");
     if (renderer_map) {
-      mem = main_role.GetMemory();
-      main_renderer.RenderMemory(*mem);
+      mem = kMainRole.GetMemory();
+      kMainRenderer.RenderMemory(*mem);
       renderer_map = false;
     } else {
-      main_renderer.RenderLivingThingsView(main_role);
+      kMainRenderer.RenderLivingThingsView(kMainRole);
     }
     std::cout << std::flush;
+    main_world.Test();
     com = std::cin.get();
     std::cin.get();
   } while (com != 'q');

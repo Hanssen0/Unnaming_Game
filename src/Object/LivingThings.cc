@@ -16,6 +16,7 @@
 //    Email: handsome0hell@gmail.com
 #include "LivingThings.h"
 #include "cstdint"
+#include "iostream"
 inline uint32_t GetDifference(uint32_t a, uint32_t b) {
   if (a > b) {
     return a - b;
@@ -96,7 +97,7 @@ int64_t RoundingOfAMulBDivideC(int64_t a, int64_t b, int64_t c) {
   }
   return (is_positive ? 1 : -1) * tmp;
 }
-void LivingThings::UpdateViewAble(const Point & now) {
+void LivingThings::UpdateViewAble() {
   size_t dis_array_size = (view_dis_ << 1) + 1;
   std::vector< std::vector< bool > > is_tested(dis_array_size, 
                                                std::vector< bool >(
@@ -113,26 +114,26 @@ void LivingThings::UpdateViewAble(const Point & now) {
   viewable_[view_dis_][view_dis_] = true;
   // Prevent additional computation
   size_t min_x;
-  if (now.x < view_dis_) {
-    min_x = view_dis_ - now.x; 
+  if (now_pos_.x < view_dis_) {
+    min_x = view_dis_ - now_pos_.x; 
   } else {
     min_x = 0;
   }
   size_t min_y;
-  if (now.y < view_dis_) {
-    min_y = view_dis_ - now.y; 
+  if (now_pos_.y < view_dis_) {
+    min_y = view_dis_ - now_pos_.y; 
   } else {
     min_y = 0;
   }
   size_t max_x;
-  if (now.x + view_dis_ >= kMapWidth) {
-    max_x = view_dis_ + (kMapWidth - 1 - now.x); 
+  if (now_pos_.x + view_dis_ >= kMapWidth) {
+    max_x = view_dis_ + (kMapWidth - 1 - now_pos_.x); 
   } else {
     max_x = dis_array_size - 1;
   }
   size_t max_y;
-  if (now.y + view_dis_ >= kMapHeight) {
-    max_y = view_dis_ + (kMapHeight - 1 - now.y); 
+  if (now_pos_.y + view_dis_ >= kMapHeight) {
+    max_y = view_dis_ + (kMapHeight - 1 - now_pos_.y); 
   } else {
     max_y = dis_array_size - 1;
   }
@@ -170,13 +171,12 @@ void LivingThings::UpdateViewAble(const Point & now) {
       is_tested[tmp.x][tmp.y] = true;
       --tmp.y;
     }
-    UpdateViewAbleOnALine(now, UnsignedMinus(tmp.x, view_dis_),
-                               UnsignedMinus(tmp.y, view_dis_));
+    UpdateViewAbleOnALine(UnsignedMinus(tmp.x, view_dis_),
+                          UnsignedMinus(tmp.y, view_dis_));
   }
   UpdateMemery();
 }
-void LivingThings::UpdateViewAbleOnALine(const Point & now,
-                                         const int64_t end_x, const int64_t end_y) {
+void LivingThings::UpdateViewAbleOnALine(const int64_t end_x, const int64_t end_y) {
   int64_t max_det;
   bool is_postive;
   bool is_x_bigger;
@@ -199,15 +199,17 @@ void LivingThings::UpdateViewAbleOnALine(const Point & now,
       min_one = RoundingOfAMulBDivideC(k , end_y, end_x);
       viewable_[static_cast< int64_t >(view_dis_) + k][static_cast< int64_t >(view_dis_) + min_one] = true;
       if (!see_through_able_[now_map_ -> data(
-                                             TempPoint(now.x + k,
-                                                 now.y + min_one))]) break;
+                                             TempPoint(now_pos_.x + k,
+                                                 now_pos_.y + min_one))]) break;
     }else {
       min_one = RoundingOfAMulBDivideC(k , end_x, end_y);
       viewable_[static_cast< int64_t >(view_dis_) + min_one][static_cast< int64_t >(view_dis_) + k] = true;
       if (!see_through_able_[now_map_ -> data(
-                                             TempPoint(now.x + min_one,
-                                                 now.y + k))]) break;
-    } } }
+                                             TempPoint(now_pos_.x + min_one,
+                                                 now_pos_.y + k))]) break;
+    }
+  }
+}
 LivingThings::LivingThings() {
   now_pos_.x = 0;
   now_pos_.y = 0;
@@ -222,7 +224,8 @@ LivingThings::LivingThings() {
 }
 void LivingThings::UpdateMemery() {
   MemoryOfMap * now;
-  if (memories_of_map_.count(now_map_) == 0) {
+  auto finder = memories_of_map_.find(now_map_);
+  if (finder == memories_of_map_.end()) {
     now = &memories_of_map_[now_map_];
     now -> left_top = TempPoint(kMapWidth, kMapHeight);
     now -> right_bottom = TempPoint(0, 0);
@@ -232,7 +235,7 @@ void LivingThings::UpdateMemery() {
       }
     }
   } else {
-    now = &memories_of_map_[now_map_];
+    now = &(finder -> second);
   }
   now -> left_top = TempPoint(std::min(now -> left_top.x,
                                        NoNegitiveMinus(now_pos_.x, view_dis_)),
@@ -246,13 +249,20 @@ void LivingThings::UpdateMemery() {
                                            NoOverflowPlus(now_pos_.y,
                                                           view_dis_,
                                                           kMapHeight - 1)));
-  for (size_t i = NoNegitiveMinus(view_dis_, now_pos_.x); i < viewable_.size(); ++i) {
-    for (size_t j = NoNegitiveMinus(view_dis_, now_pos_.y); j < viewable_.size(); ++j) {
+  size_t max_x = std::min(static_cast< uint64_t >(viewable_size() - 1),
+                          static_cast< uint64_t >(kMapWidth - now_pos_.x - 1) +
+                          view_dis_);
+  size_t max_y = std::min(static_cast< uint64_t >(viewable_size() - 1),
+                          static_cast< uint64_t >(kMapHeight - now_pos_.y - 1) + 
+                          view_dis_);
+  for (size_t i = NoNegitiveMinus(view_dis_, now_pos_.x); i <= max_x; ++i) {
+    for (size_t j = NoNegitiveMinus(view_dis_, now_pos_.y); j <= max_y; ++j) {
       if (viewable_[i][j]) {
         Point writing_point;
         ViewPosToRealPos(TempPoint(i, j), &writing_point);
         if (!now -> is_seen[writing_point.x][writing_point.y]) {
           now -> detail.set_data(writing_point, now_map_ -> data(writing_point));
+          now -> detail.set_building(writing_point, now_map_ -> building(writing_point));
           now -> is_seen[writing_point.x][writing_point.y] = true;
         }
       }

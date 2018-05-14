@@ -15,13 +15,29 @@
 //
 //    Email: handsome0hell@gmail.com
 #include "GameMap.h"
-inline bool operator==(const Point & a, const Point & b) {
-  return a.x == b.x && a.y == b.y;
+Point GameMap::PickARandomPointInGroundOrPath(RandomGenerater * ran) {
+  for (uint32_t i = 0; i < kMapWidth; ++i) {
+    if (ran -> RandomIn(i + 1, kMapWidth) == kMapWidth) {
+      for (uint32_t j = 0; j < kMapHeight; ++j) {
+        if (ran -> RandomIn(j + 1, kMapHeight) == kMapHeight) {
+          if (data_[i][j] == kBlockPath || data_[i][j] == kBlockGround) {
+            return TempPoint(i, j);
+          }
+        }
+      }
+    }
+  }
+  return TempPoint(0, 0);
 }
 void GameMapBuilder::CleanMap() {
   for (uint32_t i = 0; i < kMapWidth; ++i) {
     for (uint32_t j = 0; j < kMapHeight; ++j) {
       target_map_ -> data_[i][j] = kBlockWall;
+    }
+  }
+  for (uint32_t i = 0; i < kMapWidth; ++i) {
+    for (uint32_t j = 0; j < kMapHeight; ++j) {
+      target_map_ -> building_[i][j] = kBuildingEmpty;
     }
   }
 }
@@ -38,6 +54,19 @@ void GameMapBuilder::BuildRoomsAndPath() {
       is_first = false;
     }
     previous = tmp;
+  }
+}
+void GameMapBuilder::BuildBuildings() {
+  for (uint32_t i = 0; i < kMapWidth; ++i) {
+    for (uint32_t j = 0; j < kMapHeight; ++j) {
+      if (target_map_ -> data_[i][j] == kBlockPath || target_map_ -> data_[i][j] == kBlockGround) {
+        if (random_gen_ -> RandomIn(1, kDenominatorOfPossibilityOfPortal) <=
+            kNumeratorOfPossibilityOfPortal) {
+          target_map_ -> building_[i][j] = kBuildingPortal;
+          //target_map_ -> portal_target_[TempPoint(i, j)];
+        }
+      }
+    }
   }
 }
 void GameMapBuilder::InitForEmptyTest() {

@@ -21,12 +21,23 @@
 #include <list>
 #include <algorithm>
 #include <queue>
+#include <map>
 struct Point {
   uint32_t x, y;
 };
 inline Point TempPoint(uint32_t x, uint32_t y) {
   Point tmp = {x, y};
   return tmp;
+}
+inline bool operator<(const Point & a, const Point & b) {
+  if (a.x == b.x) {
+    return a.y < b.y;
+  } else {
+    return a.x < b.x;
+  }
+}
+inline bool operator==(const Point & a, const Point & b) {
+  return a.x == b.x && a.y == b.y;
 }
 struct Rect {
   uint32_t w, h;
@@ -41,6 +52,8 @@ const uint32_t kMinRoomWidth = 3;
 const uint32_t kMinRoomHeight = 3;
 const uint32_t kMaxRoomWidth = 8;
 const uint32_t kMaxRoomHeight = 8;
+const uint32_t kNumeratorOfPossibilityOfPortal = 1;
+const uint32_t kDenominatorOfPossibilityOfPortal = 30;
 enum BlockType {
   kBlockEmpty,
   kBlockWall,
@@ -48,16 +61,56 @@ enum BlockType {
   kBlockPath,
   kBlockMax
 };
+enum ItemType {
+};
+enum BuildingType {
+  kBuildingEmpty,
+  kBuildingPortal
+};
 class GameMap {
  public:
-  inline BlockType data(const Point & pos) const {return data_[pos.x][pos.y];}
+  struct TargetInMap {
+    GameMap * target_map;
+    Point target_pos;
+  };
   inline void set_data(const Point & pos, const BlockType type) {
     data_[pos.x][pos.y] = type;
   }
+  inline BlockType data(const Point & pos) const {return data_[pos.x][pos.y];}
+  /*
+  inline void AddItem(const Point & pos, const ItemType type) {
+    item_[pos.x][pos.y].push_back(type);
+  }
+  */
+  inline void set_building(const Point & pos, const BuildingType type) {
+    building_[pos.x][pos.y] = type;
+  }
+  inline BuildingType building(const Point & pos) const {
+    return building_[pos.x][pos.y];
+  }
+  inline void set_portal_target(const Point & pos, const TargetInMap & target) {
+    if (target.target_map == nullptr) return;
+    if (building_[pos.x][pos.y] == kBuildingPortal) {
+      portal_target_[pos] = target;
+    }
+  }
+  inline TargetInMap * portal_target(const Point & pos) const {
+    auto ret = portal_target_.find(pos);
+    if (ret == portal_target_.end()) {
+      return nullptr;
+    } else {
+      return const_cast< TargetInMap * >(&(ret -> second));
+    }
+  }
+  Point PickARandomPointInGroundOrPath(RandomGenerater *);
   friend class GameMapBuilder;
   friend class PathFinder;
+
  private:
   BlockType data_[kMapWidth][kMapHeight];
+  //std::list< ItemType > item_[kMapWidth][kMapHeight];
+  BuildingType building_[kMapWidth][kMapHeight];
+  std::map< Point, TargetInMap > portal_target_;
 };
 class GameMapBuilder {
  public:
@@ -66,6 +119,7 @@ class GameMapBuilder {
   void CleanMap();
   // Make rooms
   void BuildRoomsAndPath();
+  void BuildBuildings();
   void set_random_gen(RandomGenerater * r) {random_gen_ = r;}
   void set_target_map(GameMap * target) {target_map_ = target;}
 

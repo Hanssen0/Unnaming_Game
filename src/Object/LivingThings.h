@@ -20,7 +20,6 @@
 #include "cstdint"
 #include <vector>
 #include <map>
-#include <iostream>
 enum LivingThingsRace {
   kLivingThingsHuman,
   kLivingThingsMax
@@ -68,20 +67,24 @@ class LivingThings {
     see_through_able_[t] = s;
   }
   inline MemoryOfMap * GetMemory() {
-    return &memories_of_map_[now_map_];
+    auto ret = memories_of_map_.find(now_map_);
+    if (ret == memories_of_map_.end()) {
+      return nullptr;
+    } else {
+      return &(ret -> second);
+    }
   }
   inline void GoTo(const Point & des) {
     if (IsAValidMove(des)) {
       now_pos_ = des;
     }
   }
-  void UpdateViewAble(const Point & now);
+  void UpdateViewAble();
   inline bool ViewPosToRealPos(const Point & view_pos, Point * ret) const;
   LivingThings();
  private:
   bool IsAValidMove(const Point & des);
-  void UpdateViewAbleOnALine(const Point & now, 
-                             const int64_t end_x,
+  void UpdateViewAbleOnALine(const int64_t end_x,
                              const int64_t end_y);
   void UpdateMemery();
   LivingThingsRace race_;
@@ -100,11 +103,13 @@ inline bool LivingThings::ViewPosToRealPos(const Point & view_pos,
   tmp += view_pos.x;
   if (tmp < view_dis_) return false;
   tmp -= view_dis_;
+  if (tmp > kMapWidth) return false;
   ret -> x = tmp;
   tmp = now_pos_.y;
   tmp += view_pos.y;
   if (tmp < view_dis_) return false;
   tmp -= view_dis_;
+  if (tmp > kMapHeight) return false;
   ret -> y = tmp;
   return true;
 }
