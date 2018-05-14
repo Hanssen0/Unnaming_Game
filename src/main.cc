@@ -43,11 +43,8 @@ void Init() {
 }
 int main() {
   Init();
-  World main_world;
-  GameMapBuilder builder;
-  builder.set_random_gen(&kMainThreadRandom);
-  main_world.set_builder(&builder);
-  main_world.set_random_gen(&kMainThreadRandom);
+  GameMapBuilder builder(&kMainThreadRandom);
+  World main_world(&kMainThreadRandom, &builder);
   GameMap * active_map = main_world.NewMap();
   bool is_new_map = true;
   char com = ' ';
@@ -73,7 +70,7 @@ int main() {
       renderer_map = true;
       break;
      case ' ':
-      if (active_map -> building(kMainRole.now_pos()) == kBuildingPortal) {
+      if (active_map -> data_building(kMainRole.now_pos()) == kBuildingPortal) {
         auto tmp = main_world.GetTarget(active_map, kMainRole.now_pos());
         GameMap * tmp_map = tmp -> target_map;
         now_pos = tmp -> target_pos;
@@ -90,7 +87,7 @@ int main() {
       last_map = active_map;
       break;
      case 'c':
-      if (active_map -> building(kMainRole.now_pos()) == kBuildingPortal) {
+      if (active_map -> data_building(kMainRole.now_pos()) == kBuildingPortal) {
         GameMap::TargetInMap tmp;
         tmp.target_map = last_map;
         tmp.target_pos = last_map -> PickARandomPointInGroundOrPath(&kMainThreadRandom);

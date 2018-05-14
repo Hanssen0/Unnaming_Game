@@ -24,14 +24,14 @@ void Renderer::RenderLivingThingsView(const LivingThings & thing) const {
       } else if (thing.viewable(temp)) {
         Point read_point;
         thing.ViewPosToRealPos(temp, &read_point);
-        if (thing.now_map() -> building(read_point) == kBuildingPortal) {
+        if (thing.now_map() -> data_building(read_point) == kBuildingPortal) {
           //if (thing.now_map() -> portal_target(read_point) -> target_map == nullptr) {
             std::cout << "0";
           /*} else {
             std::cout << "8";
           }*/
         } else {
-          BlockType now_block = thing.now_map() -> data(read_point);
+          BlockType now_block = thing.now_map() -> data_block(read_point);
           std::cout << exterior_of_block_[now_block];
         }
       } else {
@@ -44,7 +44,7 @@ void Renderer::RenderLivingThingsView(const LivingThings & thing) const {
 void Renderer::RenderGameMap(const GameMap & map) const {
   for (uint32_t j = 0; j < kMapHeight; ++j) {
     for (uint32_t i = 0; i < kMapWidth; ++i) {
-      BlockType now_block = map.data(TempPoint(i, j));
+      BlockType now_block = map.data_block(TempPoint(i, j));
       std::cout << exterior_of_block_[now_block];
     }
     std::cout << "\n";
@@ -54,14 +54,14 @@ void Renderer::RenderMemory(const LivingThings::MemoryOfMap & mem) const {
   for (uint32_t j = mem.left_top.y; j <= mem.right_bottom.y; ++j) {
     for (uint32_t i = mem.left_top.x; i <= mem.right_bottom.x; ++i) {
       if (mem.is_seen[i][j]) {
-        if (mem.detail.building(TempPoint(i, j)) == kBuildingPortal) {
+        if (mem.detail.data_building(TempPoint(i, j)) == kBuildingPortal) {
           if (mem.detail.portal_target(TempPoint(i, j)) == nullptr) {
             std::cout << "0";
           } else {
             std::cout << "8";
           }
         } else {
-          BlockType now_block = mem.detail.data(TempPoint(i, j));
+          BlockType now_block = mem.detail.data_block(TempPoint(i, j));
           std::cout << exterior_of_block_[now_block];
         }
       } else {

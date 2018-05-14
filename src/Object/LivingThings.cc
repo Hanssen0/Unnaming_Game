@@ -60,7 +60,7 @@ bool LivingThings::IsAValidMove(const Point & des) {
       des.x >= kMapWidth || des.y >= kMapHeight) {
     return false;
   }
-  if (!moveable_[now_map_ -> data(des)]) return false;
+  if (!moveable_[now_map_ -> data_block(des)]) return false;
   if (GetDifference(des.x, now_pos_.x) + GetDifference(des.y, now_pos_.y)
       <= 1) {
     return true;
@@ -198,13 +198,13 @@ void LivingThings::UpdateViewAbleOnALine(const int64_t end_x, const int64_t end_
     if (is_x_bigger) {
       min_one = RoundingOfAMulBDivideC(k , end_y, end_x);
       viewable_[static_cast< int64_t >(view_dis_) + k][static_cast< int64_t >(view_dis_) + min_one] = true;
-      if (!see_through_able_[now_map_ -> data(
+      if (!see_through_able_[now_map_ -> data_block(
                                              TempPoint(now_pos_.x + k,
                                                  now_pos_.y + min_one))]) break;
     }else {
       min_one = RoundingOfAMulBDivideC(k , end_x, end_y);
       viewable_[static_cast< int64_t >(view_dis_) + min_one][static_cast< int64_t >(view_dis_) + k] = true;
-      if (!see_through_able_[now_map_ -> data(
+      if (!see_through_able_[now_map_ -> data_block(
                                              TempPoint(now_pos_.x + min_one,
                                                  now_pos_.y + k))]) break;
     }
@@ -261,8 +261,10 @@ void LivingThings::UpdateMemery() {
         Point writing_point;
         ViewPosToRealPos(TempPoint(i, j), &writing_point);
         if (!now -> is_seen[writing_point.x][writing_point.y]) {
-          now -> detail.set_data(writing_point, now_map_ -> data(writing_point));
-          now -> detail.set_building(writing_point, now_map_ -> building(writing_point));
+          now -> detail.set_data_block(writing_point,
+                            now_map_ -> data_block(writing_point));
+          now -> detail.set_data_building(writing_point,
+                            now_map_ -> data_building(writing_point));
           now -> is_seen[writing_point.x][writing_point.y] = true;
         }
       }

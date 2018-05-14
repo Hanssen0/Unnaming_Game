@@ -73,28 +73,23 @@ class GameMap {
     GameMap * target_map;
     Point target_pos;
   };
-  inline void set_data(const Point & pos, const BlockType type) {
-    data_[pos.x][pos.y] = type;
+  virtual inline void set_data_block(const Point & pos, const BlockType type) {
+    data_[pos.x][pos.y].block = type;
   }
-  inline BlockType data(const Point & pos) const {return data_[pos.x][pos.y];}
-  /*
-  inline void AddItem(const Point & pos, const ItemType type) {
-    item_[pos.x][pos.y].push_back(type);
+  virtual inline BlockType data_block(const Point & pos) const {return data_[pos.x][pos.y].block;}
+  virtual inline void set_data_building(const Point & pos, const BuildingType type) {
+    data_[pos.x][pos.y].building = type;
   }
-  */
-  inline void set_building(const Point & pos, const BuildingType type) {
-    building_[pos.x][pos.y] = type;
+  virtual inline BuildingType data_building(const Point & pos) const {
+    return data_[pos.x][pos.y].building;
   }
-  inline BuildingType building(const Point & pos) const {
-    return building_[pos.x][pos.y];
-  }
-  inline void set_portal_target(const Point & pos, const TargetInMap & target) {
+  virtual inline void set_portal_target(const Point & pos, const TargetInMap & target) {
     if (target.target_map == nullptr) return;
-    if (building_[pos.x][pos.y] == kBuildingPortal) {
+    if (data_building(pos)== kBuildingPortal) {
       portal_target_[pos] = target;
     }
   }
-  inline TargetInMap * portal_target(const Point & pos) const {
+  virtual inline TargetInMap * portal_target(const Point & pos) const {
     auto ret = portal_target_.find(pos);
     if (ret == portal_target_.end()) {
       return nullptr;
@@ -103,18 +98,20 @@ class GameMap {
     }
   }
   Point PickARandomPointInGroundOrPath(RandomGenerater *);
-  friend class GameMapBuilder;
-  friend class PathFinder;
 
  private:
-  BlockType data_[kMapWidth][kMapHeight];
-  //std::list< ItemType > item_[kMapWidth][kMapHeight];
-  BuildingType building_[kMapWidth][kMapHeight];
+  struct BlockData {
+    BlockType block;
+    BuildingType building;
+  };
+  BlockData data_[kMapWidth][kMapHeight];
   std::map< Point, TargetInMap > portal_target_;
 };
 class GameMapBuilder {
  public:
-  GameMapBuilder() {random_gen_ = nullptr;}
+  GameMapBuilder(RandomGenerater * ran) : random_gen_(ran) {
+    target_map_ = nullptr;
+  }
   // Delete everything
   void CleanMap();
   // Make rooms

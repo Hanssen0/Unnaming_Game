@@ -20,7 +20,8 @@ Point GameMap::PickARandomPointInGroundOrPath(RandomGenerater * ran) {
     if (ran -> RandomIn(i + 1, kMapWidth) == kMapWidth) {
       for (uint32_t j = 0; j < kMapHeight; ++j) {
         if (ran -> RandomIn(j + 1, kMapHeight) == kMapHeight) {
-          if (data_[i][j] == kBlockPath || data_[i][j] == kBlockGround) {
+          if (data_block(TempPoint(i, j)) == kBlockPath ||
+              data_block(TempPoint(i, j)) == kBlockGround) {
             return TempPoint(i, j);
           }
         }
@@ -32,12 +33,12 @@ Point GameMap::PickARandomPointInGroundOrPath(RandomGenerater * ran) {
 void GameMapBuilder::CleanMap() {
   for (uint32_t i = 0; i < kMapWidth; ++i) {
     for (uint32_t j = 0; j < kMapHeight; ++j) {
-      target_map_ -> data_[i][j] = kBlockWall;
+      target_map_ -> set_data_block(TempPoint(i, j), kBlockWall);
     }
   }
   for (uint32_t i = 0; i < kMapWidth; ++i) {
     for (uint32_t j = 0; j < kMapHeight; ++j) {
-      target_map_ -> building_[i][j] = kBuildingEmpty;
+      target_map_ -> set_data_building(TempPoint(i, j), kBuildingEmpty);
     }
   }
 }
@@ -59,11 +60,11 @@ void GameMapBuilder::BuildRoomsAndPath() {
 void GameMapBuilder::BuildBuildings() {
   for (uint32_t i = 0; i < kMapWidth; ++i) {
     for (uint32_t j = 0; j < kMapHeight; ++j) {
-      if (target_map_ -> data_[i][j] == kBlockPath || target_map_ -> data_[i][j] == kBlockGround) {
+      if (target_map_ -> data_block(TempPoint(i, j)) == kBlockPath ||
+          target_map_ -> data_block(TempPoint(i, j)) == kBlockGround) {
         if (random_gen_ -> RandomIn(1, kDenominatorOfPossibilityOfPortal) <=
             kNumeratorOfPossibilityOfPortal) {
-          target_map_ -> building_[i][j] = kBuildingPortal;
-          //target_map_ -> portal_target_[TempPoint(i, j)];
+          target_map_ -> set_data_building(TempPoint(i, j), kBuildingPortal);
         }
       }
     }
@@ -103,8 +104,8 @@ void GameMapBuilder::BuildPath(const Point & from, const Point & to) {
       path_designer.FindShortestPath(from, to);
   std::list< Point >::iterator path_builder = shortest_path.begin();
   while (path_builder != shortest_path.end()) {
-    if (target_map_ -> data_[(*path_builder).x][(*path_builder).y] == kBlockWall) {
-      target_map_ -> data_[(*path_builder).x][(*path_builder).y] = kBlockPath;
+    if (target_map_ -> data_block(*path_builder) == kBlockWall) {
+        target_map_ -> set_data_block(*path_builder, kBlockPath);
     }
     ++path_builder;
   }
@@ -142,8 +143,9 @@ bool GameMapBuilder::BuildRoom(Point * room_pos) {
     for (uint32_t j = 0; j < new_room.h; ++j) {
       // Won't cause room adhesion
       if (!(i == 0 || j == 0 || i + 1 == new_room.w || j + 1 == new_room.h)) {
-        target_map_ -> data_[new_room.left_top.x + i][new_room.left_top.y + j] =
-            kBlockGround;
+        target_map_ -> set_data_block(
+                           TempPoint(new_room.left_top.x + i,
+                                     new_room.left_top.y + j), kBlockGround);
       }
     }
   }
@@ -191,9 +193,9 @@ bool GameMapBuilder::IsRectEmpty(const RectWithPos & rect_for_check) {
     // Try to expand width
     if (!is_max_w && now.w != rect_for_check.w) {
       for (uint32_t i = 0; i < now.h; ++i) {
-        if (target_map_ -> data_[rect_l_t.x + now.w][rect_l_t.y + i] !=
+        if (target_map_ -> data_block(TempPoint(rect_l_t.x + now.w, rect_l_t.y + i)) !=
             kBlockWall &&
-            target_map_ -> data_[rect_l_t.x + now.w][rect_l_t.y + i] !=
+            target_map_ -> data_block(TempPoint(rect_l_t.x + now.w, rect_l_t.y + i)) !=
             kBlockPath) {
           is_max_w = true;  // Oops, can't expand anymore
           --now.w;  // Keep width
@@ -205,9 +207,9 @@ bool GameMapBuilder::IsRectEmpty(const RectWithPos & rect_for_check) {
     // Try to expand height
     if (!is_max_h && now.h != rect_for_check.h) {
       for (uint32_t i = 0; i < now.w; ++i) {
-        if (target_map_ -> data_[rect_l_t.x + i][rect_l_t.y + now.h] !=
+        if (target_map_ -> data_block(TempPoint(rect_l_t.x + i, rect_l_t.y + now.h)) !=
             kBlockWall &&
-            target_map_ -> data_[rect_l_t.x + i][rect_l_t.y + now.h] !=
+            target_map_ -> data_block(TempPoint(rect_l_t.x + i, rect_l_t.y + now.h)) !=
             kBlockPath) {
           is_max_h = true;  // Oops, can't expand anymore
           --now.h;  // Keep height
@@ -241,7 +243,7 @@ std::list< Point > PathFinder::FindShortestPath(const Point & from,
     }
   }
   evaulate_to = to;
-  walked_dis_[from.x][from.y] = value_[target_map_ -> data_[from.x][from.y]];;
+  walked_dis_[from.x][from.y] = value_[target_map_ -> data_block(from)];
   father[from.x][from.y] = from;
   searching_list.push_back(from);
   Point min_dis;
@@ -269,7 +271,7 @@ void PathFinder::UpdateNearby(const Point & now) {
   Point tmp = now;
   if (tmp.x > 0) {
     --tmp.x;
-    if (TryAPoint(target_map_ -> data_[tmp.x][tmp.y],
+    if (TryAPoint(target_map_ -> data_block(tmp),
                   walked_dis_[now.x][now.y] +
                   (father[now.x][now.y].x - 1 == now.x ? 0 : 1),
                   tmp)) {
@@ -279,7 +281,7 @@ void PathFinder::UpdateNearby(const Point & now) {
   }
   if (tmp.y > 0) {
     --tmp.y;
-    if (TryAPoint(target_map_ -> data_[tmp.x][tmp.y],
+    if (TryAPoint(target_map_ -> data_block(tmp),
                   walked_dis_[now.x][now.y] +
                   (father[now.x][now.y].y - 1 == now.y ? 0 : 1),
                   tmp)) {
@@ -289,7 +291,7 @@ void PathFinder::UpdateNearby(const Point & now) {
   }
   if (tmp.x < kMapWidth - 1) {
     ++tmp.x;
-    if (TryAPoint(target_map_ -> data_[tmp.x][tmp.y],
+    if (TryAPoint(target_map_ -> data_block(tmp),
                   walked_dis_[now.x][now.y] +
                   (father[now.x][now.y].x + 1 == now.x ? 0 : 1),
                   tmp)) {
@@ -299,7 +301,7 @@ void PathFinder::UpdateNearby(const Point & now) {
   }
   if (tmp.y < kMapHeight - 1) {
     ++tmp.y;
-    if (TryAPoint(target_map_ -> data_[tmp.x][tmp.y],
+    if (TryAPoint(target_map_ -> data_block(tmp),
                   walked_dis_[now.x][now.y] +
                   (father[now.x][now.y].y + 1 == now.y ? 0 : 1),
                   tmp)) {

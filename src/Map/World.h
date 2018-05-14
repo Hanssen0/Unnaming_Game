@@ -5,6 +5,14 @@
 #include <iostream>
 class World {
  public:
+  World(RandomGenerater * ran, GameMapBuilder * builder) :
+      builder_(builder), random_gen_(ran){
+  }
+  ~World() {
+    for (auto i = link_num_.begin(); i != link_num_.end(); ++i) {
+      delete i -> first;
+    }
+  }
   inline GameMap * NewMap() {
     GameMap * ret = new GameMap;
     builder_ -> set_target_map(ret);
@@ -28,18 +36,14 @@ class World {
   }
   inline void Left(const GameMap * map) {
     auto finder = link_num_.find(const_cast< GameMap * >(map));
-    std::cout << "Minus" << --(finder -> second) << std::endl;
-    std::cin.get();
+    --(finder -> second);
     if (finder -> second == 0) {
       delete (finder -> first);
       link_num_.erase(finder);
-      std::cout << "DELETED" << std::endl;
-      std::cin.get();
     }
   }
   inline void Arrive(const GameMap * map) {
-    std::cout << "ADD" << ++link_num_[const_cast< GameMap * >(map)] << std::endl;
-      std::cin.get();
+    ++link_num_[const_cast< GameMap * >(map)];
   }
   inline void set_builder(const GameMapBuilder * builder) {
     builder_ = const_cast< GameMapBuilder * >(builder);
@@ -51,15 +55,6 @@ class World {
     for (auto i = link_num_.begin(); i != link_num_.end(); ++i) {
       std::cout << i -> second << std::endl;
     }
-  }
-  ~World() {
-    for (auto i = link_num_.begin(); i != link_num_.end(); ++i) {
-      delete i -> first;
-      std::cout << "D!" << std::endl;
-    }
-  }
-  World() {
-    builder_ = nullptr;
   }
 
  private:
