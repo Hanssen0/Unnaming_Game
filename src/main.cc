@@ -30,12 +30,15 @@ Renderer kMainRenderer;
 void Init() {
   Object::CostOfBlock cost;
   cost.move = 0;
+  cost.see_through = 1;
   kMainRole.set_cost(Map::kBlockPath, cost);
   kMainRole.set_cost(Map::kBlockGround, cost);
   cost.move = -1;
+  cost.see_through = -1;
   kMainRole.set_cost(Map::kBlockWall, cost);
   kMainRole.set_max_energy(10);
   kMainRole.set_now_energy(10);
+  kMainRole.set_view_dis(6);
   kMainRenderer.set_exterior_of_block('#', Map::kBlockWall);
   kMainRenderer.set_exterior_of_block('.', Map::kBlockPath);
   kMainRenderer.set_exterior_of_block('+', Map::kBlockGround);
@@ -128,6 +131,8 @@ int main() {
   input.set_command_for_key('q', command_q);
   do {
     input.HandleInput().Execute(kMainRole);
+    kMainRole.UpdateViewable();
+    system("clear");
     kMainRenderer.RenderLivingThingsView(kMainRole);
     std::cout << std::flush;
   } while (!command_q.is_quit());

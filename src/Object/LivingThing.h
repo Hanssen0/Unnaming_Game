@@ -24,8 +24,7 @@
 class LivingThing final : public Object {
  public:
   inline void set_view_dis(const int32_t& d) override;
-  inline bool is_viewable(const Point& pos) const override {
-  }
+  inline bool is_viewable(const Point& pos) const override;
   inline MemoryOfMap& GetMemory() override {
   }
   inline void GoTo(const Point& des) override;
@@ -39,20 +38,33 @@ class LivingThing final : public Object {
     now_energy_ = std::min(e, max_energy_);
   }
   void UpdateViewable();
+  constexpr static int32_t kMaxViewDis = (SIZE_MAX - 1) >> 1;
 
  private:
+  void UpdateViewAbleOnALine(const Point& end);
   int32_t now_energy_;
   int32_t max_energy_;
   std::vector< std::vector< bool > > is_viewable_;
 };
-inline void set_view_dis(const int32_t& d) {
-  Object::set_view_dis(d);
-  is_viewable_.resize(d);
-  for (int32_t i = 0; i < d; ++i) {
-    is_viewable_[i].resize(d);
+inline void LivingThing::set_view_dis(const int32_t& d) {
+  const int32_t limited_d = std::min(kMaxViewDis, d);
+  this -> Object::set_view_dis(limited_d);
+  const size_t view_size = (static_cast< size_t >(limited_d) << 1) | 1;
+  is_viewable_.resize(view_size);
+  for (size_t i = 0; i < view_size; ++i) {
+    is_viewable_[i].resize(view_size);
   }
 }
-inline void GoTo(const Point& des) override {
+inline bool LivingThing::is_viewable(const Point& pos) const {
+  const Point target = {pos.x - now_pos().x + view_dis(),
+                        pos.y - now_pos().y + view_dis()};
+  if (target.x >= is_viewable_.size() || target.y >= is_viewable_.size() ||
+      target.x < 0 || target.y < 0) {
+    return false;
+  }
+  return is_viewable_[target.x][target.y];
+};
+inline void LivingThing::GoTo(const Point& des) {
   if (des.x > 0 && des.y > 0 &&
       des.x < now_map().width() && des.y < now_map().height()) {
     if(abs(des.x - now_pos().x) + abs(des.y - now_pos().y) <= 1) {

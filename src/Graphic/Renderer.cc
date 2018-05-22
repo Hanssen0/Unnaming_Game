@@ -20,8 +20,10 @@ void Renderer::RenderLivingThingsView(const Object& obj) const {
     for (size_t i = 0; i < obj.now_map().width(); ++i) {
       if (i == obj.now_pos().x && j == obj.now_pos().y) {
         std::cout << "@";
-      } else {
+      } else if (obj.is_viewable(CreatePoint(i, j))) {
         std::cout << exterior_of_block_[obj.now_map().block(CreatePoint(i, j))];
+      } else {
+        std::cout << " ";
       }
     }
     std::cout << '\n';
