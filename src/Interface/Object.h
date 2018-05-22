@@ -33,10 +33,10 @@ class Object {
     int32_t move;
     int32_t see_through;
   };
-  virtual inline void set_view_dis(const int32_t & d) {
+  virtual inline void set_view_dis(const int32_t& d) {
     view_dis_ = d;
   };
-  virtual inline const uint32_t view_dis() const {
+  virtual inline const int32_t view_dis() const {
     return view_dis_;
   } 
   virtual inline void set_now_map(Map& map) {
