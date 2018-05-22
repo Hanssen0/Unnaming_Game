@@ -1,2 +1,7 @@
 *.o
 *.out
+*.a
+*CMakeFiles*
+*CMakeCache.txt
+*.cmake
+*Makefile

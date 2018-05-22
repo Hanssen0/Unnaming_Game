@@ -15,55 +15,33 @@
 //
 //    Email: handsome0hell@gmail.com
 #include "Renderer.h"
-void Renderer::RenderLivingThingsView(const LivingThings & thing) const {
-  for (size_t j = 0; j < thing.viewable_size(); ++j) {
-    for (size_t i = 0; i < thing.viewable_size(); ++i) {
-      Point temp = TempPoint(i, j);
-      if (i == thing.view_dis() && j == thing.view_dis()) {
-        std::cout << exterior_of_race_[thing.race()];
-      } else if (thing.viewable(temp)) {
-        Point read_point;
-        thing.ViewPosToRealPos(temp, &read_point);
-        if (thing.now_map() -> data_building(read_point) == kBuildingPortal) {
-          //if (thing.now_map() -> portal_target(read_point) -> target_map == nullptr) {
-            std::cout << "0";
-          /*} else {
-            std::cout << "8";
-          }*/
-        } else {
-          BlockType now_block = thing.now_map() -> data_block(read_point);
-          std::cout << exterior_of_block_[now_block];
-        }
+void Renderer::RenderLivingThingsView(const Object& obj) const {
+  for (size_t j = 0; j < obj.now_map().height(); ++j) {
+    for (size_t i = 0; i < obj.now_map().width(); ++i) {
+      if (i == obj.now_pos().x && j == obj.now_pos().y) {
+        std::cout << "@";
       } else {
-        std::cout << ' ';
+        std::cout << exterior_of_block_[obj.now_map().block(CreatePoint(i, j))];
       }
     }
     std::cout << '\n';
   }
 }
-void Renderer::RenderGameMap(const GameMap & map) const {
-  for (uint32_t j = 0; j < kMapHeight; ++j) {
-    for (uint32_t i = 0; i < kMapWidth; ++i) {
-      BlockType now_block = map.data_block(TempPoint(i, j));
+void Renderer::RenderGameMap(const Map& map) const {
+  for (uint32_t j = 0; j < map.height(); ++j) {
+    for (uint32_t i = 0; i < map.width(); ++i) {
+      Map::BlockType now_block = map.block(CreatePoint(i, j));
       std::cout << exterior_of_block_[now_block];
     }
     std::cout << "\n";
   }
 }
-void Renderer::RenderMemory(const LivingThings::MemoryOfMap & mem) const {
+void Renderer::RenderMemory(const Object::MemoryOfMap& mem) const {
   for (uint32_t j = mem.left_top.y; j <= mem.right_bottom.y; ++j) {
     for (uint32_t i = mem.left_top.x; i <= mem.right_bottom.x; ++i) {
       if (mem.is_seen[i][j]) {
-        if (mem.detail.data_building(TempPoint(i, j)) == kBuildingPortal) {
-          if (mem.detail.portal_target(TempPoint(i, j)) == nullptr) {
-            std::cout << "0";
-          } else {
-            std::cout << "8";
-          }
-        } else {
-          BlockType now_block = mem.detail.data_block(TempPoint(i, j));
-          std::cout << exterior_of_block_[now_block];
-        }
+        Map::BlockType now_block = mem.detail.block(CreatePoint(i, j));
+        std::cout << exterior_of_block_[now_block];
       } else {
         std::cout << ' ';
       }

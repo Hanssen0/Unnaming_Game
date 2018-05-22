@@ -14,107 +14,121 @@
 //    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 //    Email: handsome0hell@gmail.com
-#include "Map/GameMap.h"
-#include "Base.h"
-#include "Object/LivingThings.h"
+#include "Map/Map.h"
+#include "Logic/MapBuilder.h"
+#include "Object/LivingThing.h"
+#include "Interface/Object.h"
+#include "Interface/Input.h"
+#include "FrontEnd/KeyBoardInput.h"
 #include "Graphic/Renderer.h"
 #include "Map/World.h"
 #include <list>
 #include <iostream>
-RandomGenerater kMainThreadRandom;
-LivingThings kMainRole;
+#include <random>
+LivingThing kMainRole;
 Renderer kMainRenderer;
 void Init() {
-  kMainThreadRandom.set_seed_of_random(time(0));
-  kMainRole.set_race(kLivingThingsHuman);
-  kMainRole.set_moveable(kBlockEmpty, false);
-  kMainRole.set_moveable(kBlockWall, false);
-  kMainRole.set_moveable(kBlockPath, true);
-  kMainRole.set_moveable(kBlockGround, true);
-  kMainRole.set_see_through_able(kBlockEmpty, true);
-  kMainRole.set_see_through_able(kBlockWall, false);
-  kMainRole.set_see_through_able(kBlockPath, true);
-  kMainRole.set_see_through_able(kBlockGround, true);
-  kMainRole.set_view_dis(6);
-  kMainRenderer.set_exterior_of_block('#', kBlockWall);
-  kMainRenderer.set_exterior_of_block('.', kBlockPath);
-  kMainRenderer.set_exterior_of_block('+', kBlockGround);
-  kMainRenderer.set_exterior_of_race('@', kLivingThingsHuman);
+  Object::CostOfBlock cost;
+  cost.move = 0;
+  kMainRole.set_cost(Map::kBlockPath, cost);
+  kMainRole.set_cost(Map::kBlockGround, cost);
+  cost.move = -1;
+  kMainRole.set_cost(Map::kBlockWall, cost);
+  kMainRole.set_max_energy(10);
+  kMainRole.set_now_energy(10);
+  kMainRenderer.set_exterior_of_block('#', Map::kBlockWall);
+  kMainRenderer.set_exterior_of_block('.', Map::kBlockPath);
+  kMainRenderer.set_exterior_of_block('+', Map::kBlockGround);
+  //kMainRenderer.set_exterior_of_race('@', kLivingThingsHuman);
 }
+class CommandForW : public Input::Command {
+ public:
+  void Execute(Object& obj) override {
+    Point now_pos = obj.now_pos();
+    --now_pos.y;
+    obj.GoTo(now_pos);
+  }
+};
+class CommandForA : public Input::Command {
+ public:
+  void Execute(Object& obj) override {
+    Point now_pos = obj.now_pos();
+    --now_pos.x;
+    obj.GoTo(now_pos);
+  }
+};
+class CommandForS : public Input::Command {
+ public:
+  void Execute(Object& obj) override {
+    Point now_pos = obj.now_pos();
+    ++now_pos.y;
+    obj.GoTo(now_pos);
+  }
+};
+class CommandForD : public Input::Command {
+ public:
+  void Execute(Object& obj) override {
+    Point now_pos = obj.now_pos();
+    ++now_pos.x;
+    obj.GoTo(now_pos);
+  }
+};
+class CommandForQ : public Input::Command {
+ public:
+  CommandForQ() {is_quit_ = false;}
+  void Execute(Object& obj) override {
+    is_quit_ = true;
+  }
+  bool is_quit() const {return is_quit_;}
+
+ private:
+  bool is_quit_;
+};
+class CommandForTransfer : public Input::Command {
+ public:
+  inline void Execute(Object& obj) override {
+    obj.Transfer(record_pos_, to_);
+  }
+  inline void Record(const Point& pos) override {
+    record_pos_ = pos;
+  }
+  inline void Record(const Map::BlockType& t) override {
+    to_ = t;
+  }
+
+ private:
+  Point record_pos_;
+  Map::BlockType to_;
+};
+class NullCommand : public Input::Command {
+ public:
+  void Execute(Object& obj) override {
+  }
+
+};
 int main() {
   Init();
-  GameMapBuilder builder(&kMainThreadRandom);
-  World main_world(&kMainThreadRandom, &builder);
-  GameMap * active_map = main_world.NewMap();
-  bool is_new_map = true;
-  char com = ' ';
-  bool renderer_map = false;
-  LivingThings::MemoryOfMap * mem;
-  Point now_pos = active_map -> PickARandomPointInGroundOrPath(&kMainThreadRandom);
-  GameMap * last_map = nullptr;
+  std::default_random_engine re(time(0));
+  MapBuilder builder(re);
+  World main_world(re, builder);
+  Map* active_map = main_world.NewMap();
+  kMainRole.set_now_map(*active_map);
+  kMainRole.set_now_pos(active_map -> PickARandomPointInGroundOrPath(re));
+  NullCommand command_default;
+  TerminalKeyBoardInput input(command_default);
+  CommandForW command_w;
+  CommandForA command_a;
+  CommandForS command_s;
+  CommandForD command_d;
+  CommandForQ command_q;
+  input.set_command_for_key('w', command_w);
+  input.set_command_for_key('a', command_a);
+  input.set_command_for_key('s', command_s);
+  input.set_command_for_key('d', command_d);
+  input.set_command_for_key('q', command_q);
   do {
-    switch (com) {
-     case 'w':
-      --now_pos.y;
-      break;
-     case 'a':
-      --now_pos.x;
-      break;
-     case 's':
-      ++now_pos.y;
-      break;
-     case 'd':
-      ++now_pos.x;
-      break;
-     case 'm':
-      renderer_map = true;
-      break;
-     case ' ':
-      if (active_map -> data_building(kMainRole.now_pos()) == kBuildingPortal) {
-        auto tmp = main_world.GetTarget(active_map, kMainRole.now_pos());
-        GameMap * tmp_map = tmp -> target_map;
-        now_pos = tmp -> target_pos;
-        main_world.Left(active_map);
-        active_map = tmp_map;
-        is_new_map = true;
-      }
-      break;
-     case 'r':
-      main_world.Arrive(active_map);
-      if (last_map != nullptr) {
-        main_world.Left(last_map);
-      }
-      last_map = active_map;
-      break;
-     case 'c':
-      if (active_map -> data_building(kMainRole.now_pos()) == kBuildingPortal) {
-        GameMap::TargetInMap tmp;
-        tmp.target_map = last_map;
-        tmp.target_pos = last_map -> PickARandomPointInGroundOrPath(&kMainThreadRandom);
-        active_map -> set_portal_target(kMainRole.now_pos(), tmp);
-      }
-      break;
-    }
-    if (is_new_map) {
-      kMainRole.set_now_map(active_map);
-      kMainRole.set_now_pos(now_pos);
-      main_world.Arrive(active_map);
-      is_new_map = false;
-    }
-    kMainRole.GoTo(now_pos);
-    now_pos = kMainRole.now_pos();
-    kMainRole.UpdateViewAble();
-    system("clear");
-    if (renderer_map) {
-      mem = kMainRole.GetMemory();
-      kMainRenderer.RenderMemory(*mem);
-      renderer_map = false;
-    } else {
-      kMainRenderer.RenderLivingThingsView(kMainRole);
-    }
+    input.HandleInput().Execute(kMainRole);
+    kMainRenderer.RenderLivingThingsView(kMainRole);
     std::cout << std::flush;
-    main_world.Test();
-    com = std::cin.get();
-    std::cin.get();
-  } while (com != 'q');
+  } while (!command_q.is_quit());
 }

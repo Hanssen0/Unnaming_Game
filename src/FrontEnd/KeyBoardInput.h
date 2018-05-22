@@ -14,26 +14,32 @@
 //    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 //    Email: handsome0hell@gmail.com
-#ifndef UNNAMING_GAME_SRC_GRAPHIC_RENDERER_H_
-#define UNNAMING_GAME_SRC_GRAPHIC_RENDERER_H_
-#include "../Map/Map.h"
+#ifndef UNNAMING_GAME_SRC_FRONTEND_KEYBOARDINPUT_H_
+#define UNNAMING_GAME_SRC_FRONTEND_KEYBOARDINPUT_H_
+#include "../Interface/Input.h"
 #include "../Interface/Object.h"
-#include <iostream>
 #include <cstdint>
-class Renderer {
+#include <map>
+#include <iostream>
+class TerminalKeyBoardInput final : public Input {
  public:
-  void set_exterior_of_block(const char exterior, const Map::BlockType & type) {
-    exterior_of_block_[type] = exterior;
+  TerminalKeyBoardInput(Command& null_com) : null_command_(&null_com) {
   }
-  /*void set_exterior_of_race(const char exterior,
-                            const LivingThingsRace & type) {
-    exterior_of_race_[type] = exterior;
-  }*/
-  void RenderLivingThingsView(const Object&) const;
-  void RenderGameMap(const Map&) const;
-  void RenderMemory(const Object::MemoryOfMap &) const;
+  virtual Command& HandleInput() override {
+    char com;
+    std::cin >> com;
+    auto command_finder = command_for_key_.find(com);
+    if (command_finder != command_for_key_.end()) {
+      return *(command_finder -> second);
+    }
+    return *null_command_;
+  }
+  void set_command_for_key(const char& key, const Command& com) {
+    command_for_key_[key] = const_cast< Command* >(&com);
+  }
+  
  private:
-  char exterior_of_block_[Map::kBlockMax];
-  //char exterior_of_race_[kLivingThingsMax];
+  std::map< char, Command* > command_for_key_;
+  Command* null_command_;
 };
-#endif  // UNNAMING_GAME_SRC_GRAPHIC_RENDERER_H_
+#endif  // UNNAMING_GAME_SRC_FRONTEND_KEYBOARDINPUT_H_

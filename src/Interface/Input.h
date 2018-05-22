@@ -14,21 +14,22 @@
 //    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 //    Email: handsome0hell@gmail.com
-#ifndef UNNAMING_GAME_SRC_CPP_H_
-#define UNNAMING_GAME_SRC_CPP_H_
-#include <climits>
-#include <cstdlib>
-#include <algorithm>
+#ifndef UNNAMING_GAME_SRC_INTERFACE_INPUT_H_
+#define UNNAMING_GAME_SRC_INTERFACE_INPUT_H_
+#include "Object.h"
+#include "../Map/Map.h"
 #include <cstdint>
-class RandomGenerater {
+class Input {
  public:
-  inline void set_seed_of_random(uint32_t a) {seed_of_random_ = a % UINT_MAX;}
-  inline uint32_t RandomIn(uint32_t start, uint32_t end) {
-    if (start > end) std::swap(start, end);
-    if (end - start > RAND_MAX) return UINT32_MAX;
-    return (rand_r(&seed_of_random_) % (end - start + 1)) + start;
-  }
- private:
-  unsigned int seed_of_random_;
+  class Command {
+   public:
+    virtual void Execute(Object& obj) = 0;
+    virtual void Record(const Point& pos) {}
+    virtual void Record(const Map::BlockType& t) {}
+    virtual ~Command() = default;
+  };
+  virtual Command& HandleInput() = 0;
+  virtual ~Input() = default;
+
 };
-#endif  // UNNAMING_GAME_SRC_CPP_H_
+#endif  // UNNAMING_GAME_SRC_INTERFACE_INPUT_H_
