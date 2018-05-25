@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 project(Unnaming)
+add_compile_options(-std=c++11)
 add_compile_options(-Wall)
 #For Raspberry Pi
 add_compile_options(-Wno-psabi)

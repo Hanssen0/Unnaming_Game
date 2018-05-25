@@ -38,7 +38,8 @@ class LivingThing final : public Object {
     now_energy_ = std::min(e, max_energy_);
   }
   void UpdateViewable();
-  constexpr static int32_t kMaxViewDis = (SIZE_MAX - 1) >> 1;
+  constexpr static int32_t kMaxViewDis =
+      (static_cast< int32_t >(SIZE_MAX - 1) >> 1);
 
  private:
   void UpdateViewAbleOnALine(const Point& end);
