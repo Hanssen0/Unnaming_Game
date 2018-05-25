@@ -23,13 +23,13 @@ class Input {
  public:
   class Command {
    public:
+    virtual ~Command() = default;
     virtual void Execute(Object& obj) = 0;
     virtual void Record(const Point& pos) {}
     virtual void Record(const Map::BlockType& t) {}
-    virtual ~Command() = default;
   };
-  virtual Command& HandleInput() = 0;
   virtual ~Input() = default;
+  virtual Command& HandleInput() = 0;
 
 };
 #endif  // UNNAMING_GAME_SRC_INTERFACE_INPUT_H_

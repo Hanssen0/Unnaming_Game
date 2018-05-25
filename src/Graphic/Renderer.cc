@@ -16,12 +16,16 @@
 //    Email: handsome0hell@gmail.com
 #include "Renderer.h"
 void Renderer::RenderLivingThingsView(const Object& obj) const {
-  for (size_t j = 0; j < obj.now_map().height(); ++j) {
-    for (size_t i = 0; i < obj.now_map().width(); ++i) {
-      if (i == obj.now_pos().x && j == obj.now_pos().y) {
+  for (int32_t j = 0; j < ((obj.view_dis() << 1) | 1); ++j) {
+    for (int32_t i = 0; i < ((obj.view_dis() << 1) | 1); ++i) {
+      const Point tmp = {obj.now_pos().x - obj.view_dis() +
+                         static_cast< int32_t >(i), 
+                         obj.now_pos().y - obj.view_dis() + 
+                         static_cast< int32_t >(j)}; 
+      if (tmp == obj.now_pos()) {
         std::cout << "@";
-      } else if (obj.is_viewable(CreatePoint(i, j))) {
-        std::cout << exterior_of_block_[obj.now_map().block(CreatePoint(i, j))];
+      } else if (obj.is_viewable(tmp)) {
+        std::cout << exterior_of_block_[obj.now_map().block(tmp)];
       } else {
         std::cout << " ";
       }
@@ -30,8 +34,8 @@ void Renderer::RenderLivingThingsView(const Object& obj) const {
   }
 }
 void Renderer::RenderGameMap(const Map& map) const {
-  for (uint32_t j = 0; j < map.height(); ++j) {
-    for (uint32_t i = 0; i < map.width(); ++i) {
+  for (int32_t j = 0; j < map.height(); ++j) {
+    for (int32_t i = 0; i < map.width(); ++i) {
       Map::BlockType now_block = map.block(CreatePoint(i, j));
       std::cout << exterior_of_block_[now_block];
     }
@@ -39,8 +43,8 @@ void Renderer::RenderGameMap(const Map& map) const {
   }
 }
 void Renderer::RenderMemory(const Object::MemoryOfMap& mem) const {
-  for (uint32_t j = mem.left_top.y; j <= mem.right_bottom.y; ++j) {
-    for (uint32_t i = mem.left_top.x; i <= mem.right_bottom.x; ++i) {
+  for (int32_t j = mem.left_top.y; j <= mem.right_bottom.y; ++j) {
+    for (int32_t i = mem.left_top.x; i <= mem.right_bottom.x; ++i) {
       if (mem.is_seen[i][j]) {
         Map::BlockType now_block = mem.detail.block(CreatePoint(i, j));
         std::cout << exterior_of_block_[now_block];

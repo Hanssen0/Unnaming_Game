@@ -21,12 +21,12 @@
 #include <algorithm>
 #include <cstdint>
 #include <vector>
+#include <map>
 class LivingThing final : public Object {
  public:
   inline void set_view_dis(const int32_t& d) override;
   inline bool is_viewable(const Point& pos) const override;
-  inline MemoryOfMap& GetMemory() override {
-  }
+  inline MemoryOfMap& GetMemory() override;
   inline void GoTo(const Point& des) override;
   inline void Transfer(const Point& des, const Map::BlockType& to) override {
   }
@@ -42,9 +42,11 @@ class LivingThing final : public Object {
 
  private:
   void UpdateViewAbleOnALine(const Point& end);
+  void UpdateMemory();
   int32_t now_energy_;
   int32_t max_energy_;
   std::vector< std::vector< bool > > is_viewable_;
+  std::map< int32_t, MemoryOfMap > memories_;
 };
 inline void LivingThing::set_view_dis(const int32_t& d) {
   const int32_t limited_d = std::min(kMaxViewDis, d);
@@ -58,12 +60,27 @@ inline void LivingThing::set_view_dis(const int32_t& d) {
 inline bool LivingThing::is_viewable(const Point& pos) const {
   const Point target = {pos.x - now_pos().x + view_dis(),
                         pos.y - now_pos().y + view_dis()};
-  if (target.x >= is_viewable_.size() || target.y >= is_viewable_.size() ||
+  if (target.x >= static_cast< int32_t >(is_viewable_.size()) ||
+      target.y >= static_cast< int32_t >(is_viewable_.size()) ||
       target.x < 0 || target.y < 0) {
     return false;
   }
   return is_viewable_[target.x][target.y];
 };
+inline LivingThing::MemoryOfMap& LivingThing::GetMemory() {
+  auto finder = memories_.find(now_map().map_id());
+  if (finder == memories_.end()) {
+    const MemoryOfMap tmp = {{now_map().width(), now_map().height()},
+                             {0, 0},
+                             std::vector< std::vector< bool > >(
+                                 now_map().width(),
+                                 std::vector< bool >(now_map().height(),
+                                                     false)),
+                                 Map(now_map().width(), now_map().height())};
+    finder = memories_.insert(std::make_pair(now_map().map_id(), tmp)).first;
+  }
+  return finder -> second;
+}
 inline void LivingThing::GoTo(const Point& des) {
   if (des.x > 0 && des.y > 0 &&
       des.x < now_map().width() && des.y < now_map().height()) {

@@ -14,22 +14,13 @@
 //    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 //    Email: handsome0hell@gmail.com
-#include "Map.h"
-#include <list>
-constexpr Map::Target Map::kNullTarget;
-int32_t Map::kMapSize = 0;
-const Point Map::PickARandomPointInGroundOrPath(UniformIntRandom& ran) const {
-  for (int32_t i = 0; i < width_; ++i) {
-    if (ran.rand(i + 1, width_) == width_) {
-      for (int32_t j = 0; j < height_; ++j) {
-        if (ran.rand(j + 1, height_) == height_) {
-          if (block(CreatePoint(i, j)) == kBlockPath ||
-              block(CreatePoint(i, j)) == kBlockGround) {
-            return CreatePoint(i, j);
-          }
-        }
-      }
-    }
-  }
-  return CreatePoint(0, 0);
-}
+#ifndef UNNAMING_GAME_SRC_INTERFACE_RANDOM_H_
+#define UNNAMING_GAME_SRC_INTERFACE_RANDOM_H_
+#include <cstdint>
+class UniformIntRandom {
+ public:
+  inline virtual ~UniformIntRandom() = default;
+  virtual const int32_t rand(const int32_t& from, const int32_t& to) = 0;
+  virtual void set_seed(const int32_t& seed) = 0;
+};
+#endif  // UNNAMING_GAME_SRC_INTERFACE_RANDOM_H_

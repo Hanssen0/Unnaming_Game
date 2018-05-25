@@ -123,14 +123,14 @@ void LivingThing::UpdateViewable() {
   }
   is_viewable_[view_dis()][view_dis()] = true;
   // Prevent additional computation
-  const size_t min_x = now_pos().x < view_dis() ? view_dis() - now_pos().x : 0;
-  const size_t min_y = now_pos().y < view_dis() ? view_dis() - now_pos().y : 0;
-  const size_t max_x = now_pos().x + view_dis() >= now_map().width() ?
-                           view_dis() + (now_map().width() - 1 - now_pos().x) :
-                           dis_array_size - 1;
-  const size_t max_y = now_pos().y + view_dis() >= now_map().height() ?
-                           view_dis() + (now_map().height() - 1 - now_pos().y) :
-                           dis_array_size - 1;
+  const int32_t min_x = now_pos().x < view_dis() ? view_dis() - now_pos().x : 0;
+  const int32_t min_y = now_pos().y < view_dis() ? view_dis() - now_pos().y : 0;
+  const int32_t max_x = now_pos().x + view_dis() >= now_map().width() ?
+                            view_dis() + (now_map().width() - 1 - now_pos().x) :
+                            dis_array_size - 1;
+  const int32_t max_y = now_pos().y + view_dis() >= now_map().height() ?
+                            view_dis() + (now_map().height() - 1 - now_pos().y) :
+                            dis_array_size - 1;
   int64_t square_view_dis = Square(view_dis());
   while (!waiting.empty()) {
     Point tmp = waiting.front();
@@ -168,5 +168,25 @@ void LivingThing::UpdateViewable() {
     tmp.x -= view_dis();
     tmp.y -= view_dis();
     UpdateViewAbleOnALine(tmp);
+  }
+  UpdateMemory();
+}
+void LivingThing::UpdateMemory() {
+  MemoryOfMap& now_mem = GetMemory();
+  for (size_t i = 0; i < is_viewable_.size(); ++i) {
+    for (size_t j = 0; j < is_viewable_.size(); ++j) {
+      if (is_viewable_[i][j]) {
+        const Point tmp = {now_pos().x - view_dis() +
+                           static_cast< int32_t >(i),
+                           now_pos().y - view_dis() +
+                           static_cast< int32_t >(j)};
+        now_mem.left_top.x = std::min(now_mem.left_top.x, tmp.x);
+        now_mem.left_top.y = std::min(now_mem.left_top.y, tmp.y);
+        now_mem.right_bottom.x = std::max(now_mem.right_bottom.x, tmp.x);
+        now_mem.right_bottom.y = std::max(now_mem.right_bottom.y, tmp.y);
+        now_mem.is_seen[tmp.x][tmp.y] = true;
+        now_mem.detail.set_block(tmp, now_map().block(tmp));
+      }
+    }
   }
 }

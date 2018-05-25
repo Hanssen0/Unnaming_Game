@@ -36,8 +36,8 @@ void MapBuilder::BuildRoomsAndPath() {
   }
 }
 void MapBuilder::InitForEmptyTest() {
-  for (uint32_t i = 0; i < target_map_ -> width(); ++i) {
-    for (uint32_t j = 0; j < target_map_ -> height(); ++j) {
+  for (int32_t i = 0; i < target_map_ -> width(); ++i) {
+    for (int32_t j = 0; j < target_map_ -> height(); ++j) {
       checked_build_able_[i][j].w = 0;
       checked_build_able_[i][j].h = 0;
     }
@@ -89,9 +89,7 @@ bool MapBuilder::SelectRoomPosition(RectWithPos* rect_for_build) {
     }
   }
   if (build_able_point.size() == 0) return false;
-  static std::uniform_int_distribution< unsigned int > rand_dis;
-  typedef std::uniform_int_distribution< unsigned int >::param_type party;
-  size_t select_a_pos = rand_dis(*random_gen_, party(1, build_able_point.size()));
+  size_t select_a_pos = random_gen_ -> rand(1, build_able_point.size());
   for (size_t i = 1; i < select_a_pos; ++i) {
     build_able_point.pop();
   }
@@ -106,8 +104,8 @@ bool MapBuilder::BuildRoom(Point* room_pos) {
   if (!SelectRoomPosition(&new_room)) {
     return false;
   }
-  for (uint32_t i = 0; i < new_room.w; ++i) {
-    for (uint32_t j = 0; j < new_room.h; ++j) {
+  for (int32_t i = 0; i < new_room.w; ++i) {
+    for (int32_t j = 0; j < new_room.h; ++j) {
       // Won't cause room adhesion
       if (!(i == 0 || j == 0 || i + 1 == new_room.w || j + 1 == new_room.h)) {
         target_map_ -> set_block(
@@ -119,8 +117,8 @@ bool MapBuilder::BuildRoom(Point* room_pos) {
   }
   // Keep the checked array correct
   Point now = new_room.left_top;
-  now.x -= kMaxRoomWidth;
-  now.y -= kMaxRoomHeight;
+  now.x -= max_room_size_.w;
+  now.y -= max_room_size_.h;
   now.x = std::max(0, now.x);
   now.y = std::max(0, now.y);
   for (; now.x < new_room.left_top.x + new_room.w; ++now.x) {
@@ -160,7 +158,7 @@ bool MapBuilder::IsRectEmpty(const RectWithPos& rect_for_check) {
          !(now.h == rect_for_check.h || is_max_h)) {
     // Try to expand width
     if (!is_max_w && now.w != rect_for_check.w) {
-      for (uint32_t i = 0; i < now.h; ++i) {
+      for (int32_t i = 0; i < now.h; ++i) {
         if (target_map_ -> block(CreatePoint(rect_l_t.x + now.w,
                                            rect_l_t.y + i)) !=
             Map::kBlockWall &&
@@ -176,7 +174,7 @@ bool MapBuilder::IsRectEmpty(const RectWithPos& rect_for_check) {
     }
     // Try to expand height
     if (!is_max_h && now.h != rect_for_check.h) {
-      for (uint32_t i = 0; i < now.w; ++i) {
+      for (int32_t i = 0; i < now.w; ++i) {
         if (target_map_ -> block(CreatePoint(rect_l_t.x + i,
                                            rect_l_t.y + now.h)) !=
             Map::kBlockWall &&
@@ -198,20 +196,17 @@ bool MapBuilder::IsRectEmpty(const RectWithPos& rect_for_check) {
   }
 }
 inline Rect MapBuilder::RandomRoomRect() {
-  Rect ret;
-  static std::uniform_int_distribution< unsigned int > rand_dis_w =
-    std::uniform_int_distribution< unsigned int >(kMinRoomWidth + 2, kMaxRoomWidth + 2);
-  static std::uniform_int_distribution< unsigned int > rand_dis_h = 
-    std::uniform_int_distribution< unsigned int >(kMinRoomHeight + 2, kMaxRoomHeight + 2);
   // Need some space to prevent room adhesion
-  ret.w = rand_dis_w(*random_gen_);
-  ret.h = rand_dis_h(*random_gen_);
+  const Rect ret = {random_gen_ -> rand(min_room_size_.w + 2,
+                                        max_room_size_.w + 2),
+                    random_gen_ -> rand(min_room_size_.h + 2,
+                                        max_room_size_.h + 2)};
   return ret;
 }
 inline const Rect & MapBuilder::max(const Rect & a, const Rect & b) {
   if (a.w < 0 || a.h < 0) return b;
   if (b.w < 0 || b.h < 0) return a;
-  uint64_t a_area = a.w, b_area = b.w;
+  int64_t a_area = a.w, b_area = b.w;
   a_area *= a.h, b_area *= b.h;
   if (a_area > b_area) {
     return a;

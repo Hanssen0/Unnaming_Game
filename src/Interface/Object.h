@@ -33,6 +33,7 @@ class Object {
     int32_t move;
     int32_t see_through;
   };
+  virtual inline ~Object() = default;
   virtual inline void set_view_dis(const int32_t& d) {
     view_dis_ = d;
   };

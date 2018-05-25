@@ -16,11 +16,11 @@
 //    Email: handsome0hell@gmail.com
 #ifndef UNNAMING_GAME_SRC_MAP_MAP_H_
 #define UNNAMING_GAME_SRC_MAP_MAP_H_
+#include "../Interface/Random.h"
 #include <cstdint>
 #include <vector>
 #include <list>
 #include <map>
-#include <random>
 struct Point {
   int32_t x, y;
 };
@@ -31,10 +31,6 @@ struct RectWithPos {
   Point left_top;
   int32_t w, h;
 };
-const int32_t kMinRoomWidth = 3;
-const int32_t kMinRoomHeight = 3;
-const int32_t kMaxRoomWidth = 8;
-const int32_t kMaxRoomHeight = 8;
 inline bool operator<(const Point & a, const Point & b) {
   if (a.x == b.x) {
     return a.y < b.y;
@@ -46,7 +42,11 @@ inline bool operator==(const Point & a, const Point & b) {
   return a.x == b.x && a.y == b.y;
 }
 inline const Point CreatePoint(const int32_t& x, const int32_t& y) {
-  Point tmp = {x, y};
+  const Point tmp = {x, y};
+  return tmp;
+}
+inline const Rect CreateRect(const int32_t& w, const int32_t& h) {
+  const Rect tmp = {w, h};
   return tmp;
 }
 class Map final {
@@ -65,7 +65,10 @@ class Map final {
   inline Map(const int32_t& w, const int32_t& h)
       : width_(w), height_(h) {
     block_.resize(w, std::vector< BlockType >(h));
+    is_got_id_ = false;
   }
+  inline void get_id();
+  inline const int32_t map_id();
   inline const BlockType& block(const Point& pos) const;
   inline const int32_t width() const {return width_;}
   inline const int32_t height() const {return height_;}
@@ -75,15 +78,30 @@ class Map final {
   inline void set_portal_target(const Point& pos,
                                 const Target& target);
   inline void FillWith(const BlockType& block);
-  const Point PickARandomPointInGroundOrPath(std::default_random_engine&) const;
+  const Point PickARandomPointInGroundOrPath(UniformIntRandom&) const;
 
  private:
+  static int32_t kMapSize;
   const int32_t width_;
   const int32_t height_;
   constexpr static Target kNullTarget = {nullptr, {0, 0}};
+  bool is_got_id_;
+  int32_t map_id_;
   std::vector< std::vector< BlockType > > block_;
   std::map< Point, Target > portal_target_;
 };
+inline void Map::get_id() {
+  if (!is_got_id_) {
+    map_id_ = kMapSize++;
+    is_got_id_ = true;
+  }
+}
+inline const int32_t Map::map_id() {
+  if (!is_got_id_) {
+    get_id();
+  }
+  return map_id_;
+}
 inline const Map::BlockType& Map::block(const Point& pos) const {
   return block_[pos.x][pos.y];
 }

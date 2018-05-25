@@ -22,6 +22,7 @@
 #include "FrontEnd/KeyBoardInput.h"
 #include "Graphic/Renderer.h"
 #include "Map/World.h"
+#include "Interface/Random.h"
 #include <list>
 #include <iostream>
 #include <random>
@@ -46,7 +47,7 @@ void Init() {
 }
 class CommandForW : public Input::Command {
  public:
-  void Execute(Object& obj) override {
+  inline void Execute(Object& obj) override {
     Point now_pos = obj.now_pos();
     --now_pos.y;
     obj.GoTo(now_pos);
@@ -54,7 +55,7 @@ class CommandForW : public Input::Command {
 };
 class CommandForA : public Input::Command {
  public:
-  void Execute(Object& obj) override {
+  inline void Execute(Object& obj) override {
     Point now_pos = obj.now_pos();
     --now_pos.x;
     obj.GoTo(now_pos);
@@ -62,7 +63,7 @@ class CommandForA : public Input::Command {
 };
 class CommandForS : public Input::Command {
  public:
-  void Execute(Object& obj) override {
+  inline void Execute(Object& obj) override {
     Point now_pos = obj.now_pos();
     ++now_pos.y;
     obj.GoTo(now_pos);
@@ -70,22 +71,41 @@ class CommandForS : public Input::Command {
 };
 class CommandForD : public Input::Command {
  public:
-  void Execute(Object& obj) override {
+  inline void Execute(Object& obj) override {
     Point now_pos = obj.now_pos();
     ++now_pos.x;
     obj.GoTo(now_pos);
   }
 };
-class CommandForQ : public Input::Command {
+class CommandForState : public Input::Command {
  public:
-  CommandForQ() {is_quit_ = false;}
-  void Execute(Object& obj) override {
-    is_quit_ = true;
+  inline CommandForState() {is_executed_ = false;}
+  inline void Execute(Object& obj) override {
+    is_executed_ = true;
   }
-  bool is_quit() const {return is_quit_;}
+  inline bool is_executed() {
+    const bool tmp = is_executed_;
+    is_executed_ = false;
+    return tmp; 
+  }
 
  private:
-  bool is_quit_;
+  bool is_executed_;
+};
+class DefaultUIRandom : public UniformIntRandom {
+ public:
+  inline DefaultUIRandom() {};
+  inline void set_seed(const int32_t& seed) override {
+    random_engine_.seed(seed);
+  }
+  inline const int32_t rand(const int32_t& from, const int32_t& to) override {
+    static std::uniform_int_distribution< int > rand_dis;
+    typedef std::uniform_int_distribution< int >::param_type party;
+    return rand_dis(random_engine_, party(from, to));
+  }
+
+ private:
+  std::default_random_engine random_engine_;
 };
 class CommandForTransfer : public Input::Command {
  public:
@@ -103,37 +123,40 @@ class CommandForTransfer : public Input::Command {
   Point record_pos_;
   Map::BlockType to_;
 };
-class NullCommand : public Input::Command {
- public:
-  void Execute(Object& obj) override {
-  }
-
-};
 int main() {
   Init();
-  std::default_random_engine re(time(0));
-  MapBuilder builder(re);
+  DefaultUIRandom re;
+  re.set_seed(time(0));
+  MapBuilder builder(re, CreateRect(3, 3), CreateRect(8, 8));
   World main_world(re, builder);
   Map* active_map = main_world.NewMap();
   kMainRole.set_now_map(*active_map);
   kMainRole.set_now_pos(active_map -> PickARandomPointInGroundOrPath(re));
-  NullCommand command_default;
+  CommandForState command_default;
   TerminalKeyBoardInput input(command_default);
   CommandForW command_w;
   CommandForA command_a;
   CommandForS command_s;
   CommandForD command_d;
-  CommandForQ command_q;
+  CommandForState command_quit;
+  CommandForState command_render_memory;
   input.set_command_for_key('w', command_w);
   input.set_command_for_key('a', command_a);
   input.set_command_for_key('s', command_s);
   input.set_command_for_key('d', command_d);
-  input.set_command_for_key('q', command_q);
+  input.set_command_for_key('q', command_quit);
+  input.set_command_for_key('m', command_render_memory);
   do {
     input.HandleInput().Execute(kMainRole);
-    kMainRole.UpdateViewable();
-    system("clear");
-    kMainRenderer.RenderLivingThingsView(kMainRole);
-    std::cout << std::flush;
-  } while (!command_q.is_quit());
+    if (!command_default.is_executed()) {
+      kMainRole.UpdateViewable();
+      system("clear");
+      if (command_render_memory.is_executed()) {
+        kMainRenderer.RenderMemory(kMainRole.GetMemory());
+      } else {
+        kMainRenderer.RenderLivingThingsView(kMainRole);
+      }
+      std::cout << std::flush;
+    }
+  } while (!command_quit.is_executed());
 }
