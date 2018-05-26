@@ -79,6 +79,7 @@ class Map final {
                                 const Target& target);
   inline void FillWith(const BlockType& block);
   const Point PickARandomPointInGroundOrPath(UniformIntRandom&) const;
+  const std::list< int32_t >& linked_map() const {return linked_map_;}
 
  private:
   static int32_t kMapSize;
@@ -89,6 +90,7 @@ class Map final {
   int32_t map_id_;
   std::vector< std::vector< BlockType > > block_;
   std::map< Point, Target > portal_target_;
+  std::list< int32_t > linked_map_;
 };
 inline void Map::get_id() {
   if (!is_got_id_) {

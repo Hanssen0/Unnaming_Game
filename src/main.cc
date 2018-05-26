@@ -39,7 +39,9 @@ void Init() {
   kMainRole.set_cost(Map::kBlockWall, cost);
   kMainRole.set_max_energy(10);
   kMainRole.set_now_energy(10);
+  std::cout << "GG" << std::endl;
   kMainRole.set_view_dis(6);
+  std::cout << "GG" << std::endl;
   kMainRenderer.set_exterior_of_block('#', Map::kBlockWall);
   kMainRenderer.set_exterior_of_block('.', Map::kBlockPath);
   kMainRenderer.set_exterior_of_block('+', Map::kBlockGround);
