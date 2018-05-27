@@ -21,6 +21,7 @@
 #include <vector>
 #include <list>
 #include <map>
+#include <cassert>
 struct Point {
   int32_t x, y;
 };
@@ -58,6 +59,10 @@ class Map final {
     kBlockPath,
     kBlockMax
   };
+  enum BuildingType {
+    kBuildingEmpty,
+    kBuildingPortal
+  };
   struct Target {
     Map* map;
     Point pos;
@@ -67,19 +72,27 @@ class Map final {
     block_.resize(w, std::vector< BlockType >(h));
     is_got_id_ = false;
   }
+  static inline const Target CreateTarget(Map* const map,
+                                          const Point& pos) {
+    const Target tmp = {map, pos};
+    return tmp;
+  }
   inline void get_id();
-  inline const int32_t map_id();
-  inline const BlockType& block(const Point& pos) const;
+  inline const int32_t map_id() const;
   inline const int32_t width() const {return width_;}
   inline const int32_t height() const {return height_;}
+  inline const BlockType& block(const Point& pos) const;
   inline void set_block(const Point& pos,
                         const BlockType& block);
+  inline const BuildingType& building(const Point& pos) const;
+  inline void set_building(const Point& pos,
+                           const BuildingType& building);
   inline const Target& portal_target(const Point& pos) const;
   inline void set_portal_target(const Point& pos,
                                 const Target& target);
-  inline void FillWith(const BlockType& block);
+  inline void FillWithBlock(const BlockType& block);
+  inline void FillWithBuilding(const BuildingType& building);
   const Point PickARandomPointInGroundOrPath(UniformIntRandom&) const;
-  const std::list< int32_t >& linked_map() const {return linked_map_;}
 
  private:
   static int32_t kMapSize;
@@ -89,8 +102,8 @@ class Map final {
   bool is_got_id_;
   int32_t map_id_;
   std::vector< std::vector< BlockType > > block_;
+  std::vector< std::vector< BuildingType > > building_;
   std::map< Point, Target > portal_target_;
-  std::list< int32_t > linked_map_;
 };
 inline void Map::get_id() {
   if (!is_got_id_) {
@@ -98,10 +111,8 @@ inline void Map::get_id() {
     is_got_id_ = true;
   }
 }
-inline const int32_t Map::map_id() {
-  if (!is_got_id_) {
-    get_id();
-  }
+inline const int32_t Map::map_id() const {
+  assert(is_got_id_);
   return map_id_;
 }
 inline const Map::BlockType& Map::block(const Point& pos) const {
@@ -110,6 +121,17 @@ inline const Map::BlockType& Map::block(const Point& pos) const {
 inline void Map::set_block(const Point& pos,
                            const BlockType& block) {
   block_[pos.x][pos.y] = block;
+}
+inline const Map::BuildingType& Map::building(const Point& pos) const {
+  return building_[pos.x][pos.y];
+}
+inline void Map::set_building(const Point& pos,
+                         const BuildingType& building) {
+  if (building_[pos.x][pos.y] == building) return;
+  if (building_[pos.x][pos.y] == kBuildingPortal) {
+    set_portal_target(pos, CreateTarget(nullptr, CreatePoint(0, 0)));
+  }
+  building_[pos.x][pos.y] = building;
 }
 inline const Map::Target& Map::portal_target(const Point& pos)
     const {
@@ -121,7 +143,7 @@ inline const Map::Target& Map::portal_target(const Point& pos)
   }
 }
 inline void Map::set_portal_target(const Point& pos,
-                                       const Target& target) {
+                                   const Target& target) {
   auto finder = portal_target_.find(pos);
   if (target.map == nullptr) {
     if (finder != portal_target_.end()) {
@@ -131,10 +153,17 @@ inline void Map::set_portal_target(const Point& pos,
     portal_target_[pos] = target;
   }
 }
-inline void Map::FillWith(const BlockType& block) {
+inline void Map::FillWithBlock(const BlockType& block) {
   for (int32_t i = 0; i < width_; ++i) {
     for (int32_t j = 0; j < height_; ++j) {
       block_[i][j] = block;
+    }
+  }
+}
+inline void Map::FillWithBuilding(const BuildingType& building) {
+  for (int32_t i = 0; i < width_; ++i) {
+    for (int32_t j = 0; j < height_; ++j) {
+      building_[i][j] = building;
     }
   }
 }

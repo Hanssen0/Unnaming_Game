@@ -22,7 +22,6 @@
 #include <cstdint>
 #include <vector>
 #include <map>
-#include <iostream>
 class LivingThing final : public Object {
  public:
   inline void set_view_dis(const int32_t& d) override;
@@ -53,10 +52,7 @@ class LivingThing final : public Object {
 inline void LivingThing::set_view_dis(const int32_t& d) {
   const int32_t limited_d = std::min(kMaxViewDis, d);
   this -> Object::set_view_dis(limited_d);
-  std::cout << limited_d << std::endl;
-  std::cout << INT32_MAX << " " << SIZE_MAX << std::endl;
   const size_t view_size = (static_cast< size_t >(limited_d) << 1) | 1;
-  std::cout << view_size << std::endl;
   is_viewable_.resize(view_size);
   for (size_t i = 0; i < view_size; ++i) {
     is_viewable_[i].resize(view_size);

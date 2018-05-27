@@ -39,9 +39,7 @@ void Init() {
   kMainRole.set_cost(Map::kBlockWall, cost);
   kMainRole.set_max_energy(10);
   kMainRole.set_now_energy(10);
-  std::cout << "GG" << std::endl;
   kMainRole.set_view_dis(6);
-  std::cout << "GG" << std::endl;
   kMainRenderer.set_exterior_of_block('#', Map::kBlockWall);
   kMainRenderer.set_exterior_of_block('.', Map::kBlockPath);
   kMainRenderer.set_exterior_of_block('+', Map::kBlockGround);
@@ -131,9 +129,9 @@ int main() {
   re.set_seed(time(0));
   MapBuilder builder(re, CreateRect(3, 3), CreateRect(8, 8));
   World main_world(re, builder);
-  Map* active_map = main_world.NewMap();
-  kMainRole.set_now_map(*active_map);
-  kMainRole.set_now_pos(active_map -> PickARandomPointInGroundOrPath(re));
+  kMainRole.set_now_map(main_world.NewMap());
+  kMainRole.set_now_pos(kMainRole.now_map().PickARandomPointInGroundOrPath(re));
+  main_world.Arrive(kMainRole.now_map());
   CommandForState command_default;
   TerminalKeyBoardInput input(command_default);
   CommandForW command_w;
@@ -142,15 +140,24 @@ int main() {
   CommandForD command_d;
   CommandForState command_quit;
   CommandForState command_render_memory;
+  CommandForState command_new_world;
   input.set_command_for_key('w', command_w);
   input.set_command_for_key('a', command_a);
   input.set_command_for_key('s', command_s);
   input.set_command_for_key('d', command_d);
   input.set_command_for_key('q', command_quit);
   input.set_command_for_key('m', command_render_memory);
+  input.set_command_for_key('n', command_new_world);
   do {
     input.HandleInput().Execute(kMainRole);
     if (!command_default.is_executed()) {
+      if (command_new_world.is_executed()) {
+        Map::Target tmp = main_world.GetTarget(kMainRole.now_map(), kMainRole.now_pos());
+        main_world.Left(kMainRole.now_map());
+        kMainRole.set_now_map(*tmp.map);
+        kMainRole.set_now_pos(kMainRole.now_map().PickARandomPointInGroundOrPath(re));
+        main_world.Arrive(kMainRole.now_map());
+      }
       kMainRole.UpdateViewable();
       system("clear");
       if (command_render_memory.is_executed()) {
