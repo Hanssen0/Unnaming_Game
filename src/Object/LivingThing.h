@@ -37,6 +37,9 @@ class LivingThing final : public Object {
   inline void set_now_energy(const int32_t& e) {
     now_energy_ = std::min(e, max_energy_);
   }
+  inline void get_id() override {
+    set_id(kLivingThingSize++);
+  }
   void UpdateViewable();
   constexpr static int32_t kMaxViewDis =
       (SIZE_MAX > INT32_MAX ? INT32_MAX : SIZE_MAX - 1) >> 1;
@@ -44,6 +47,7 @@ class LivingThing final : public Object {
  private:
   void UpdateViewAbleOnALine(const Point& end);
   void UpdateMemory();
+  static int32_t kLivingThingSize;
   int32_t now_energy_;
   int32_t max_energy_;
   std::vector< std::vector< bool > > is_viewable_;

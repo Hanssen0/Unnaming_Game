@@ -33,6 +33,9 @@ class Object {
     int32_t move;
     int32_t see_through;
   };
+  inline Object() {
+    have_id_ = false;
+  }
   virtual inline ~Object() = default;
   virtual inline void set_view_dis(const int32_t& d) {
     view_dis_ = d;
@@ -55,6 +58,8 @@ class Object {
   virtual inline void set_cost(const Map::BlockType& t, const CostOfBlock& d) {
     cost_[t] = d;
   }
+  virtual inline void get_id() = 0;
+  inline const int32_t id();
   virtual bool is_viewable(const Point& pos) const = 0;
   virtual MemoryOfMap& GetMemory() = 0;
   virtual void GoTo(const Point& des) = 0;
@@ -64,11 +69,22 @@ class Object {
   virtual inline const CostOfBlock& cost(const Map::BlockType& t) {
     return cost_[t];
   }
+  inline void set_id(int32_t id);
 
  private:
+  int32_t id_;
+  bool have_id_;
   Map* now_map_;
   Point now_pos_;
   int32_t view_dis_;
   CostOfBlock cost_[Map::kBlockMax];
 };
+inline const int32_t Object::id() {
+  if (!have_id_) get_id();
+  return id_;
+}
+inline void Object::set_id(int32_t id) {
+  have_id_ = true;
+  id_ = id;
+}
 #endif  // UNNAMING_GAME_SRC_INTERFACE_OBJECT_H_

@@ -17,6 +17,7 @@
 #include "LivingThing.h"
 #include "../Map/Map.h"
 #include <queue>
+int32_t LivingThing::kLivingThingSize = 0;
 constexpr int32_t LivingThing::kMaxViewDis;
 inline const int64_t Square(const int32_t& in) {
   return static_cast< int64_t >(in) * static_cast< int64_t >(in);
