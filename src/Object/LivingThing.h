@@ -16,6 +16,7 @@
 //    Email: handsome0hell@gmail.com
 #ifndef UNNAMING_GAME_SRC_OBJECT_LIVINGTHING_H_
 #define UNNAMING_GAME_SRC_OBJECT_LIVINGTHING_H_
+#include "../Map/World.h"
 #include "../Map/Map.h"
 #include "../Interface/Object.h"
 #include <algorithm>
@@ -24,9 +25,12 @@
 #include <map>
 class LivingThing final : public Object {
  public:
+  inline LivingThing(const World& world) : Object() {
+    now_world_ = const_cast< World* >(&world);
+  }
   inline void set_view_dis(const int32_t& d) override;
   inline bool is_viewable(const Point& pos) const override;
-  inline MemoryOfMap& GetMemory() override;
+  inline World::MemoryOfMap& GetMemory() override;
   inline void GoTo(const Point& des) override;
   inline void Transfer(const Point& des, const Map::BlockType& to) override {
   }
@@ -37,21 +41,25 @@ class LivingThing final : public Object {
   inline void set_now_energy(const int32_t& e) {
     now_energy_ = std::min(e, max_energy_);
   }
-  inline void get_id() override {
-    set_id(kLivingThingSize++);
+  inline void set_now_world(const World& world) {
+    now_world_ = const_cast< World* >(&world);
   }
   void UpdateViewable();
   constexpr static int32_t kMaxViewDis =
       (SIZE_MAX > INT32_MAX ? INT32_MAX : SIZE_MAX - 1) >> 1;
 
  private:
+  inline void get_id() override {
+    set_id(kLivingThingSize++);
+  }
   void UpdateViewAbleOnALine(const Point& end);
   void UpdateMemory();
   static int32_t kLivingThingSize;
   int32_t now_energy_;
   int32_t max_energy_;
   std::vector< std::vector< bool > > is_viewable_;
-  std::map< int32_t, MemoryOfMap > memories_;
+  World* now_world_;
+  World::MemoryOfMap* now_memory_;
 };
 inline void LivingThing::set_view_dis(const int32_t& d) {
   const int32_t limited_d = std::min(kMaxViewDis, d);
@@ -72,19 +80,8 @@ inline bool LivingThing::is_viewable(const Point& pos) const {
   }
   return is_viewable_[target.x][target.y];
 };
-inline LivingThing::MemoryOfMap& LivingThing::GetMemory() {
-  auto finder = memories_.find(now_map().map_id());
-  if (finder == memories_.end()) {
-    const MemoryOfMap tmp = {{now_map().width(), now_map().height()},
-                             {0, 0},
-                             std::vector< std::vector< bool > >(
-                                 now_map().width(),
-                                 std::vector< bool >(now_map().height(),
-                                                     false)),
-                                 Map(now_map().width(), now_map().height())};
-    finder = memories_.insert(std::make_pair(now_map().map_id(), tmp)).first;
-  }
-  return finder -> second;
+inline World::MemoryOfMap& LivingThing::GetMemory() {
+  return now_world_ -> GetMemory(id(), now_map());
 }
 inline void LivingThing::GoTo(const Point& des) {
   if (des.x > 0 && des.y > 0 &&

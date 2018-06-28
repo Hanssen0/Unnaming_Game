@@ -42,7 +42,7 @@ void Renderer::RenderGameMap(const Map& map) const {
     std::cout << "\n";
   }
 }
-void Renderer::RenderMemory(const Object::MemoryOfMap& mem) const {
+void Renderer::RenderMemory(const World::MemoryOfMap& mem) const {
   for (int32_t j = mem.left_top.y; j <= mem.right_bottom.y; ++j) {
     for (int32_t i = mem.left_top.x; i <= mem.right_bottom.x; ++i) {
       if (mem.is_seen[i][j]) {

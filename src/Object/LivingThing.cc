@@ -173,7 +173,7 @@ void LivingThing::UpdateViewable() {
   UpdateMemory();
 }
 void LivingThing::UpdateMemory() {
-  MemoryOfMap& now_mem = GetMemory();
+  World::MemoryOfMap& now_mem = GetMemory();
   for (size_t i = 0; i < is_viewable_.size(); ++i) {
     for (size_t j = 0; j < is_viewable_.size(); ++j) {
       if (is_viewable_[i][j]) {

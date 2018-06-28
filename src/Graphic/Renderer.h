@@ -17,6 +17,7 @@
 #ifndef UNNAMING_GAME_SRC_GRAPHIC_RENDERER_H_
 #define UNNAMING_GAME_SRC_GRAPHIC_RENDERER_H_
 #include "../Map/Map.h"
+#include "../Map/World.h"
 #include "../Interface/Object.h"
 #include <iostream>
 #include <cstdint>
@@ -31,7 +32,7 @@ class Renderer {
   }*/
   void RenderLivingThingsView(const Object&) const;
   void RenderGameMap(const Map&) const;
-  void RenderMemory(const Object::MemoryOfMap &) const;
+  void RenderMemory(const World::MemoryOfMap &) const;
  private:
   char exterior_of_block_[Map::kBlockMax];
   //char exterior_of_race_[kLivingThingsMax];

@@ -21,7 +21,6 @@
 #include <vector>
 #include <list>
 #include <map>
-#include <cassert>
 struct Point {
   int32_t x, y;
 };
@@ -77,8 +76,7 @@ class Map final {
     const Target tmp = {map, pos};
     return tmp;
   }
-  inline void get_id();
-  inline const int32_t map_id() const;
+  inline const int32_t id();
   inline const int32_t width() const {return width_;}
   inline const int32_t height() const {return height_;}
   inline const BlockType& block(const Point& pos) const;
@@ -95,25 +93,26 @@ class Map final {
   const Point PickARandomPointInGroundOrPath(UniformIntRandom&) const;
 
  private:
+  inline void get_id();
   static int32_t kMapSize;
   const int32_t width_;
   const int32_t height_;
   constexpr static Target kNullTarget = {nullptr, {0, 0}};
   bool is_got_id_;
-  int32_t map_id_;
+  int32_t id_;
   std::vector< std::vector< BlockType > > block_;
   std::vector< std::vector< BuildingType > > building_;
   std::map< Point, Target > portal_target_;
 };
 inline void Map::get_id() {
   if (!is_got_id_) {
-    map_id_ = kMapSize++;
+    id_ = kMapSize++;
     is_got_id_ = true;
   }
 }
-inline const int32_t Map::map_id() const {
-  assert(is_got_id_);
-  return map_id_;
+inline const int32_t Map::id() {
+  if (!is_got_id_) get_id();
+  return id_;
 }
 inline const Map::BlockType& Map::block(const Point& pos) const {
   return block_[pos.x][pos.y];

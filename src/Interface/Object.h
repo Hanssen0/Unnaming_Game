@@ -22,12 +22,6 @@
 #include <map>
 class Object {
  public:
-  struct MemoryOfMap {
-    Point left_top;
-    Point right_bottom; 
-    std::vector< std::vector< bool > > is_seen;
-    Map detail;
-  };
   struct CostOfBlock {
     int32_t destory;
     int32_t move;
@@ -43,8 +37,8 @@ class Object {
   virtual inline const int32_t view_dis() const {
     return view_dis_;
   } 
-  virtual inline void set_now_map(Map& map) {
-    now_map_ = &map;
+  virtual inline void set_now_map(const Map& map) {
+    now_map_ = const_cast< Map* >(&map);
   }
   virtual inline Map& now_map() const {
     return *now_map_;
@@ -58,14 +52,14 @@ class Object {
   virtual inline void set_cost(const Map::BlockType& t, const CostOfBlock& d) {
     cost_[t] = d;
   }
-  virtual inline void get_id() = 0;
   inline const int32_t id();
   virtual bool is_viewable(const Point& pos) const = 0;
-  virtual MemoryOfMap& GetMemory() = 0;
+  virtual World::MemoryOfMap& GetMemory() = 0;
   virtual void GoTo(const Point& des) = 0;
   virtual void Transfer(const Point& des, const Map::BlockType& to) = 0;
 
  protected:
+  virtual void get_id() = 0;
   virtual inline const CostOfBlock& cost(const Map::BlockType& t) {
     return cost_[t];
   }

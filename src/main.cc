@@ -26,20 +26,19 @@
 #include <list>
 #include <iostream>
 #include <random>
-LivingThing kMainRole;
 Renderer kMainRenderer;
-void Init() {
+void Init(LivingThing* role) {
   Object::CostOfBlock cost;
   cost.move = 0;
   cost.see_through = 1;
-  kMainRole.set_cost(Map::kBlockPath, cost);
-  kMainRole.set_cost(Map::kBlockGround, cost);
+  role -> set_cost(Map::kBlockPath, cost);
+  role -> set_cost(Map::kBlockGround, cost);
   cost.move = -1;
   cost.see_through = -1;
-  kMainRole.set_cost(Map::kBlockWall, cost);
-  kMainRole.set_max_energy(10);
-  kMainRole.set_now_energy(10);
-  kMainRole.set_view_dis(6);
+  role -> set_cost(Map::kBlockWall, cost);
+  role -> set_max_energy(10);
+  role -> set_now_energy(10);
+  role -> set_view_dis(6);
   kMainRenderer.set_exterior_of_block('#', Map::kBlockWall);
   kMainRenderer.set_exterior_of_block('.', Map::kBlockPath);
   kMainRenderer.set_exterior_of_block('+', Map::kBlockGround);
@@ -124,14 +123,17 @@ class CommandForTransfer : public Input::Command {
   Map::BlockType to_;
 };
 int main() {
-  Init();
   DefaultUIRandom re;
   re.set_seed(time(0));
   MapBuilder builder(re, CreateRect(3, 3), CreateRect(8, 8));
-  World main_world(re, builder);
-  kMainRole.set_now_map(main_world.NewMap());
-  kMainRole.set_now_pos(kMainRole.now_map().PickARandomPointInGroundOrPath(re));
-  main_world.Arrive(kMainRole.now_map());
+  World main_world(re, builder, CreateRect(32, 32));
+  LivingThing main_role(main_world);
+  Init(&main_role);
+  std::cout << "GG" << std::endl;
+  main_role.set_now_map(main_world.NewMap());
+  std::cout << "GG" << std::endl;
+  main_role.set_now_pos(main_role.now_map().PickARandomPointInGroundOrPath(re));
+  main_world.Arrive(main_role.now_map());
   CommandForState command_default;
   TerminalKeyBoardInput input(command_default);
   CommandForW command_w;
@@ -149,21 +151,21 @@ int main() {
   input.set_command_for_key('m', command_render_memory);
   input.set_command_for_key('n', command_new_world);
   do {
-    input.HandleInput().Execute(kMainRole);
+    input.HandleInput().Execute(main_role);
     if (!command_default.is_executed()) {
       if (command_new_world.is_executed()) {
-        Map::Target tmp = main_world.GetTarget(kMainRole.now_map(), kMainRole.now_pos());
-        main_world.Left(kMainRole.now_map());
-        kMainRole.set_now_map(*tmp.map);
-        kMainRole.set_now_pos(kMainRole.now_map().PickARandomPointInGroundOrPath(re));
-        main_world.Arrive(kMainRole.now_map());
+        Map::Target tmp = main_world.GetTarget(main_role.now_map(), main_role.now_pos());
+        main_world.Left(main_role.now_map());
+        main_role.set_now_map(*tmp.map);
+        main_role.set_now_pos(main_role.now_map().PickARandomPointInGroundOrPath(re));
+        main_world.Arrive(main_role.now_map());
       }
-      kMainRole.UpdateViewable();
+      main_role.UpdateViewable();
       system("clear");
       if (command_render_memory.is_executed()) {
-        kMainRenderer.RenderMemory(kMainRole.GetMemory());
+        kMainRenderer.RenderMemory(main_role.GetMemory());
       } else {
-        kMainRenderer.RenderLivingThingsView(kMainRole);
+        kMainRenderer.RenderLivingThingsView(main_role);
       }
       std::cout << std::flush;
     }
