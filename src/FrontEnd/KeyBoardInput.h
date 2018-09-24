@@ -34,8 +34,8 @@ class TerminalKeyBoardInput final : public Input {
     }
     return *null_command_;
   }
-  void set_command_for_key(const char& key, const Command& com) {
-    command_for_key_[key] = const_cast< Command* >(&com);
+  void set_command_for_key(const char& key, Command* com) {
+    command_for_key_[key] = com;
   }
   
  private:

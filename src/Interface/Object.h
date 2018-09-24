@@ -37,8 +37,8 @@ class Object {
   virtual inline const int32_t view_dis() const {
     return view_dis_;
   } 
-  virtual inline void set_now_map(const Map& map) {
-    now_map_ = const_cast< Map* >(&map);
+  virtual inline void set_now_map(Map* const map) {
+    now_map_ = map;
   }
   virtual inline Map& now_map() const {
     return *now_map_;

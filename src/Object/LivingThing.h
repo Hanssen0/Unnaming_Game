@@ -25,8 +25,8 @@
 #include <map>
 class LivingThing final : public Object {
  public:
-  inline LivingThing(const World& world) : Object() {
-    now_world_ = const_cast< World* >(&world);
+  inline LivingThing(World* const world) : Object() {
+    now_world_ = world;
   }
   inline void set_view_dis(const int32_t& d) override;
   inline bool is_viewable(const Point& pos) const override;
@@ -41,8 +41,8 @@ class LivingThing final : public Object {
   inline void set_now_energy(const int32_t& e) {
     now_energy_ = std::min(e, max_energy_);
   }
-  inline void set_now_world(const World& world) {
-    now_world_ = const_cast< World* >(&world);
+  inline void set_now_world(World* const world) {
+    now_world_ = world;
   }
   void UpdateViewable();
   constexpr static int32_t kMaxViewDis =

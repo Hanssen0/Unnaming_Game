@@ -22,15 +22,15 @@
 #include <vector>
 class MapBuilder {
  public:
-  MapBuilder(UniformIntRandom& ran, const Rect min_room_size,
+  MapBuilder(UniformIntRandom* const ran, const Rect min_room_size,
              const Rect max_room_size) :
-      random_gen_(&ran), min_room_size_(min_room_size),
+      random_gen_(ran), min_room_size_(min_room_size),
       max_room_size_(max_room_size)  {
   }
   // Make rooms
   void BuildRoomsAndPath();
   //void BuildBuildings();
-  inline void set_target_map(const Map& target);
+  inline void set_target_map(Map* const target);
 
  private:
   // Init to speed up empty test
@@ -52,11 +52,11 @@ class MapBuilder {
   std::vector< std::vector< Rect > > checked_build_able_;
   Map* target_map_;
 };
-inline void MapBuilder::set_target_map(const Map& target) {
-  target_map_ = const_cast< Map* >(&target);
-  checked_build_able_.resize(target.width()); 
-  for (int32_t i = 0; i < target.width(); ++i) {
-    checked_build_able_[i].resize(target.height());
+inline void MapBuilder::set_target_map(Map* const target) {
+  target_map_ = target;
+  checked_build_able_.resize(target_map_ -> width()); 
+  for (int32_t i = 0; i < target_map_ -> width(); ++i) {
+    checked_build_able_[i].resize(target_map_ -> height());
   }
 }
 #endif  // UNNAMING_GAME_SRC_LOGIC_BUILDERLOGIC_H_

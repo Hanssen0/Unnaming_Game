@@ -125,13 +125,11 @@ class CommandForTransfer : public Input::Command {
 int main() {
   DefaultUIRandom re;
   re.set_seed(time(0));
-  MapBuilder builder(re, CreateRect(3, 3), CreateRect(8, 8));
-  World main_world(re, builder, CreateRect(32, 32));
-  LivingThing main_role(main_world);
+  MapBuilder builder(&re, CreateRect(3, 3), CreateRect(8, 8));
+  World main_world(&re, &builder, CreateRect(32, 32));
+  LivingThing main_role(&main_world);
   Init(&main_role);
-  std::cout << "GG" << std::endl;
   main_role.set_now_map(main_world.NewMap());
-  std::cout << "GG" << std::endl;
   main_role.set_now_pos(main_role.now_map().PickARandomPointInGroundOrPath(re));
   main_world.Arrive(main_role.now_map());
   CommandForState command_default;
@@ -143,20 +141,25 @@ int main() {
   CommandForState command_quit;
   CommandForState command_render_memory;
   CommandForState command_new_world;
-  input.set_command_for_key('w', command_w);
-  input.set_command_for_key('a', command_a);
-  input.set_command_for_key('s', command_s);
-  input.set_command_for_key('d', command_d);
-  input.set_command_for_key('q', command_quit);
-  input.set_command_for_key('m', command_render_memory);
-  input.set_command_for_key('n', command_new_world);
-  do {
-    input.HandleInput().Execute(main_role);
+  input.set_command_for_key('w', &command_w);
+  input.set_command_for_key('a', &command_a);
+  input.set_command_for_key('s', &command_s);
+  input.set_command_for_key('d', &command_d);
+  input.set_command_for_key('q', &command_quit);
+  input.set_command_for_key('m', &command_render_memory);
+  input.set_command_for_key('n', &command_new_world);
+  bool is_init_stat = true;
+  while (!command_quit.is_executed()) {
+    if (is_init_stat) {
+      is_init_stat = false;
+    } else {
+      input.HandleInput().Execute(main_role);
+    }
     if (!command_default.is_executed()) {
       if (command_new_world.is_executed()) {
         Map::Target tmp = main_world.GetTarget(main_role.now_map(), main_role.now_pos());
         main_world.Left(main_role.now_map());
-        main_role.set_now_map(*tmp.map);
+        main_role.set_now_map(tmp.map);
         main_role.set_now_pos(main_role.now_map().PickARandomPointInGroundOrPath(re));
         main_world.Arrive(main_role.now_map());
       }
@@ -169,5 +172,5 @@ int main() {
       }
       std::cout << std::flush;
     }
-  } while (!command_quit.is_executed());
+  }
 }
