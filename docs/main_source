@@ -1,0 +1,15 @@
+It contains the main function of the program. I can't keep it clean yet because having to add lots of things there to test them.
+
+void Init(LivingThing* role); 
+  // You can find more informations about LivingThing class in Object/.
+  Initiate almost every necessery data in this game.
+    1. Setup some attributes about roles
+    2. Setup some attributes about renderer
+
+int main();
+  The main loop of this game. 
+  First, prepare some important things such as map or world.
+  // You can find more informations about them in Map/.
+  Then, define what every keys means. I use some classes inherit from Command class so they can be call through a interface.
+  // You can find more informations about Command class in Input/.
+  Finally, we handle inputs in a "while". Notice that we only re-disaply things after something changed.
