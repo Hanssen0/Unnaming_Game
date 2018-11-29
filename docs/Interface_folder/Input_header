@@ -1,0 +1,12 @@
+This header define a interface for input.
+
+class Input;
+  A interface class. Its inheritance classes should define these functions.
+
+  class Command;
+    It represent a single command. you give it some informations and execute it,
+    then getting some reactions as you wish.
+
+  virtual Command& HandleInput() = 0;
+    When this function is called, it should return a command for user's input.
+    If user doesn't do anything, return a command which do nothing.
