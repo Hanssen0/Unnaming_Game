@@ -1,5 +1,16 @@
 It contains the main function of the program. I can't keep it clean yet because having to add lots of things there to test them.
 
+class DefaultUIRandom : public UniformIntRandom;
+  An class inherit from uniform random number interface.
+  // You can find more informations about interface in Interface/.
+  Use STL libs to implement functions.
+
+class CommandFor* : public Input::Command;
+  Classes inherit from command interface.
+  // You can find more informations about interface in Interface/.
+  They defined what will happened after you hit a key on your keyboard.
+  
+
 void Init(LivingThing* role); 
   // You can find more informations about LivingThing class in Object/.
   Initiate almost every necessery data in this game.
