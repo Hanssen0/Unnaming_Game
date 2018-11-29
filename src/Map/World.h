@@ -20,7 +20,7 @@ class World {
                random_gen_(ran),
                next_map_size_(nms) {
   }
-  inline void set_next_tap_size(const Rect& si) {next_map_size_ = si;}
+  inline void set_next_map_size(const Rect& si) {next_map_size_ = si;}
   inline Map* const NewMap();
   inline const Map::Target GetTarget(Map& map, const Point& pos);
   inline void Arrive(Map& map);
