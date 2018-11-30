@@ -14,7 +14,20 @@ can easily make your own binary file by following commands (on Linux):
     make
 
 Make sure you have installed cmake and make tools. You should get
-  Unnaming.out
+
+    Unnaming.out
+
 if everything goes well.
+
+Haven't tested on Windows platform, but almost everything should works fine
+except 
+
+    system("clear");
+
+in main.cc. You should edit it to
+
+    system("cls");
+
+manually now. Going to fix it later.
 
 Open an issue if you found any bug.
