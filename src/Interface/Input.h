@@ -30,6 +30,5 @@ class Input {
   };
   virtual ~Input() = default;
   virtual Command& HandleInput() = 0;
-
 };
 #endif  // UNNAMING_GAME_SRC_INTERFACE_INPUT_H_
