@@ -5,7 +5,7 @@
 
 ---
 
-```c++
+```cpp
 class DefaultUIRandom : public UniformIntRandom;
 ```
 

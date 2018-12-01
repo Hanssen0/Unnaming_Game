@@ -5,7 +5,7 @@ because having to add lots of things there to test them.
 
 ---
 
-```c++
+```cpp
 class DefaultUIRandom : public UniformIntRandom;
 ```
 
@@ -17,7 +17,7 @@ class DefaultUIRandom : public UniformIntRandom;
 
 ---
 
-```c++
+```cpp
 class CommandFor* : public Input::Command;
 ```
 
@@ -29,7 +29,7 @@ class CommandFor* : public Input::Command;
   
 ---
 
-```c++
+```cpp
 void Init(LivingThing* role); 
 ```
 
@@ -42,7 +42,7 @@ void Init(LivingThing* role);
 
 ---
 
-```c++
+```cpp
 int main();
 ```
 

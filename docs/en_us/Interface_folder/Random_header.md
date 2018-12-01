@@ -1,6 +1,6 @@
 # Random.h
 
-```c++
+```cpp
 class UniformIntRandom;
 ```
 
@@ -9,7 +9,7 @@ class UniformIntRandom;
 >
 > ---
 >
-> ```c++
+> ```cpp
 > virtual const int32_t rand(const int32_t& from, const int32_t& to) = 0;
 > ```
 >
@@ -18,7 +18,7 @@ class UniformIntRandom;
 >
 > ---
 >
-> ```c++
+> ```cpp
 > virtual void set_seed(const int32_t& seed) = 0;
 > ```
 >
