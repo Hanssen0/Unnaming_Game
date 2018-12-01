@@ -11,6 +11,6 @@
 
 > 继承自`UniformIntRandom`接口类
 >
-> > 你可以在`Interface`目录下找到接口类。
+> > 你可以在`Interface\`目录下找到接口类。
 >
 > `STL`库实现其功能。
