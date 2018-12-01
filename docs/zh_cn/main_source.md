@@ -5,9 +5,9 @@
 
 ---
 
-```c++
- class DefaultUIRandom : public UniformIntRandom;
-```
+* ```c++
+  class DefaultUIRandom : public UniformIntRandom;
+  ```
 
 > 继承自`UniformIntRandom`接口类
 >
