@@ -5,6 +5,6 @@
 ---
 > * class DefaultUIRandom : public UniformIntRandom;
 >> 继承自`UniformIntRandom`接口类
->>> 接口类文档传送门："docs/Interface\_folder/Random\_header"
+>>> 接口类文档传送门："docs/Interface\_folder/Random\_header"  
 >> 用STL库实现其功能
 
