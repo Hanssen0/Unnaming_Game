@@ -24,7 +24,7 @@ class Map;
 
   enum BlockType;
     Some constant value to describe the type of each blocks in map.
-  
+
   enum BuildingType;
     We need some buildings for other thing such as travelling around the world!
 
