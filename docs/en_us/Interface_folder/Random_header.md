@@ -1,5 +1,9 @@
 # Random.h
 
+This header define a interface for random things.
+
+---
+
 ```cpp
 class UniformIntRandom;
 ```
