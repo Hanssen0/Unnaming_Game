@@ -1,9 +1,0 @@
-"main.cc" 文件的说明：
-
-包含了程序的 main 函数，现在看起来不是很整洁，因为不得不用一大堆代码来测试它们。
-
-class DefaultUIRandom : public UniformIntRandom;
-  继承自均匀分布随机数接口的类
-  // 接口类文档传送门："docs/Interface_folder/Random_header"
-  用STL库实现其功能
-
