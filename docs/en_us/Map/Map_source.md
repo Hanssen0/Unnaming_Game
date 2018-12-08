@@ -121,4 +121,4 @@ class Map;
 > inline void FillWithBuilding(const BuildingType& building);
 > ```
 >
-> > Fill entire Map.
+> > Fill entire `Map`.
