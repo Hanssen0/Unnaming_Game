@@ -14,7 +14,7 @@ class World;
                next_map_size_(nms);
     The variable ran is a random number generator, it use to build the map or
     to do something else.
-  
+
   inline Map* const NewMap();
     Create a map and build things for it. Then insert it to a sorted Map list.
 
