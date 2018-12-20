@@ -46,9 +46,8 @@ int main();
 > First, prepare some important things such as
   [`Map`](./Map/Map_source.md) or [`World` (No doc yet)](./Map/World_source).
 >
-> Then, define what every keys means. I use some classes inherit from
-  [`Command` class](./Interface/Input_header.md) so they can be call through a
-  interface.
+> Then, define what every keys means. I use some classes inherit from `Command`
+  class, so they can be call through a interface.
 >
 > Finally, we handle inputs in a `while`. Notice that we only re-disaply
   things after something changed.
