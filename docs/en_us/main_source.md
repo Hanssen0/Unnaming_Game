@@ -9,11 +9,9 @@ because having to add lots of things there to test them.
 class DefaultUIRandom : public UniformIntRandom;
 ```
 
-> An class inherit from `UniformIntRandom` interface.
->
-> > You can find more informations about interface in `Interface\`.
->
-> Use `STL` libs to implement functions.
+> An class inherit from
+  [`UniformIntRandom` interface](./Interface/Random_header.md).
+  Use `STL` libs to implement functions.
 
 ---
 
@@ -21,11 +19,8 @@ class DefaultUIRandom : public UniformIntRandom;
 class CommandFor* : public Input::Command;
 ```
 
-> Classes inherit from `Command` interface.
->
-> > You can find more informations about interface in `Interface/`.
->
-> They defined what will happened after you hit a key on your keyboard.
+> Classes inherit from [`Command` interface](./Interface/Input_header.md).
+  They defined what will happened after you hit a key on your keyboard.
   
 ---
 
@@ -33,7 +28,7 @@ class CommandFor* : public Input::Command;
 void Init(LivingThing* role); 
 ```
 
-> > You can find more informations about `LivingThing` class in `Object/`.
+> > [`LivingThing` class (No doc yet)](../../src/Object/LivingThing.h).
 >
 > Initiate almost every necessery data in this game.
 >
@@ -47,14 +42,13 @@ int main();
 ```
 
 > The main loop of this game. 
-  First, prepare some important things such as `Map` or `World`.
 >
-> > You can find more informations about them in `Map/`.
+> First, prepare some important things such as
+  [`Map`](./Map/Map_source.md) or [`World` (No doc yet)](./Map/World_source).
 >
-> Then, define what every keys means. I use some classes inherit from `Command`
-  class so they can be call through a interface.
->
-> > You can find more informations about `Command` class in `Input/`.
+> Then, define what every keys means. I use some classes inherit from
+  [`Command` class](./Interface/Input_header.md) so they can be call through a
+  interface.
 >
 > Finally, we handle inputs in a `while`. Notice that we only re-disaply
   things after something changed.

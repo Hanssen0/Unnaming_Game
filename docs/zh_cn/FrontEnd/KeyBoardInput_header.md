@@ -8,7 +8,7 @@
 class Input;
 ```
 
-> 终端输入类，它继承自 [class Input](../Interface/Input_header.md)
+> 终端输入类，它继承自[`Input`类](../Interface/Input_header.md)
 >
 > ```cpp
 > std::map< char, Command* > command_for_key_;
