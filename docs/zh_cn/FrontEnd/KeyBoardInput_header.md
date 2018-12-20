@@ -14,7 +14,7 @@ class Input;
 > std::map< char, Command* > command_for_key_;
 > ```
 >
-> > 记录了键盘输入对应的`Command（指令）`。
+> > 记录了键盘输入对应的[`Command（指令）`](../Interface/Input_header.md)。
 >
 > ---
 >
