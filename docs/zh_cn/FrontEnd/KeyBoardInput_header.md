@@ -14,7 +14,7 @@ class Input;
 > std::map< char, Command* > command_for_key_;
 > ```
 >
-> > 它记录了输入->命令的映射。
+> > 记录了键盘输入对应的`Command（指令）`。
 >
 > ---
 >
@@ -22,7 +22,7 @@ class Input;
 > Command* null_command_;
 > ```
 >
-> > 它定义了未被记录的输入对应的命令，它在构造函数中被你提供的参数初始化。
+> > 它定义了一个空`Command（指令）`，在构造函数中初始化。
 >
 > ---
 >
@@ -30,7 +30,7 @@ class Input;
 > void set_command_for_key(const char& key, Command* com);
 > ```
 >
-> > 它构建一个输入->命令的映射并存储进command_for_key_，你应该在构造该类后优先调用这个函数。
+> > 它设置了一个键盘输入对应的`Command（指令）`。
 >
 > ---
 >
@@ -38,4 +38,5 @@ class Input;
 > virtual Command& HandleInput();
 > ```
 >
-> > 它读取一个输入并返回输入映射到的命令，当这个映射不存在时，它返回 null_command_。
+> > 它读取输入并返回输入对应的`Command（指令）`，如果找不到合适的返回值，
+    它返回`null_command_（空指令）`。

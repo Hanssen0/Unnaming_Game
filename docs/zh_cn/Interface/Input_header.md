@@ -22,5 +22,5 @@ class Input;
 > virtual Command& HandleInput() = 0;
 > ```
 >
-> > 当这个函数被调用时，它应当根据用户的输入返回一个`Command`类。
-    如果用户什么都没做，返回一个什么都不做的`Command`。
+> > 当这个函数被调用时，它应当根据用户的输入返回一个`Command（指令）`类。
+    如果用户什么都没做，返回一个什么都不做的`Command（指令）`。
