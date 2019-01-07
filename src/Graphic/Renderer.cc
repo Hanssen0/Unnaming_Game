@@ -14,7 +14,14 @@
 //    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 //    Email: handsome0hell@gmail.com
+#include "../Map/Map.h"
 #include "Renderer.h"
+#include <cstdint>
+#include <iostream>
+void Renderer::set_exterior_of_block(const char exterior,
+                                     const Map::BlockType & type) {
+  exterior_of_block_[type] = exterior;
+}
 void Renderer::RenderLivingThingsView(const Object& obj) const {
   for (int32_t j = 0; j < ((obj.view_dis() << 1) | 1); ++j) {
     for (int32_t i = 0; i < ((obj.view_dis() << 1) | 1); ++i) {
@@ -55,3 +62,5 @@ void Renderer::RenderMemory(const World::MemoryOfMap& mem) const {
     std::cout << "\n";
   }
 }
+Renderer::Renderer() {
+};

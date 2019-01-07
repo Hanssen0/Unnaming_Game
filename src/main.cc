@@ -26,7 +26,7 @@
 #include <list>
 #include <iostream>
 #include <random>
-Renderer kMainRenderer;
+Renderer& kMainRenderer = *Renderer::CreateRenderer();
 void Init(LivingThing* role) {
   Object::CostOfBlock cost;
   cost.move = 0;
@@ -79,7 +79,7 @@ class CommandForD : public Input::Command {
 class CommandForState : public Input::Command {
  public:
   inline CommandForState() {is_executed_ = false;}
-  inline void Execute(Object& obj) override {
+  inline void Execute(Object&) override {
     is_executed_ = true;
   }
   inline bool is_executed() {
