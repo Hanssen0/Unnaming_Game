@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(Unnaming)
+project(Unnaming CXX)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 # For shared library on windows
 set(CMAKE_CXX_STANDARD 11)
