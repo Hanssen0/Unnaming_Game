@@ -17,6 +17,7 @@
 #ifndef UNNAMING_GAME_SRC_INTERFACE_OBJECT_H_
 #define UNNAMING_GAME_SRC_INTERFACE_OBJECT_H_
 #include "../Map/Map.h"
+#include "../Map/World.h"
 #include <cstdint>
 #include <vector>
 #include <map>

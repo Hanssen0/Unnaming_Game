@@ -18,13 +18,13 @@
 #include "Logic/MapBuilder.h"
 #include "Object/LivingThing.h"
 #include "Interface/Object.h"
-#include "Interface/Input.h"
-#include "FrontEnd/KeyBoardInput.h"
+#include "FrontEnd/CinInput.h"
 #include "Graphic/Renderer.h"
 #include "Map/World.h"
 #include "Interface/Random.h"
 #include <list>
 #include <iostream>
+#include <functional>
 #include <random>
 Renderer_ref kMainRenderer = Renderer::CreateRenderer();
 void Init(LivingThing* role) {
@@ -45,52 +45,24 @@ void Init(LivingThing* role) {
   kMainRenderer -> set_exterior_of_block('+', Map::kBlockGround);
   //kMainRenderer.set_exterior_of_race('@', kLivingThingsHuman);
 }
-class CommandForW : public Input::Command {
+template <int32_t x, int32_t y>
+inline void MoveObj(Object* const obj) {
+  Point now_pos = obj -> now_pos();
+  now_pos.x += x;
+  now_pos.y += y;
+  obj -> GoTo(now_pos);
+}
+class AutoResetStatus {
  public:
-  inline void Execute(Object& obj) override {
-    Point now_pos = obj.now_pos();
-    --now_pos.y;
-    obj.GoTo(now_pos);
+  inline AutoResetStatus() : status_(false) {};
+  inline void set_status() {status_ = true;}
+  inline bool Status() {
+    const bool tmp = status_;
+    status_ = false;
+    return tmp;
   }
-};
-class CommandForA : public Input::Command {
- public:
-  inline void Execute(Object& obj) override {
-    Point now_pos = obj.now_pos();
-    --now_pos.x;
-    obj.GoTo(now_pos);
-  }
-};
-class CommandForS : public Input::Command {
- public:
-  inline void Execute(Object& obj) override {
-    Point now_pos = obj.now_pos();
-    ++now_pos.y;
-    obj.GoTo(now_pos);
-  }
-};
-class CommandForD : public Input::Command {
- public:
-  inline void Execute(Object& obj) override {
-    Point now_pos = obj.now_pos();
-    ++now_pos.x;
-    obj.GoTo(now_pos);
-  }
-};
-class CommandForState : public Input::Command {
- public:
-  inline CommandForState() {is_executed_ = false;}
-  inline void Execute(Object&) override {
-    is_executed_ = true;
-  }
-  inline bool is_executed() {
-    const bool tmp = is_executed_;
-    is_executed_ = false;
-    return tmp; 
-  }
-
  private:
-  bool is_executed_;
+  bool status_;
 };
 class DefaultUIRandom : public UniformIntRandom {
  public:
@@ -117,31 +89,28 @@ int main() {
   main_role.set_now_map(main_world.NewMap());
   main_role.set_now_pos(main_role.now_map().PickARandomPointInGroundOrPath(re));
   main_world.Arrive(main_role.now_map());
-  CommandForState command_default;
-  TerminalKeyBoardInput input(command_default);
-  CommandForW command_w;
-  CommandForA command_a;
-  CommandForS command_s;
-  CommandForD command_d;
-  CommandForState command_quit;
-  CommandForState command_render_memory;
-  CommandForState command_new_world;
-  input.set_command_for_key('w', &command_w);
-  input.set_command_for_key('a', &command_a);
-  input.set_command_for_key('s', &command_s);
-  input.set_command_for_key('d', &command_d);
-  input.set_command_for_key('q', &command_quit);
-  input.set_command_for_key('m', &command_render_memory);
-  input.set_command_for_key('n', &command_new_world);
+  AutoResetStatus null_status;
+  CinInput_ref input =
+      CinInput::CreateCinInput(std::bind(&AutoResetStatus::set_status, &null_status));
+  AutoResetStatus quit_status;
+  AutoResetStatus new_map_status;
+  AutoResetStatus render_memory_status;
+  input -> BindKey('w', std::bind(MoveObj< 0, -1 >, &main_role));
+  input -> BindKey('a', std::bind(MoveObj< -1, 0 >, &main_role));
+  input -> BindKey('s', std::bind(MoveObj< 0, 1 >, &main_role));
+  input -> BindKey('d', std::bind(MoveObj< 1, 0 >, &main_role));
+  input -> BindKey('q', std::bind(&AutoResetStatus::set_status, &quit_status));
+  input -> BindKey('m', std::bind(&AutoResetStatus::set_status, &render_memory_status));
+  input -> BindKey('n', std::bind(&AutoResetStatus::set_status, &new_map_status));
   bool is_init_stat = true;
-  while (!command_quit.is_executed()) {
+  while (!quit_status.Status()) {
     if (is_init_stat) {
       is_init_stat = false;
     } else {
-      input.HandleInput().Execute(main_role);
+      input -> HandleInput();
     }
-    if (!command_default.is_executed()) {
-      if (command_new_world.is_executed()) {
+    if (!null_status.Status()) {
+      if (new_map_status.Status()) {
         Map::Target tmp = main_world.GetTarget(main_role.now_map(), main_role.now_pos());
         main_world.Left(main_role.now_map());
         main_role.set_now_map(tmp.map);
@@ -150,7 +119,7 @@ int main() {
       }
       main_role.UpdateViewable();
       system("clear");
-      if (command_render_memory.is_executed()) {
+      if (render_memory_status.Status()) {
         kMainRenderer -> RenderMemory(main_role.GetMemory());
       } else {
         kMainRenderer -> RenderLivingThingsView(main_role);
