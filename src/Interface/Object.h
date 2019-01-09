@@ -34,7 +34,7 @@ class Object {
   virtual inline void set_view_dis(const int32_t& d) {
     view_dis_ = d;
   };
-  virtual inline const int32_t view_dis() const {
+  virtual inline int32_t view_dis() const {
     return view_dis_;
   } 
   virtual inline void set_now_map(Map* const map) {
@@ -46,17 +46,16 @@ class Object {
   virtual inline void set_now_pos(const Point& pos) {
     now_pos_ = pos;
   }
-  virtual inline const Point now_pos() const {
+  virtual inline Point now_pos() const {
     return now_pos_;
   }
   virtual inline void set_cost(const Map::BlockType& t, const CostOfBlock& d) {
     cost_[t] = d;
   }
-  inline const int32_t id();
+  inline int32_t id();
   virtual bool is_viewable(const Point& pos) const = 0;
   virtual World::MemoryOfMap& GetMemory() = 0;
   virtual void GoTo(const Point& des) = 0;
-  virtual void Transfer(const Point& des, const Map::BlockType& to) = 0;
 
  protected:
   virtual void get_id() = 0;
@@ -73,7 +72,7 @@ class Object {
   int32_t view_dis_;
   CostOfBlock cost_[Map::kBlockMax];
 };
-inline const int32_t Object::id() {
+inline int32_t Object::id() {
   if (!have_id_) get_id();
   return id_;
 }

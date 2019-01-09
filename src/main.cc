@@ -98,7 +98,7 @@ class DefaultUIRandom : public UniformIntRandom {
   inline void set_seed(const int32_t& seed) override {
     random_engine_.seed(seed);
   }
-  inline const int32_t rand(const int32_t& from, const int32_t& to) override {
+  inline int32_t rand(const int32_t& from, const int32_t& to) override {
     static std::uniform_int_distribution< int > rand_dis;
     typedef std::uniform_int_distribution< int >::param_type party;
     return rand_dis(random_engine_, party(from, to));
@@ -106,22 +106,6 @@ class DefaultUIRandom : public UniformIntRandom {
 
  private:
   std::default_random_engine random_engine_;
-};
-class CommandForTransfer : public Input::Command {
- public:
-  inline void Execute(Object& obj) override {
-    obj.Transfer(record_pos_, to_);
-  }
-  inline void Record(const Point& pos) override {
-    record_pos_ = pos;
-  }
-  inline void Record(const Map::BlockType& t) override {
-    to_ = t;
-  }
-
- private:
-  Point record_pos_;
-  Map::BlockType to_;
 };
 int main() {
   DefaultUIRandom re;

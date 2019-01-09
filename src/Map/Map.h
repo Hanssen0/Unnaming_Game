@@ -76,9 +76,9 @@ class Map final {
     const Target tmp = {map, pos};
     return tmp;
   }
-  inline const int32_t id();
-  inline const int32_t width() const {return width_;}
-  inline const int32_t height() const {return height_;}
+  inline int32_t id();
+  inline int32_t width() const {return width_;}
+  inline int32_t height() const {return height_;}
   inline const BlockType& block(const Point& pos) const;
   inline void set_block(const Point& pos,
                         const BlockType& block);
@@ -90,7 +90,7 @@ class Map final {
                                 const Target& target);
   inline void FillWithBlock(const BlockType& block);
   inline void FillWithBuilding(const BuildingType& building);
-  const Point PickARandomPointInGroundOrPath(UniformIntRandom&) const;
+  Point PickARandomPointInGroundOrPath(UniformIntRandom&) const;
 
  private:
   inline void get_id();
@@ -110,7 +110,7 @@ inline void Map::get_id() {
     is_got_id_ = true;
   }
 }
-inline const int32_t Map::id() {
+inline int32_t Map::id() {
   if (!is_got_id_) get_id();
   return id_;
 }

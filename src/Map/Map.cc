@@ -18,7 +18,7 @@
 #include <list>
 constexpr Map::Target Map::kNullTarget;
 int32_t Map::kMapSize = 0;
-const Point Map::PickARandomPointInGroundOrPath(UniformIntRandom& ran) const {
+Point Map::PickARandomPointInGroundOrPath(UniformIntRandom& ran) const {
   for (int32_t i = 0; i < width_; ++i) {
     if (ran.rand(i + 1, width_) == width_) {
       for (int32_t j = 0; j < height_; ++j) {

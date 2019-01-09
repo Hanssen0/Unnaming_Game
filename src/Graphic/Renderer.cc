@@ -18,11 +18,12 @@
 #include "Renderer.h"
 #include <cstdint>
 #include <iostream>
-void Renderer::set_exterior_of_block(const char exterior,
+#include <renderer_export.h>
+RENDERER_EXPORT void Renderer::set_exterior_of_block(const char exterior,
                                      const Map::BlockType& type) {
   exterior_of_block_[type] = exterior;
 }
-void Renderer::RenderLivingThingsView(const Object& obj) const {
+RENDERER_EXPORT void Renderer::RenderLivingThingsView(const Object& obj) const {
   for (int32_t j = 0; j < ((obj.view_dis() << 1) | 1); ++j) {
     for (int32_t i = 0; i < ((obj.view_dis() << 1) | 1); ++i) {
       const Point tmp = {obj.now_pos().x - obj.view_dis() +
@@ -40,7 +41,7 @@ void Renderer::RenderLivingThingsView(const Object& obj) const {
     std::cout << '\n';
   }
 }
-void Renderer::RenderGameMap(const Map& map) const {
+RENDERER_EXPORT void Renderer::RenderGameMap(const Map& map) const {
   for (int32_t j = 0; j < map.height(); ++j) {
     for (int32_t i = 0; i < map.width(); ++i) {
       Map::BlockType now_block = map.block(CreatePoint(i, j));
@@ -49,7 +50,7 @@ void Renderer::RenderGameMap(const Map& map) const {
     std::cout << "\n";
   }
 }
-void Renderer::RenderMemory(const World::MemoryOfMap& mem) const {
+RENDERER_EXPORT void Renderer::RenderMemory(const World::MemoryOfMap& mem) const {
   for (int32_t j = mem.left_top.y; j <= mem.right_bottom.y; ++j) {
     for (int32_t i = mem.left_top.x; i <= mem.right_bottom.x; ++i) {
       if (mem.is_seen[i][j]) {
@@ -62,8 +63,8 @@ void Renderer::RenderMemory(const World::MemoryOfMap& mem) const {
     std::cout << "\n";
   }
 }
-Renderer::Renderer() {
-};
-Renderer_ref Renderer::CreateRenderer() {
+RENDERER_EXPORT Renderer_ref Renderer::CreateRenderer() {
   return Renderer_ref(new Renderer);
 }
+RENDERER_NO_EXPORT Renderer::Renderer() {
+};

@@ -25,8 +25,8 @@ class Input {
    public:
     virtual ~Command() = default;
     virtual void Execute(Object& obj) = 0;
-    virtual void Record(const Point& pos) {}
-    virtual void Record(const Map::BlockType& t) {}
+    virtual void Record(const Point&) {}
+    virtual void Record(const Map::BlockType&) {}
   };
   virtual ~Input() = default;
   virtual Command& HandleInput() = 0;

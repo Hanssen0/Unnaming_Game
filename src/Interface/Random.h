@@ -20,7 +20,7 @@
 class UniformIntRandom {
  public:
   inline virtual ~UniformIntRandom() = default;
-  virtual const int32_t rand(const int32_t& from, const int32_t& to) = 0;
+  virtual int32_t rand(const int32_t& from, const int32_t& to) = 0;
   virtual void set_seed(const int32_t& seed) = 0;
 };
 #endif  // UNNAMING_GAME_SRC_INTERFACE_RANDOM_H_

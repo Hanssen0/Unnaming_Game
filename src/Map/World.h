@@ -21,7 +21,7 @@ class World {
                next_map_size_(nms) {
   }
   inline void set_next_map_size(const Rect& si) {next_map_size_ = si;}
-  inline Map* const NewMap();
+  inline Map* NewMap();
   inline const Map::Target GetTarget(Map& map, const Point& pos);
   inline void Arrive(Map& map);
   inline void Left(Map& map);
@@ -38,8 +38,8 @@ class World {
   UniformIntRandom* const random_gen_;
   Rect next_map_size_;
 };
-inline Map* const World::NewMap() {
-  MapInformation tmp = {Map(next_map_size_.w, next_map_size_.h), 0};
+inline Map* World::NewMap() {
+  MapInformation tmp = {Map(next_map_size_.w, next_map_size_.h), 0, std::map< int32_t, MemoryOfMap>()};
   tmp.map.FillWithBlock(Map::kBlockWall);
   builder_ -> set_target_map(&tmp.map);
   builder_ -> BuildRoomsAndPath();

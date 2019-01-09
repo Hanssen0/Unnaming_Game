@@ -32,8 +32,6 @@ class LivingThing final : public Object {
   inline bool is_viewable(const Point& pos) const override;
   inline World::MemoryOfMap& GetMemory() override;
   inline void GoTo(const Point& des) override;
-  inline void Transfer(const Point& des, const Map::BlockType& to) override {
-  }
   inline void set_max_energy(const int32_t& e) {
     max_energy_ = e;
     now_energy_ = std::min(now_energy_, max_energy_);
