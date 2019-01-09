@@ -19,7 +19,7 @@
 #include <cstdint>
 #include <iostream>
 void Renderer::set_exterior_of_block(const char exterior,
-                                     const Map::BlockType & type) {
+                                     const Map::BlockType& type) {
   exterior_of_block_[type] = exterior;
 }
 void Renderer::RenderLivingThingsView(const Object& obj) const {
@@ -34,7 +34,7 @@ void Renderer::RenderLivingThingsView(const Object& obj) const {
       } else if (obj.is_viewable(tmp)) {
         std::cout << exterior_of_block_[obj.now_map().block(tmp)];
       } else {
-        std::cout << " ";
+        std::cout << ' ';
       }
     }
     std::cout << '\n';
@@ -64,3 +64,6 @@ void Renderer::RenderMemory(const World::MemoryOfMap& mem) const {
 }
 Renderer::Renderer() {
 };
+Renderer_ref Renderer::CreateRenderer() {
+  return Renderer_ref(new Renderer);
+}

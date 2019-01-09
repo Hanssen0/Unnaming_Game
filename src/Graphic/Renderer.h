@@ -20,18 +20,19 @@
 #include "../Map/World.h"
 #include "../Interface/Object.h"
 #include <memory>
+#include <renderer_export.h>
 class Renderer;
 typedef std::shared_ptr< Renderer > Renderer_ref;
 class Renderer {
  public:
-  void set_exterior_of_block(const char exterior, const Map::BlockType & type);
-  void RenderLivingThingsView(const Object&) const;
-  void RenderGameMap(const Map&) const;
-  void RenderMemory(const World::MemoryOfMap &) const;
-  static Renderer_ref CreateRenderer() {return Renderer_ref(new Renderer);}
+  RENDERER_EXPORT void set_exterior_of_block(const char exterior, const Map::BlockType& type);
+  RENDERER_EXPORT void RenderLivingThingsView(const Object&) const;
+  RENDERER_EXPORT void RenderGameMap(const Map&) const;
+  RENDERER_EXPORT void RenderMemory(const World::MemoryOfMap&) const;
+  RENDERER_EXPORT static Renderer_ref CreateRenderer();
  private:
-  Renderer();
-  Renderer& operator=(const Renderer&) = delete;
+  RENDERER_NO_EXPORT Renderer();
+  RENDERER_NO_EXPORT Renderer& operator=(const Renderer&) = delete;
   char exterior_of_block_[Map::kBlockMax];
 };
 #endif  // UNNAMING_GAME_SRC_GRAPHIC_RENDERER_H_

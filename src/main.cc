@@ -26,7 +26,7 @@
 #include <list>
 #include <iostream>
 #include <random>
-Renderer& kMainRenderer = *Renderer::CreateRenderer();
+Renderer_ref kMainRenderer = Renderer::CreateRenderer();
 void Init(LivingThing* role) {
   Object::CostOfBlock cost;
   cost.move = 0;
@@ -39,9 +39,10 @@ void Init(LivingThing* role) {
   role -> set_max_energy(10);
   role -> set_now_energy(10);
   role -> set_view_dis(6);
-  kMainRenderer.set_exterior_of_block('#', Map::kBlockWall);
-  kMainRenderer.set_exterior_of_block('.', Map::kBlockPath);
-  kMainRenderer.set_exterior_of_block('+', Map::kBlockGround);
+  kMainRenderer -> set_exterior_of_block(' ', Map::kBlockEmpty);
+  kMainRenderer -> set_exterior_of_block('#', Map::kBlockWall);
+  kMainRenderer -> set_exterior_of_block('.', Map::kBlockPath);
+  kMainRenderer -> set_exterior_of_block('+', Map::kBlockGround);
   //kMainRenderer.set_exterior_of_race('@', kLivingThingsHuman);
 }
 class CommandForW : public Input::Command {
@@ -166,9 +167,9 @@ int main() {
       main_role.UpdateViewable();
       system("clear");
       if (command_render_memory.is_executed()) {
-        kMainRenderer.RenderMemory(main_role.GetMemory());
+        kMainRenderer -> RenderMemory(main_role.GetMemory());
       } else {
-        kMainRenderer.RenderLivingThingsView(main_role);
+        kMainRenderer -> RenderLivingThingsView(main_role);
       }
       std::cout << std::flush;
     }
