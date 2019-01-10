@@ -16,7 +16,6 @@
 //    Email: handsome0hell@gmail.com
 #ifndef UNNAMING_GAME_SRC_FRONTEND_CININPUT_H_
 #define UNNAMING_GAME_SRC_FRONTEND_CININPUT_H_
-#include "../Interface/Object.h"
 #include <cstdint>
 #include <functional>
 #include <map>

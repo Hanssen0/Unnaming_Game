@@ -15,6 +15,7 @@
 //
 //    Email: handsome0hell@gmail.com
 #include "../Map/Map.h"
+#include "../Object/Creature.h"
 #include "Renderer.h"
 #include <cstdint>
 #include <iostream>
@@ -23,14 +24,14 @@ RENDERER_EXPORT void Renderer::set_exterior_of_block(const char exterior,
                                      const Map::BlockType& type) {
   exterior_of_block_[type] = exterior;
 }
-RENDERER_EXPORT void Renderer::RenderLivingThingsView(const Object& obj) const {
+RENDERER_EXPORT void Renderer::RenderCreaturesView(const Creature& obj) const {
   for (int32_t j = 0; j < ((obj.view_dis() << 1) | 1); ++j) {
     for (int32_t i = 0; i < ((obj.view_dis() << 1) | 1); ++i) {
-      const Point tmp = {obj.now_pos().x - obj.view_dis() +
+      const Point tmp = {obj.now_position().x - obj.view_dis() +
                          static_cast< int32_t >(i), 
-                         obj.now_pos().y - obj.view_dis() + 
+                         obj.now_position().y - obj.view_dis() + 
                          static_cast< int32_t >(j)}; 
-      if (tmp == obj.now_pos()) {
+      if (tmp == obj.now_position()) {
         std::cout << "@";
       } else if (obj.is_viewable(tmp)) {
         std::cout << exterior_of_block_[obj.now_map().block(tmp)];
@@ -50,7 +51,8 @@ RENDERER_EXPORT void Renderer::RenderGameMap(const Map& map) const {
     std::cout << "\n";
   }
 }
-RENDERER_EXPORT void Renderer::RenderMemory(const World::MemoryOfMap& mem) const {
+RENDERER_EXPORT void Renderer::RenderMemory(
+                         const World::MemoryOfMap& mem) const {
   for (int32_t j = mem.left_top.y; j <= mem.right_bottom.y; ++j) {
     for (int32_t i = mem.left_top.x; i <= mem.right_bottom.x; ++i) {
       if (mem.is_seen[i][j]) {

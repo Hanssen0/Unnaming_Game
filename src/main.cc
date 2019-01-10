@@ -16,8 +16,7 @@
 //    Email: handsome0hell@gmail.com
 #include "Map/Map.h"
 #include "Logic/MapBuilder.h"
-#include "Object/LivingThing.h"
-#include "Interface/Object.h"
+#include "Object/Creature.h"
 #include "FrontEnd/CinInput.h"
 #include "Graphic/Renderer.h"
 #include "Map/World.h"
@@ -27,15 +26,16 @@
 #include <functional>
 #include <random>
 Renderer_ref kMainRenderer = Renderer::CreateRenderer();
-void Init(LivingThing* role) {
-  Object::CostOfBlock cost;
-  cost.move = 0;
-  cost.see_through = 1;
-  role -> set_cost(Map::kBlockPath, cost);
-  role -> set_cost(Map::kBlockGround, cost);
-  cost.move = -1;
-  cost.see_through = -1;
-  role -> set_cost(Map::kBlockWall, cost);
+void Init(Creature* role) {
+  Creature::CostOfBlock_ref normal_cost = Creature::CostOfBlock::Create();
+  Creature::CostOfBlock_ref stop_cost = Creature::CostOfBlock::Create();
+  normal_cost -> BindMoveCost([]() -> int32_t {return 1;});
+  normal_cost -> BindSeeThroughCost([]() -> int32_t {return 1;});
+  role -> set_cost(Map::kBlockPath, *normal_cost);
+  role -> set_cost(Map::kBlockGround, *normal_cost);
+  stop_cost -> BindMoveCost([]() -> int32_t {return -1;});
+  stop_cost -> BindSeeThroughCost([]() -> int32_t {return -1;});
+  role -> set_cost(Map::kBlockWall, *stop_cost);
   role -> set_max_energy(10);
   role -> set_now_energy(10);
   role -> set_view_dis(6);
@@ -43,14 +43,6 @@ void Init(LivingThing* role) {
   kMainRenderer -> set_exterior_of_block('#', Map::kBlockWall);
   kMainRenderer -> set_exterior_of_block('.', Map::kBlockPath);
   kMainRenderer -> set_exterior_of_block('+', Map::kBlockGround);
-  //kMainRenderer.set_exterior_of_race('@', kLivingThingsHuman);
-}
-template <int32_t x, int32_t y>
-inline void MoveObj(Object* const obj) {
-  Point now_pos = obj -> now_pos();
-  now_pos.x += x;
-  now_pos.y += y;
-  obj -> GoTo(now_pos);
 }
 class AutoResetStatus {
  public:
@@ -84,24 +76,27 @@ int main() {
   re.set_seed(time(0));
   MapBuilder builder(&re, CreateRect(3, 3), CreateRect(8, 8));
   World main_world(&re, &builder, CreateRect(32, 32));
-  LivingThing main_role(&main_world);
-  Init(&main_role);
-  main_role.set_now_map(main_world.NewMap());
-  main_role.set_now_pos(main_role.now_map().PickARandomPointInGroundOrPath(re));
-  main_world.Arrive(main_role.now_map());
+  Creature_ref main_role = Creature::CreateCreature(&main_world);
+  Init(main_role.get());
+  main_role -> set_now_map(main_world.NewMap());
+  main_role -> set_now_position(main_role -> now_map()
+                                    .PickARandomPointInGroundOrPath(re));
+  main_world.Arrive(main_role -> now_map());
   AutoResetStatus null_status;
   CinInput_ref input =
-      CinInput::CreateCinInput(std::bind(&AutoResetStatus::set_status, &null_status));
+      CinInput::CreateCinInput([&null_status](){null_status.set_status();});
   AutoResetStatus quit_status;
   AutoResetStatus new_map_status;
   AutoResetStatus render_memory_status;
-  input -> BindKey('w', std::bind(MoveObj< 0, -1 >, &main_role));
-  input -> BindKey('a', std::bind(MoveObj< -1, 0 >, &main_role));
-  input -> BindKey('s', std::bind(MoveObj< 0, 1 >, &main_role));
-  input -> BindKey('d', std::bind(MoveObj< 1, 0 >, &main_role));
-  input -> BindKey('q', std::bind(&AutoResetStatus::set_status, &quit_status));
-  input -> BindKey('m', std::bind(&AutoResetStatus::set_status, &render_memory_status));
-  input -> BindKey('n', std::bind(&AutoResetStatus::set_status, &new_map_status));
+  input -> BindKey('w', [&main_role](){main_role -> Move< 0, -1 >();});
+  input -> BindKey('a', [&main_role](){main_role -> Move< -1, 0 >();});
+  input -> BindKey('s', [&main_role](){main_role -> Move< 0, 1 >();});
+  input -> BindKey('d', [&main_role](){main_role -> Move< 1, 0 >();});
+  input -> BindKey('q', [&quit_status](){quit_status.set_status();});
+  input -> BindKey('m', [&render_memory_status](){
+                            render_memory_status.set_status();
+                         });
+  input -> BindKey('n', [&new_map_status](){new_map_status.set_status();});
   bool is_init_stat = true;
   while (!quit_status.Status()) {
     if (is_init_stat) {
@@ -110,19 +105,23 @@ int main() {
       input -> HandleInput();
     }
     if (!null_status.Status()) {
+      // TODO: Finish energy system
+      main_role -> set_now_energy(10);
       if (new_map_status.Status()) {
-        Map::Target tmp = main_world.GetTarget(main_role.now_map(), main_role.now_pos());
-        main_world.Left(main_role.now_map());
-        main_role.set_now_map(tmp.map);
-        main_role.set_now_pos(main_role.now_map().PickARandomPointInGroundOrPath(re));
-        main_world.Arrive(main_role.now_map());
+        Map::Target tmp = main_world.GetTarget(main_role -> now_map(),
+                                               main_role -> now_position());
+        main_world.Left(main_role -> now_map());
+        main_role -> set_now_map(tmp.map);
+        main_role -> set_now_position(main_role -> now_map()
+                                      .PickARandomPointInGroundOrPath(re));
+        main_world.Arrive(main_role -> now_map());
       }
-      main_role.UpdateViewable();
+      main_role -> UpdateViewable();
       system("clear");
       if (render_memory_status.Status()) {
-        kMainRenderer -> RenderMemory(main_role.GetMemory());
+        kMainRenderer -> RenderMemory(main_role -> GetMemory());
       } else {
-        kMainRenderer -> RenderLivingThingsView(main_role);
+        kMainRenderer -> RenderCreaturesView(*main_role);
       }
       std::cout << std::flush;
     }

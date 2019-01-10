@@ -39,7 +39,8 @@ class World {
   Rect next_map_size_;
 };
 inline Map* World::NewMap() {
-  MapInformation tmp = {Map(next_map_size_.w, next_map_size_.h), 0, std::map< int32_t, MemoryOfMap>()};
+  MapInformation tmp = {Map(next_map_size_.w, next_map_size_.h), 0,
+                        std::map< int32_t, MemoryOfMap>()};
   tmp.map.FillWithBlock(Map::kBlockWall);
   builder_ -> set_target_map(&tmp.map);
   builder_ -> BuildRoomsAndPath();

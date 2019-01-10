@@ -18,14 +18,14 @@
 #define UNNAMING_GAME_SRC_GRAPHIC_RENDERER_H_
 #include "../Map/Map.h"
 #include "../Map/World.h"
-#include "../Interface/Object.h"
+#include "../Object/Creature.h"
 #include <memory>
 class Renderer;
 typedef std::shared_ptr< Renderer > Renderer_ref;
 class Renderer {
  public:
   void set_exterior_of_block(const char exterior, const Map::BlockType& type);
-  void RenderLivingThingsView(const Object&) const;
+  void RenderCreaturesView(const Creature&) const;
   void RenderGameMap(const Map&) const;
   void RenderMemory(const World::MemoryOfMap&) const;
   static Renderer_ref CreateRenderer();

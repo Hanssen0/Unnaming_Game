@@ -32,7 +32,8 @@ class PathFinder {
     PathFinder* original_finder;
   };
   void UpdateNearby(const Point& now);
-  bool TryAPoint(const Map::BlockType type, uint64_t walked_dis, const Point & now);
+  bool TryAPoint(const Map::BlockType type, uint64_t walked_dis,
+                 const Point & now);
   void PushPointToAstarList(const Point &);
   int32_t value_[Map::kBlockMax];
   // A star data
