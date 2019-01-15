@@ -6,10 +6,10 @@ because having to add lots of things there to test them.
 ---
 
 ```cpp
-void Init(LivingThing* role); 
+void Init(Creature* role); 
 ```
 
-> > [`Creature` class (No doc yet)](../../src/Object/Creature.h).
+> > [`Creature`](../../../src/Object/Creature.h)(No doc yet).
 >
 > Initiate almost every necessery data in this game.
 >
@@ -28,10 +28,10 @@ int main();
   [`Map`][] or [`World`][].
 >
 > [`Map`]: Map/Map_source.md
-  [`World`]: Map/World_source.md
+> [`World`]: Map/World_source.md
 >
 > Then, define what every keys means. I bind some functions to the keys, so
-  they can be call by the [`CinInput`(No doc yet)][] class.
+  they can be call by the [`CinInput`][](No doc yet) class.
 >
 > [`CinInput`]: ../../zh_cn/src/FrontEnd/CinInput_source.md
 >

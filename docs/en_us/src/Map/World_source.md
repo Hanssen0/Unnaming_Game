@@ -18,9 +18,9 @@ class World;
 >
 > > Role's memory of a [`Map`][]. Two [`Point`][] and a Vector array, store the
     viewable area, and a `Map` class saves details.
-
-> > [`Map`]: (Map_source.md)
-    [`Point`]: (Map_source.md)
+> >
+> > [`Map`]: Map_source.md
+> > [`Point`]: Map_source.md
 >    
 > ---
 >
