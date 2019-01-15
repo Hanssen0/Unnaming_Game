@@ -2,10 +2,9 @@
 #define UNNAMING_GAME_SRC_MAP_WORLD_H_
 #include "Map.h"
 #include "../Logic/MapBuilder.h"
-#include "../Interface/Random.h"
 #include <map>
 #include <cassert>
-#include <iostream>
+#include <functional>
 class World {
  public:
   struct MemoryOfMap {
@@ -14,12 +13,9 @@ class World {
     std::vector< std::vector< bool > > is_seen;
     Map detail;
   };
-  inline World(UniformIntRandom* const ran, MapBuilder* builder,
-               const Rect& nms) :
-               builder_(builder),
-               random_gen_(ran),
-               next_map_size_(nms) {
-  }
+  inline World(const std::function< int32_t(int32_t, int32_t) >& ran,
+               MapBuilder* builder, const Rect& nms) :
+               builder_(builder), random_gen_(ran), next_map_size_(nms) {}
   inline void set_next_map_size(const Rect& si) {next_map_size_ = si;}
   inline Map* NewMap();
   inline const Map::Target GetTarget(Map& map, const Point& pos);
@@ -35,7 +31,7 @@ class World {
   };
   std::map< int32_t, MapInformation > id_to_map_;
   MapBuilder* const builder_;
-  UniformIntRandom* const random_gen_;
+  const std::function< int32_t(int32_t, int32_t) > random_gen_;
   Rect next_map_size_;
 };
 inline Map* World::NewMap() {
@@ -51,8 +47,7 @@ inline const Map::Target World::GetTarget(Map& map, const Point& pos) {
   Map::Target ret = map.portal_target(pos);
   if (ret.map == nullptr) {
     ret.map = NewMap();
-    ret.pos = ret.map -> PickARandomPointInGroundOrPath(
-                             *random_gen_);
+    ret.pos = ret.map -> PickARandomPointInGroundOrPath(random_gen_);
     map.set_portal_target(pos, ret);
   }
   return ret;

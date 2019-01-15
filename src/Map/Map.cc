@@ -16,13 +16,15 @@
 //    Email: handsome0hell@gmail.com
 #include "Map.h"
 #include <list>
+#include <functional>
 constexpr Map::Target Map::kNullTarget;
 int32_t Map::kMapSize = 0;
-Point Map::PickARandomPointInGroundOrPath(UniformIntRandom& ran) const {
+Point Map::PickARandomPointInGroundOrPath(
+    const std::function< int32_t(int32_t, int32_t) >& ran) const {
   for (int32_t i = 0; i < width_; ++i) {
-    if (ran.rand(i + 1, width_) == width_) {
+    if (ran(i + 1, width_) == width_) {
       for (int32_t j = 0; j < height_; ++j) {
-        if (ran.rand(j + 1, height_) == height_) {
+        if (ran(j + 1, height_) == height_) {
           if (block(CreatePoint(i, j)) == kBlockPath ||
               block(CreatePoint(i, j)) == kBlockGround) {
             return CreatePoint(i, j);

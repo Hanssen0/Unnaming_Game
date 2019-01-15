@@ -16,11 +16,11 @@
 //    Email: handsome0hell@gmail.com
 #ifndef UNNAMING_GAME_SRC_MAP_MAP_H_
 #define UNNAMING_GAME_SRC_MAP_MAP_H_
-#include "../Interface/Random.h"
 #include <cstdint>
-#include <vector>
+#include <functional>
 #include <list>
 #include <map>
+#include <vector>
 struct Point {
   int32_t x, y;
 };
@@ -90,7 +90,8 @@ class Map final {
                                 const Target& target);
   inline void FillWithBlock(const BlockType& block);
   inline void FillWithBuilding(const BuildingType& building);
-  Point PickARandomPointInGroundOrPath(UniformIntRandom&) const;
+  Point PickARandomPointInGroundOrPath(
+      const std::function< int32_t(int32_t, int32_t) >& ran) const;
 
  private:
   inline void get_id();

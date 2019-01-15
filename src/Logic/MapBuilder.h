@@ -17,13 +17,13 @@
 #ifndef UNNAMING_GAME_SRC_LOGIC_BUILDERINPUT_H_
 #define UNNAMING_GAME_SRC_LOGIC_BUILDERINPUT_H_
 #include "../Map/Map.h"
-#include "../Interface/Random.h"
 #include <cstdint>
+#include <functional>
 #include <vector>
 class MapBuilder {
  public:
-  MapBuilder(UniformIntRandom* const ran, const Rect min_room_size,
-             const Rect max_room_size) :
+  MapBuilder(const std::function< int32_t(int32_t, int32_t) >& ran,
+             const Rect min_room_size, const Rect max_room_size) :
       random_gen_(ran), min_room_size_(min_room_size),
       max_room_size_(max_room_size)  {
   }
@@ -45,7 +45,7 @@ class MapBuilder {
   bool IsRectEmpty(const RectWithPos & rect_for_check);
   inline Rect RandomRoomRect();
   inline const Rect & max(const Rect &, const Rect &);
-  UniformIntRandom* const random_gen_;
+  const std::function< int32_t(int32_t, int32_t) > random_gen_;
   const Rect min_room_size_;
   const Rect max_room_size_;
   // To speed up empty test

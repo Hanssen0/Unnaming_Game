@@ -89,7 +89,7 @@ bool MapBuilder::SelectRoomPosition(RectWithPos* rect_for_build) {
     }
   }
   if (build_able_point.size() == 0) return false;
-  size_t select_a_pos = random_gen_ -> rand(1, build_able_point.size());
+  size_t select_a_pos = random_gen_(1, build_able_point.size());
   for (size_t i = 1; i < select_a_pos; ++i) {
     build_able_point.pop();
   }
@@ -197,10 +197,8 @@ bool MapBuilder::IsRectEmpty(const RectWithPos& rect_for_check) {
 }
 inline Rect MapBuilder::RandomRoomRect() {
   // Need some space to prevent room adhesion
-  const Rect ret = {random_gen_ -> rand(min_room_size_.w + 2,
-                                        max_room_size_.w + 2),
-                    random_gen_ -> rand(min_room_size_.h + 2,
-                                        max_room_size_.h + 2)};
+  const Rect ret = {random_gen_(min_room_size_.w + 2, max_room_size_.w + 2),
+                    random_gen_(min_room_size_.h + 2, max_room_size_.h + 2)};
   return ret;
 }
 inline const Rect & MapBuilder::max(const Rect & a, const Rect & b) {

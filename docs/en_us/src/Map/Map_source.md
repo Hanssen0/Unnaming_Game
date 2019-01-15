@@ -1,15 +1,17 @@
 # Map.h & Map.cc
 
-Most of functions are very short, so I put them in header.
+These file contain things about gaming map.
 
 ---
 
 ```cpp
-const Point Map::PickARandomPointInGroundOrPath(UniformIntRandom& ran) const;
+Point Map::PickARandomPointInGroundOrPath(
+    const std::function< int32_t(int32_t, int32_t) >& ran) const;
 ```
 
 > This function will return a totally valid random `Point` in map. Valid means
-  that it's `Ground` or `Path`.
+  that it's `Ground` or `Path`. `ran` is a function, which returns a random
+  number between two arguments.
 
 ---
 

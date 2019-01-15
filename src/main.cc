@@ -20,7 +20,6 @@
 #include "FrontEnd/CinInput.h"
 #include "Graphic/Renderer.h"
 #include "Map/World.h"
-#include "Interface/Random.h"
 #include <list>
 #include <iostream>
 #include <functional>
@@ -56,31 +55,25 @@ class AutoResetStatus {
  private:
   bool status_;
 };
-class DefaultUIRandom : public UniformIntRandom {
- public:
-  inline DefaultUIRandom() {};
-  inline void set_seed(const int32_t& seed) override {
-    random_engine_.seed(seed);
-  }
-  inline int32_t rand(const int32_t& from, const int32_t& to) override {
-    static std::uniform_int_distribution< int > rand_dis;
-    typedef std::uniform_int_distribution< int >::param_type party;
-    return rand_dis(random_engine_, party(from, to));
-  }
-
- private:
-  std::default_random_engine random_engine_;
-};
 int main() {
-  DefaultUIRandom re;
-  re.set_seed(time(0));
-  MapBuilder builder(&re, CreateRect(3, 3), CreateRect(8, 8));
-  World main_world(&re, &builder, CreateRect(32, 32));
+  std::default_random_engine random_engine;
+  std::uniform_int_distribution< int > rand_dis;
+  random_engine.seed(time(0));
+  std::function< int32_t(int32_t, int32_t) > GenerateRandom = 
+      [&random_engine, &rand_dis](int32_t from, int32_t to) -> int32_t {
+        return rand_dis(random_engine,
+                        std::uniform_int_distribution< int >::param_type(from,
+                                                                         to)
+                       );
+      };
+  MapBuilder builder(GenerateRandom, CreateRect(3, 3), CreateRect(8, 8));
+  World main_world(GenerateRandom, &builder, CreateRect(32, 32));
   Creature_ref main_role = Creature::CreateCreature(&main_world);
   Init(main_role.get());
   main_role -> set_now_map(main_world.NewMap());
-  main_role -> set_now_position(main_role -> now_map()
-                                    .PickARandomPointInGroundOrPath(re));
+  main_role -> set_now_position(
+                   main_role -> now_map()
+                       .PickARandomPointInGroundOrPath(GenerateRandom));
   main_world.Arrive(main_role -> now_map());
   AutoResetStatus null_status;
   CinInput_ref input =
@@ -112,8 +105,9 @@ int main() {
                                                main_role -> now_position());
         main_world.Left(main_role -> now_map());
         main_role -> set_now_map(tmp.map);
-        main_role -> set_now_position(main_role -> now_map()
-                                      .PickARandomPointInGroundOrPath(re));
+        main_role -> set_now_position(
+                         main_role -> now_map()
+                             .PickARandomPointInGroundOrPath(GenerateRandom));
         main_world.Arrive(main_role -> now_map());
       }
       main_role -> UpdateViewable();
