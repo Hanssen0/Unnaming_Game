@@ -6,34 +6,10 @@
 ---
 
 ```cpp
-class DefaultUIRandom : public UniformIntRandom;
-```
-
-> 继承自`UniformIntRandom`接口类。
->
-> > 你可以在`Interface\`目录下找到接口类的更多信息。
->
-> `STL`库实现其功能。
-
----
-
-```cpp
-class CommandFor* : public Input::Command;
-```
-
-> 继承自`Command`接口类。
->
-> > 你可以在`Interface\`目录下找到接口类的更多信息。
->
-> 它们定义了在你敲下键盘上的按钮后会发生什么。
-  
----
-
-```cpp
 void Init(LivingThing* role); 
 ```
 
-> > 你可以在`Object\`目录下找到`LivingThing`类的更多信息。
+> > [`Creature`](../../../src/Object/Creature.h)(No doc yet).
 >
 > 初始化游戏中几乎所有必要的数据。
 >
@@ -46,13 +22,14 @@ void Init(LivingThing* role);
 int main();
 ```
 
-> 游戏的主循环。首先，准备一些重要的东西，比如`Map`或`World`。
+> 游戏的主循环。首先，准备一些重要的东西，比如[`Map`][]或[`World`][]。
 >
-> > 你可以在`Object\`目录下找到它们的更多信息。
+> [`Map`]: Map/Map_source.mdfdss2勒
+> [`World`]: Map/World_source.md
 >
-> 然后，定义按键所代表的动作。我使用了一些继承自`Command`的类，
-  因此它们可以通过接口被调用。
+> 然后，定义按键所代表的动作。我把一些函数绑定到了按键上，
+  由此它们可以被[`CinInput`][](`cin`输入)类调用。
 >
-> > 你可以在`Interface\`目录下找到接口类的更多信息。
+> [`CinInput`]: ../../zh_cn/src/FrontEnd/CinInput_source.md
 >
 > 终于，我们在`while`中处理输入。注意，我们只在一些东西改变后更新显示。

@@ -39,4 +39,4 @@ class CinInput;
 > ```
 >
 > > 它读取输入并返回调用对应的回调函数，如果找不到合适的回调函数，
-    它调用`null_function_（空函数）`。
+    它调用`null_function_`（空函数）。
