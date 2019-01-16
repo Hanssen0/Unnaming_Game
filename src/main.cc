@@ -56,7 +56,6 @@ class AutoResetStatus {
   bool status_;
 };
 int main() {
-<<<<<<< HEAD
   std::default_random_engine random_engine;
   std::uniform_int_distribution< int > rand_dis;
   random_engine.seed(time(0));
@@ -75,17 +74,6 @@ int main() {
   main_role -> set_now_position(
                    main_role -> now_map()
                        .PickARandomPointInGroundOrPath(GenerateRandom));
-=======
-  DefaultUIRandom re;
-  re.set_seed(time(0));
-  MapBuilder builder(&re, CreateRect(3, 3), CreateRect(8, 8));
-  World main_world(&re, &builder, CreateRect(32, 32));
-  Creature_ref main_role = Creature::CreateCreature(&main_world);
-  Init(main_role.get());
-  main_role -> set_now_map(main_world.NewMap());
-  main_role -> set_now_position(main_role -> now_map()
-                                    .PickARandomPointInGroundOrPath(re));
->>>>>>> 2fcb9461dd89f90f23c812903480241547e030af
   main_world.Arrive(main_role -> now_map());
   AutoResetStatus null_status;
   CinInput_ref input =
@@ -117,14 +105,9 @@ int main() {
                                                main_role -> now_position());
         main_world.Left(main_role -> now_map());
         main_role -> set_now_map(tmp.map);
-<<<<<<< HEAD
         main_role -> set_now_position(
                          main_role -> now_map()
                              .PickARandomPointInGroundOrPath(GenerateRandom));
-=======
-        main_role -> set_now_position(main_role -> now_map()
-                                      .PickARandomPointInGroundOrPath(re));
->>>>>>> 2fcb9461dd89f90f23c812903480241547e030af
         main_world.Arrive(main_role -> now_map());
       }
       main_role -> UpdateViewable();
