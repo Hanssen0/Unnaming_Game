@@ -60,7 +60,7 @@ class Creature {
   int32_t id();
   void set_max_energy(const int32_t& energy);
   void set_now_energy(const int32_t& energy);
-  void set_cost(const Map::BlockType& type, const CostOfBlock& cost);
+  void set_cost(const Map::BlockType& type, const CostOfBlock_ref& cost);
   World::MemoryOfMap& GetMemory();
   constexpr static int32_t kMaxViewDis =
       (SIZE_MAX > INT32_MAX ? INT32_MAX : SIZE_MAX - 1) >> 1;
@@ -86,7 +86,7 @@ class Creature {
   struct {
     int32_t id;
     bool is_have_id;
-    const CostOfBlock* cost[Map::kBlockMax];
+    CostOfBlock_ref cost[Map::kBlockMax];
     std::vector< std::vector< bool > > is_viewable;
   } information_;
 };

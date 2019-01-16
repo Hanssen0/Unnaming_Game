@@ -213,8 +213,8 @@ CREATURE_EXPORT void Creature::set_now_energy(const int32_t& energy) {
   ability_.now_energy = std::min(energy, ability_.max_energy);
 }
 CREATURE_EXPORT void Creature::set_cost(const Map::BlockType& type,
-                                        const CostOfBlock& cost) {
-  information_.cost[type] = &cost;
+                                        const CostOfBlock_ref& cost) {
+  information_.cost[type] = cost;
 }
 CREATURE_EXPORT World::MemoryOfMap& Creature::GetMemory() {
   return now_.world -> GetMemory(id(), now_map());
