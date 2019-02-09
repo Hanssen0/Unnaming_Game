@@ -113,6 +113,8 @@ CREATURE_NO_EXPORT void Creature::Move() {
   Point des = now_position();
   des.x += x;
   des.y += y;
+  if (des.x < 0 || des.y < 0 ||
+      des.x >= now_.map -> width() || des.y >= now_.map -> height()) return;
   const int32_t c_m = information_.cost[now_map().block(des)] -> MoveCost();
   if (c_m < 0 || c_m > ability_.now_energy) return;
   ability_.now_energy -= c_m;
