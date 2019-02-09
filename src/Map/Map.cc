@@ -25,13 +25,12 @@ Point Map::PickARandomPointInGroundOrPath(
     if (ran(i + 1, width_) == width_) {
       for (int32_t j = 0; j < height_; ++j) {
         if (ran(j + 1, height_) == height_) {
-          if (block(CreatePoint(i, j)) == kBlockPath ||
-              block(CreatePoint(i, j)) == kBlockGround) {
-            return CreatePoint(i, j);
+          if (block({i, j}) == kBlockPath || block({i, j}) == kBlockGround) {
+            return Point({i, j});
           }
         }
       }
     }
   }
-  return CreatePoint(0, 0);
+  return Point({0, 0});
 }

@@ -108,10 +108,8 @@ bool MapBuilder::BuildRoom(Point* room_pos) {
     for (int32_t j = 0; j < new_room.h; ++j) {
       // Won't cause room adhesion
       if (!(i == 0 || j == 0 || i + 1 == new_room.w || j + 1 == new_room.h)) {
-        target_map_ -> set_block(
-                           CreatePoint(new_room.left_top.x + i,
-                                       new_room.left_top.y + j),
-                                       Map::kBlockGround);
+        target_map_ -> set_block({new_room.left_top.x + i,
+                                  new_room.left_top.y + j}, Map::kBlockGround);
       }
     }
   }
@@ -159,11 +157,9 @@ bool MapBuilder::IsRectEmpty(const RectWithPos& rect_for_check) {
     // Try to expand width
     if (!is_max_w && now.w != rect_for_check.w) {
       for (int32_t i = 0; i < now.h; ++i) {
-        if (target_map_ -> block(CreatePoint(rect_l_t.x + now.w,
-                                           rect_l_t.y + i)) !=
+        if (target_map_ -> block({rect_l_t.x + now.w, rect_l_t.y + i}) !=
             Map::kBlockWall &&
-            target_map_ -> block(CreatePoint(rect_l_t.x + now.w,
-                                           rect_l_t.y + i)) !=
+            target_map_ -> block({rect_l_t.x + now.w, rect_l_t.y + i}) !=
             Map::kBlockPath) {
           is_max_w = true;  // Oops, can't expand anymore
           --now.w;  // Keep width
@@ -175,11 +171,9 @@ bool MapBuilder::IsRectEmpty(const RectWithPos& rect_for_check) {
     // Try to expand height
     if (!is_max_h && now.h != rect_for_check.h) {
       for (int32_t i = 0; i < now.w; ++i) {
-        if (target_map_ -> block(CreatePoint(rect_l_t.x + i,
-                                           rect_l_t.y + now.h)) !=
+        if (target_map_ -> block({rect_l_t.x + i, rect_l_t.y + now.h}) !=
             Map::kBlockWall &&
-            target_map_ -> block(CreatePoint(rect_l_t.x + i,
-                                           rect_l_t.y + now.h)) !=
+            target_map_ -> block({rect_l_t.x + i, rect_l_t.y + now.h}) !=
             Map::kBlockPath) {
           is_max_h = true;  // Oops, can't expand anymore
           --now.h;  // Keep height

@@ -41,14 +41,6 @@ inline bool operator<(const Point & a, const Point & b) {
 inline bool operator==(const Point & a, const Point & b) {
   return a.x == b.x && a.y == b.y;
 }
-inline const Point CreatePoint(const int32_t& x, const int32_t& y) {
-  const Point tmp = {x, y};
-  return tmp;
-}
-inline const Rect CreateRect(const int32_t& w, const int32_t& h) {
-  const Rect tmp = {w, h};
-  return tmp;
-}
 class Map final {
  public:
   enum BlockType {
@@ -129,7 +121,7 @@ inline void Map::set_building(const Point& pos,
                          const BuildingType& building) {
   if (building_[pos.x][pos.y] == building) return;
   if (building_[pos.x][pos.y] == kBuildingPortal) {
-    set_portal_target(pos, CreateTarget(nullptr, CreatePoint(0, 0)));
+    set_portal_target(pos, CreateTarget(nullptr, {0, 0}));
   }
   building_[pos.x][pos.y] = building;
 }

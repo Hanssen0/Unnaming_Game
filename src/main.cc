@@ -66,8 +66,8 @@ int main() {
                                                                          to)
                        );
       };
-  MapBuilder builder(GenerateRandom, CreateRect(3, 3), CreateRect(8, 8));
-  World main_world(GenerateRandom, &builder, CreateRect(32, 32));
+  MapBuilder builder(GenerateRandom, {3, 3}, {8, 8});
+  World main_world(GenerateRandom, &builder, {32, 32});
   Creature_ref main_role = Creature::CreateCreature(&main_world);
   Init(main_role.get());
   main_role -> set_now_map(main_world.NewMap());
