@@ -28,7 +28,7 @@ class Renderer {
   void RenderCreaturesView(const Creature&) const;
   void RenderGameMap(const Map&) const;
   void RenderMemory(const World::MemoryOfMap&) const;
-  static Renderer_ref CreateRenderer();
+  static Renderer_ref Create();
  private:
   Renderer();
   Renderer& operator=(const Renderer&) = delete;

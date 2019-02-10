@@ -104,7 +104,7 @@ CREATURE_EXPORT Creature_ref Creature::CreateCreature(World* const world) {
   return Creature_ref(new Creature(world));
 }
 CREATURE_EXPORT void Creature::set_now_map(Map* const map) {now_.map = map;}
-CREATURE_EXPORT Map& Creature::now_map() const {return *now_.map;}
+CREATURE_EXPORT Map* Creature::now_map() const {return now_.map;}
 CREATURE_EXPORT void Creature::set_now_position(const Point& position) {
   now_.position = position;
 }
@@ -114,8 +114,8 @@ CREATURE_NO_EXPORT void Creature::Move() {
   des.x += x;
   des.y += y;
   if (des.x < 0 || des.y < 0 ||
-      des.x >= now_.map -> width() || des.y >= now_.map -> height()) return;
-  const int32_t c_m = information_.cost[now_map().block(des)] -> MoveCost();
+      des.x >= now_.map -> Width() || des.y >= now_.map -> Height()) return;
+  const int32_t c_m = information_.cost[now_map() -> Block(des)] -> MoveCost();
   if (c_m < 0 || c_m > ability_.now_energy) return;
   ability_.now_energy -= c_m;
   set_now_position(des);
@@ -162,13 +162,13 @@ CREATURE_EXPORT void Creature::UpdateViewable() {
                             view_dis() - now_position().x : 0;
   const int32_t min_y = now_position().y < view_dis() ?
                             view_dis() - now_position().y : 0;
-  const int32_t max_x = now_position().x + view_dis() >= now_map().width() ?
+  const int32_t max_x = now_position().x + view_dis() >= now_map() -> Width() ?
                             view_dis() +
-                                (now_map().width() - 1 - now_position().x) :
+                                (now_map() -> Width() - 1 - now_position().x) :
                             dis_array_size - 1;
-  const int32_t max_y = now_position().y + view_dis() >= now_map().height() ?
+  const int32_t max_y = now_position().y + view_dis() >= now_map() -> Height() ?
                             view_dis() +
-                                (now_map().height() - 1 - now_position().y) :
+                                (now_map() -> Height() - 1 - now_position().y) :
                             dis_array_size - 1;
   int64_t square_view_dis = Square(view_dis());
   while (!waiting.empty()) {
@@ -253,9 +253,8 @@ CREATURE_NO_EXPORT void Creature::UpdateViewAbleOnALine(const Point& end) {
     information_.is_viewable[view_dis() + *testing_x]
                             [view_dis() + *testing_y] = true;
     const int32_t c_s =
-        information_.cost[now_map().block(
-                                        {now_position().x + *testing_x,
-                                         now_position().y + *testing_y})
+        information_.cost[now_map() -> Block({now_position().x + *testing_x,
+                                              now_position().y + *testing_y})
                          ] -> SeeThroughCost();
     if (c_s < 0) break;
     energy -= c_s;
@@ -276,7 +275,7 @@ CREATURE_NO_EXPORT void Creature::UpdateMemory() {
         now_mem.right_bottom.x = std::max(now_mem.right_bottom.x, tmp.x);
         now_mem.right_bottom.y = std::max(now_mem.right_bottom.y, tmp.y);
         now_mem.is_seen[tmp.x][tmp.y] = true;
-        now_mem.detail.set_block(tmp, now_map().block(tmp));
+        now_mem.detail -> SetBlock(tmp, now_map() -> Block(tmp));
       }
     }
   }

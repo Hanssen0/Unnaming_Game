@@ -54,9 +54,9 @@ class MapBuilder {
 };
 inline void MapBuilder::set_target_map(Map* const target) {
   target_map_ = target;
-  checked_build_able_.resize(target_map_ -> width()); 
-  for (int32_t i = 0; i < target_map_ -> width(); ++i) {
-    checked_build_able_[i].resize(target_map_ -> height());
+  checked_build_able_.resize(target_map_ -> Width()); 
+  for (int32_t i = 0; i < target_map_ -> Width(); ++i) {
+    checked_build_able_[i].resize(target_map_ -> Height());
   }
 }
 #endif  // UNNAMING_GAME_SRC_LOGIC_BUILDERLOGIC_H_

@@ -34,7 +34,7 @@ RENDERER_EXPORT void Renderer::RenderCreaturesView(const Creature& obj) const {
       if (tmp == obj.now_position()) {
         std::cout << "@";
       } else if (obj.is_viewable(tmp)) {
-        std::cout << exterior_of_block_[obj.now_map().block(tmp)];
+        std::cout << exterior_of_block_[obj.now_map() -> Block(tmp)];
       } else {
         std::cout << ' ';
       }
@@ -43,9 +43,9 @@ RENDERER_EXPORT void Renderer::RenderCreaturesView(const Creature& obj) const {
   }
 }
 RENDERER_EXPORT void Renderer::RenderGameMap(const Map& map) const {
-  for (int32_t j = 0; j < map.height(); ++j) {
-    for (int32_t i = 0; i < map.width(); ++i) {
-      Map::BlockType now_block = map.block({i, j});
+  for (int32_t j = 0; j < map.Height(); ++j) {
+    for (int32_t i = 0; i < map.Width(); ++i) {
+      Map::BlockType now_block = map.Block({i, j});
       std::cout << exterior_of_block_[now_block];
     }
     std::cout << "\n";
@@ -56,7 +56,7 @@ RENDERER_EXPORT void Renderer::RenderMemory(
   for (int32_t j = mem.left_top.y; j <= mem.right_bottom.y; ++j) {
     for (int32_t i = mem.left_top.x; i <= mem.right_bottom.x; ++i) {
       if (mem.is_seen[i][j]) {
-        Map::BlockType now_block = mem.detail.block({i, j});
+        Map::BlockType now_block = mem.detail -> Block({i, j});
         std::cout << exterior_of_block_[now_block];
       } else {
         std::cout << ' ';
@@ -65,7 +65,7 @@ RENDERER_EXPORT void Renderer::RenderMemory(
     std::cout << "\n";
   }
 }
-RENDERER_EXPORT Renderer_ref Renderer::CreateRenderer() {
+RENDERER_EXPORT Renderer_ref Renderer::Create() {
   return Renderer_ref(new Renderer);
 }
 RENDERER_NO_EXPORT Renderer::Renderer() {

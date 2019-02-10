@@ -3,21 +3,21 @@
 Point evaulate_to;
 void PathFinder::set_target_map(Map& target) {
   target_map_ = &target;
-  walked_.resize(target.width());
-  walked_dis_.resize(target.width());
-  is_first_check_.resize(target.width());
-  father_.resize(target.width());
-  for (int32_t i = 0; i < target.height(); ++i) {
-    walked_[i].resize(target.height());
+  walked_.resize(target.Width());
+  walked_dis_.resize(target.Width());
+  is_first_check_.resize(target.Width());
+  father_.resize(target.Width());
+  for (int32_t i = 0; i < target.Height(); ++i) {
+    walked_[i].resize(target.Height());
   }
-  for (int32_t i = 0; i < target.height(); ++i) {
-    walked_dis_[i].resize(target.height());
+  for (int32_t i = 0; i < target.Height(); ++i) {
+    walked_dis_[i].resize(target.Height());
   }
-  for (int32_t i = 0; i < target.height(); ++i) {
-    is_first_check_[i].resize(target.height());
+  for (int32_t i = 0; i < target.Height(); ++i) {
+    is_first_check_[i].resize(target.Height());
   }
-  for (int32_t i = 0; i < target.height(); ++i) {
-    father_[i].resize(target.height());
+  for (int32_t i = 0; i < target.Height(); ++i) {
+    father_[i].resize(target.Height());
   }
 }
 inline uint32_t EvaulateValue(const Point& po) {
@@ -26,19 +26,19 @@ inline uint32_t EvaulateValue(const Point& po) {
 }
 std::list< Point > PathFinder::FindShortestPath(const Point& from,
                                                 const Point& to) {
-  for (int32_t i = 0; i < target_map_ -> width(); ++i) {
-    for (int32_t j = 0; j < target_map_ -> height(); ++j) {
+  for (int32_t i = 0; i < target_map_ -> Width(); ++i) {
+    for (int32_t j = 0; j < target_map_ -> Height(); ++j) {
       is_first_check_[i][j] = true;
     }
   }
-  for (int32_t i = 0; i < target_map_ -> width(); ++i) {
-    for (int32_t j = 0; j < target_map_ -> height(); ++j) {
+  for (int32_t i = 0; i < target_map_ -> Width(); ++i) {
+    for (int32_t j = 0; j < target_map_ -> Height(); ++j) {
       walked_[i][j] = false;
     }
   }
   evaulate_to = to;
   walked_dis_[from.x][from.y] =
-      static_cast< uint64_t >(value_[target_map_ -> block(from)]);
+      static_cast< uint64_t >(value_[target_map_ -> Block(from)]);
   father_[from.x][from.y] = from;
   searching_list.push_back(from);
   Point min_dis;
@@ -66,7 +66,7 @@ void PathFinder::UpdateNearby(const Point& now) {
   Point tmp = now;
   if (tmp.x > 0) {
     --tmp.x;
-    if (TryAPoint(target_map_ -> block(tmp),
+    if (TryAPoint(target_map_ -> Block(tmp),
                   walked_dis_[now.x][now.y] +
                   (father_[now.x][now.y].x - 1 == now.x ? 0 : 1),
                   tmp)) {
@@ -76,7 +76,7 @@ void PathFinder::UpdateNearby(const Point& now) {
   }
   if (tmp.y > 0) {
     --tmp.y;
-    if (TryAPoint(target_map_ -> block(tmp),
+    if (TryAPoint(target_map_ -> Block(tmp),
                   walked_dis_[now.x][now.y] +
                   (father_[now.x][now.y].y - 1 == now.y ? 0 : 1),
                   tmp)) {
@@ -84,9 +84,9 @@ void PathFinder::UpdateNearby(const Point& now) {
     }
     ++tmp.y;
   }
-  if (tmp.x < target_map_ -> width() - 1) {
+  if (tmp.x < target_map_ -> Width() - 1) {
     ++tmp.x;
-    if (TryAPoint(target_map_ -> block(tmp),
+    if (TryAPoint(target_map_ -> Block(tmp),
                   walked_dis_[now.x][now.y] +
                   (father_[now.x][now.y].x + 1 == now.x ? 0 : 1),
                   tmp)) {
@@ -94,9 +94,9 @@ void PathFinder::UpdateNearby(const Point& now) {
     }
     --tmp.x;
   }
-  if (tmp.y < target_map_ -> height() - 1) {
+  if (tmp.y < target_map_ -> Height() - 1) {
     ++tmp.y;
-    if (TryAPoint(target_map_ -> block(tmp),
+    if (TryAPoint(target_map_ -> Block(tmp),
                   walked_dis_[now.x][now.y] +
                   (father_[now.x][now.y].y + 1 == now.y ? 0 : 1),
                   tmp)) {

@@ -47,7 +47,7 @@ class Creature {
   static Creature_ref CreateCreature();
   static Creature_ref CreateCreature(World* const world);
   void set_now_map(Map* const map);
-  Map& now_map() const;
+  Map* now_map() const;
   void set_now_position(const Point& position);
   template <int32_t x, int32_t y>
   void Move();

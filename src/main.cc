@@ -24,7 +24,7 @@
 #include <iostream>
 #include <functional>
 #include <random>
-Renderer_ref kMainRenderer = Renderer::CreateRenderer();
+Renderer_ref kMainRenderer = Renderer::Create();
 void Init(Creature* role) {
   Creature::CostOfBlock_ref normal_cost = Creature::CostOfBlock::Create();
   Creature::CostOfBlock_ref stop_cost = Creature::CostOfBlock::Create();
@@ -73,7 +73,7 @@ int main() {
   main_role -> set_now_map(main_world.NewMap());
   main_role -> set_now_position(
                    main_role -> now_map()
-                       .PickARandomPointInGroundOrPath(GenerateRandom));
+                       -> PickARandomPointInGroundOrPath(GenerateRandom));
   main_world.Arrive(main_role -> now_map());
   AutoResetStatus null_status;
   CinInput_ref input =
@@ -107,7 +107,7 @@ int main() {
         main_role -> set_now_map(tmp.map);
         main_role -> set_now_position(
                          main_role -> now_map()
-                             .PickARandomPointInGroundOrPath(GenerateRandom));
+                             -> PickARandomPointInGroundOrPath(GenerateRandom));
         main_world.Arrive(main_role -> now_map());
       }
       main_role -> UpdateViewable();
