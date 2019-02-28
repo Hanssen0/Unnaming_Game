@@ -99,15 +99,15 @@ bool MapBuilder::SelectRoomPosition(RectWithPos* rect_for_build) {
 bool MapBuilder::BuildRoom(Point* room_pos) {
   RectWithPos new_room;
   Rect random_rect = RandomRoomRect();
-  new_room.w = random_rect.w;
-  new_room.h = random_rect.h;
+  new_room.size = random_rect;
   if (!SelectRoomPosition(&new_room)) {
     return false;
   }
-  for (int32_t i = 0; i < new_room.w; ++i) {
-    for (int32_t j = 0; j < new_room.h; ++j) {
+  for (int32_t i = 0; i < new_room.size.w; ++i) {
+    for (int32_t j = 0; j < new_room.size.h; ++j) {
       // Won't cause room adhesion
-      if (!(i == 0 || j == 0 || i + 1 == new_room.w || j + 1 == new_room.h)) {
+      if (!(i == 0 || j == 0 ||
+            i + 1 == new_room.size.w || j + 1 == new_room.size.h)) {
         target_map_ -> SetBlock({new_room.left_top.x + i,
                                  new_room.left_top.y + j}, Map::kBlockGround);
       }
@@ -119,8 +119,8 @@ bool MapBuilder::BuildRoom(Point* room_pos) {
   now.y -= max_room_size_.h;
   now.x = std::max(0, now.x);
   now.y = std::max(0, now.y);
-  for (; now.x < new_room.left_top.x + new_room.w; ++now.x) {
-    for (; now.y < new_room.left_top.y + new_room.h; ++now.y) {
+  for (; now.x < new_room.left_top.x + new_room.size.w; ++now.x) {
+    for (; now.y < new_room.left_top.y + new_room.size.h; ++now.y) {
       if (now.x >= new_room.left_top.x && now.y >= new_room.left_top.y) {
         checked_build_able_[now.x][now.y].w = 0;
         checked_build_able_[now.x][now.y].h = 0;
@@ -142,20 +142,20 @@ bool MapBuilder::BuildRoom(Point* room_pos) {
 }
 bool MapBuilder::IsRectEmpty(const RectWithPos& rect_for_check) {
   const Point & rect_l_t = rect_for_check.left_top;  // Shorter code
-  if ((rect_for_check.w + rect_l_t.x > target_map_ -> Width()) ||
-      (rect_for_check.h + rect_l_t.y > target_map_ -> Height())) return false;
+  if ((rect_for_check.size.w + rect_l_t.x > target_map_ -> Width()) ||
+      (rect_for_check.size.h + rect_l_t.y > target_map_ -> Height())) return false;
   UpdateCheckedBuildAble(rect_l_t);
   // Shorter code, the result will be saved to the checked array
   Rect & now = checked_build_able_[rect_l_t.x][rect_l_t.y];
   // Can I continue to expand the width or height?
   bool is_max_w = false, is_max_h = false;
   // Won't check too much area
-  now.w = std::min(now.w, rect_for_check.w);
-  now.h = std::min(now.h, rect_for_check.h);
-  while (!(now.w == rect_for_check.w || is_max_w) ||
-         !(now.h == rect_for_check.h || is_max_h)) {
+  now.w = std::min(now.w, rect_for_check.size.w);
+  now.h = std::min(now.h, rect_for_check.size.h);
+  while (!(now.w == rect_for_check.size.w || is_max_w) ||
+         !(now.h == rect_for_check.size.h || is_max_h)) {
     // Try to expand width
-    if (!is_max_w && now.w != rect_for_check.w) {
+    if (!is_max_w && now.w != rect_for_check.size.w) {
       for (int32_t i = 0; i < now.h; ++i) {
         if (target_map_ -> Block({rect_l_t.x + now.w, rect_l_t.y + i}) !=
             Map::kBlockWall &&
@@ -169,7 +169,7 @@ bool MapBuilder::IsRectEmpty(const RectWithPos& rect_for_check) {
       ++now.w;
     }
     // Try to expand height
-    if (!is_max_h && now.h != rect_for_check.h) {
+    if (!is_max_h && now.h != rect_for_check.size.h) {
       for (int32_t i = 0; i < now.w; ++i) {
         if (target_map_ -> Block({rect_l_t.x + i, rect_l_t.y + now.h}) !=
             Map::kBlockWall &&
@@ -183,7 +183,7 @@ bool MapBuilder::IsRectEmpty(const RectWithPos& rect_for_check) {
       ++now.h;
     }
   }
-  if (now.w == rect_for_check.w && now.h == rect_for_check.h) {
+  if (now.w == rect_for_check.size.w && now.h == rect_for_check.size.h) {
     return true;
   } else {
     return false;

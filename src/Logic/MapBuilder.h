@@ -39,10 +39,10 @@ class MapBuilder {
   void UpdateCheckedBuildAble(const Point & pos_to_update);
   // Build path by A*
   void BuildPath(const Point & from, const Point & to);
-  bool SelectRoomPosition(RectWithPos *);
+  bool SelectRoomPosition(RectWithPos*);
   // Build one room
   bool BuildRoom(Point * room_pos);
-  bool IsRectEmpty(const RectWithPos & rect_for_check);
+  bool IsRectEmpty(const RectWithPos& rect_for_check);
   inline Rect RandomRoomRect();
   inline const Rect & max(const Rect &, const Rect &);
   const std::function< int32_t(int32_t, int32_t) > random_gen_;

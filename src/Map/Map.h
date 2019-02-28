@@ -30,7 +30,7 @@ struct Rect {
 };
 struct RectWithPos {
   Point left_top;
-  int32_t w, h;
+  Rect size;
 };
 inline bool operator<(const Point& a, const Point& b) {
   if (a.x == b.x) {
