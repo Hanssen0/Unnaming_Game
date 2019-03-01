@@ -7,20 +7,20 @@ just a game for geekers.
 
 If you need any help (on code), you could find some documents in `docs\`.
 
-# Why I develop this project?
+# Why we develop this project?
 
-I want a project that anybody who likes it can experience or develop on any
+We want a project that anybody who likes it can experience or develop on any
 devices.
 
-I want a project that have highly enough DOF (Degree of freedom), which makes
+We want a project that have highly enough DOF (Degree of freedom), which makes
 participation of everybody possible in the development process.
 
-I want a project that have aggressive concept, which can keep its direction.
+We want a project that have aggressive concept, which can keep its direction.
 
-I want a project that have detailed documents, which makes understanding and
+We want a project that have detailed documents, which makes understanding and
 learning from it possible for peoples who have a foundation in programming.
 
-The most important thing is, while accomplishing this goal, I can learn and
+The most important thing is, while accomplishing this goal, we can learn and
 practice things having not been mastered before, which is more interesting and
 efficient than just learning.
 
@@ -67,18 +67,18 @@ Open an `issue` if you found any bug.
 
 如果你需要一些（代码上的）帮助，可以在`docs`文件夹中找到一些文档。
 
-# 为什么我开发这个项目？
+# 为什么我们开发这个项目？
 
-我想要这样一个项目，它能让任何喜欢它的人在任何设备上开发/体验它。
+我们想要这样一个项目，它能让任何喜欢它的人在任何设备上开发/体验它。
 
-我想要这样一个项目，它有足够高的自由度，让所有人都有可能参与到它的开发进程中。
+我们想要这样一个项目，它有足够高的自由度，让所有人都有可能参与到它的开发进程中。
 
-我想要这样一个项目，它有激进的理念，能够一直保持它的方向。
+我们想要这样一个项目，它有激进的理念，能够一直保持它的方向。
 
-我想要这样一个项目，它有详细的文档，
+我们想要这样一个项目，它有详细的文档，
 让对编程有一定基础的人理解它并从中学习变得可能。
 
-最重要的是，在完成目标的过程中，我能去学习并实践尚未掌握的东西，
+最重要的是，在完成目标的过程中，我们能去学习并实践尚未掌握的东西，
 而这要比只学习要有趣且高效得多。
 
 # 我怎么能玩到它？
