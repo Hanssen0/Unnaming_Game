@@ -16,159 +16,106 @@
 //    Email: handsome0hell@gmail.com
 #include "Map/Map.h"
 #include "Logic/MapBuilder.h"
-#include "Object/LivingThing.h"
-#include "Interface/Object.h"
-#include "Interface/Input.h"
-#include "FrontEnd/KeyBoardInput.h"
+#include "Object/Creature.h"
+#include "FrontEnd/CinInput.h"
 #include "Graphic/Renderer.h"
 #include "Map/World.h"
-#include "Interface/Random.h"
 #include <list>
 #include <iostream>
+#include <functional>
 #include <random>
-Renderer kMainRenderer;
-void Init(LivingThing* role) {
-  Object::CostOfBlock cost;
-  cost.move = 0;
-  cost.see_through = 1;
-  role -> set_cost(Map::kBlockPath, cost);
-  role -> set_cost(Map::kBlockGround, cost);
-  cost.move = -1;
-  cost.see_through = -1;
-  role -> set_cost(Map::kBlockWall, cost);
+Renderer_ref kMainRenderer = Renderer::Create();
+void Init(Creature* role) {
+  Creature::CostOfBlock_ref normal_cost = Creature::CostOfBlock::Create();
+  Creature::CostOfBlock_ref stop_cost = Creature::CostOfBlock::Create();
+  normal_cost -> BindMoveCost([]() -> int32_t {return 1;});
+  normal_cost -> BindSeeThroughCost([]() -> int32_t {return 1;});
+  role -> set_cost(Map::kBlockPath, normal_cost);
+  role -> set_cost(Map::kBlockGround, normal_cost);
+  stop_cost -> BindMoveCost([]() -> int32_t {return -1;});
+  stop_cost -> BindSeeThroughCost([]() -> int32_t {return -1;});
+  role -> set_cost(Map::kBlockWall, stop_cost);
   role -> set_max_energy(10);
   role -> set_now_energy(10);
   role -> set_view_dis(6);
-  kMainRenderer.set_exterior_of_block('#', Map::kBlockWall);
-  kMainRenderer.set_exterior_of_block('.', Map::kBlockPath);
-  kMainRenderer.set_exterior_of_block('+', Map::kBlockGround);
-  //kMainRenderer.set_exterior_of_race('@', kLivingThingsHuman);
+  kMainRenderer -> set_exterior_of_block(' ', Map::kBlockEmpty);
+  kMainRenderer -> set_exterior_of_block('#', Map::kBlockWall);
+  kMainRenderer -> set_exterior_of_block('.', Map::kBlockPath);
+  kMainRenderer -> set_exterior_of_block('+', Map::kBlockGround);
 }
-class CommandForW : public Input::Command {
+class AutoResetStatus {
  public:
-  inline void Execute(Object& obj) override {
-    Point now_pos = obj.now_pos();
-    --now_pos.y;
-    obj.GoTo(now_pos);
+  inline AutoResetStatus() : status_(false) {};
+  inline void set_status() {status_ = true;}
+  inline bool Status() {
+    const bool tmp = status_;
+    status_ = false;
+    return tmp;
   }
-};
-class CommandForA : public Input::Command {
- public:
-  inline void Execute(Object& obj) override {
-    Point now_pos = obj.now_pos();
-    --now_pos.x;
-    obj.GoTo(now_pos);
-  }
-};
-class CommandForS : public Input::Command {
- public:
-  inline void Execute(Object& obj) override {
-    Point now_pos = obj.now_pos();
-    ++now_pos.y;
-    obj.GoTo(now_pos);
-  }
-};
-class CommandForD : public Input::Command {
- public:
-  inline void Execute(Object& obj) override {
-    Point now_pos = obj.now_pos();
-    ++now_pos.x;
-    obj.GoTo(now_pos);
-  }
-};
-class CommandForState : public Input::Command {
- public:
-  inline CommandForState() {is_executed_ = false;}
-  inline void Execute(Object& obj) override {
-    is_executed_ = true;
-  }
-  inline bool is_executed() {
-    const bool tmp = is_executed_;
-    is_executed_ = false;
-    return tmp; 
-  }
-
  private:
-  bool is_executed_;
-};
-class DefaultUIRandom : public UniformIntRandom {
- public:
-  inline DefaultUIRandom() {};
-  inline void set_seed(const int32_t& seed) override {
-    random_engine_.seed(seed);
-  }
-  inline const int32_t rand(const int32_t& from, const int32_t& to) override {
-    static std::uniform_int_distribution< int > rand_dis;
-    typedef std::uniform_int_distribution< int >::param_type party;
-    return rand_dis(random_engine_, party(from, to));
-  }
-
- private:
-  std::default_random_engine random_engine_;
-};
-class CommandForTransfer : public Input::Command {
- public:
-  inline void Execute(Object& obj) override {
-    obj.Transfer(record_pos_, to_);
-  }
-  inline void Record(const Point& pos) override {
-    record_pos_ = pos;
-  }
-  inline void Record(const Map::BlockType& t) override {
-    to_ = t;
-  }
-
- private:
-  Point record_pos_;
-  Map::BlockType to_;
+  bool status_;
 };
 int main() {
-  DefaultUIRandom re;
-  re.set_seed(time(0));
-  MapBuilder builder(&re, CreateRect(3, 3), CreateRect(8, 8));
-  World main_world(&re, &builder, CreateRect(32, 32));
-  LivingThing main_role(&main_world);
-  Init(&main_role);
-  main_role.set_now_map(main_world.NewMap());
-  main_role.set_now_pos(main_role.now_map().PickARandomPointInGroundOrPath(re));
-  main_world.Arrive(main_role.now_map());
-  CommandForState command_default;
-  TerminalKeyBoardInput input(command_default);
-  CommandForW command_w;
-  CommandForA command_a;
-  CommandForS command_s;
-  CommandForD command_d;
-  CommandForState command_quit;
-  CommandForState command_render_memory;
-  CommandForState command_new_world;
-  input.set_command_for_key('w', &command_w);
-  input.set_command_for_key('a', &command_a);
-  input.set_command_for_key('s', &command_s);
-  input.set_command_for_key('d', &command_d);
-  input.set_command_for_key('q', &command_quit);
-  input.set_command_for_key('m', &command_render_memory);
-  input.set_command_for_key('n', &command_new_world);
+  std::default_random_engine random_engine;
+  std::uniform_int_distribution< int > rand_dis;
+  random_engine.seed(time(0));
+  std::function< int32_t(int32_t, int32_t) > GenerateRandom = 
+      [&random_engine, &rand_dis](int32_t from, int32_t to) -> int32_t {
+        return rand_dis(random_engine,
+                        std::uniform_int_distribution< int >::param_type(from,
+                                                                         to)
+                       );
+      };
+  MapBuilder builder(GenerateRandom, {3, 3}, {8, 8});
+  World main_world(GenerateRandom, &builder, {32, 32});
+  Creature_ref main_role = Creature::CreateCreature(&main_world);
+  Init(main_role.get());
+  main_role -> set_now_map(main_world.NewMap());
+  main_role -> set_now_position(
+                   main_role -> now_map()
+                       -> PickARandomPointInGroundOrPath(GenerateRandom));
+  main_world.Arrive(main_role -> now_map());
+  AutoResetStatus null_status;
+  CinInput_ref input =
+      CinInput::CreateCinInput([&null_status](){null_status.set_status();});
+  AutoResetStatus quit_status;
+  AutoResetStatus new_map_status;
+  AutoResetStatus render_memory_status;
+  input -> BindKey('w', [&main_role](){main_role -> Move< 0, -1 >();});
+  input -> BindKey('a', [&main_role](){main_role -> Move< -1, 0 >();});
+  input -> BindKey('s', [&main_role](){main_role -> Move< 0, 1 >();});
+  input -> BindKey('d', [&main_role](){main_role -> Move< 1, 0 >();});
+  input -> BindKey('q', [&quit_status](){quit_status.set_status();});
+  input -> BindKey('m', [&render_memory_status](){
+                            render_memory_status.set_status();
+                         });
+  input -> BindKey('n', [&new_map_status](){new_map_status.set_status();});
   bool is_init_stat = true;
-  while (!command_quit.is_executed()) {
+  while (!quit_status.Status()) {
     if (is_init_stat) {
       is_init_stat = false;
     } else {
-      input.HandleInput().Execute(main_role);
+      input -> HandleInput();
     }
-    if (!command_default.is_executed()) {
-      if (command_new_world.is_executed()) {
-        Map::Target tmp = main_world.GetTarget(main_role.now_map(), main_role.now_pos());
-        main_world.Left(main_role.now_map());
-        main_role.set_now_map(tmp.map);
-        main_role.set_now_pos(main_role.now_map().PickARandomPointInGroundOrPath(re));
-        main_world.Arrive(main_role.now_map());
+    if (!null_status.Status()) {
+      // TODO: Finish energy system
+      main_role -> set_now_energy(10);
+      if (new_map_status.Status()) {
+        Map::Target tmp = main_world.GetTarget(main_role -> now_map(),
+                                               main_role -> now_position());
+        main_world.Left(main_role -> now_map());
+        main_role -> set_now_map(tmp.map);
+        main_role -> set_now_position(
+                         main_role -> now_map()
+                             -> PickARandomPointInGroundOrPath(GenerateRandom));
+        main_world.Arrive(main_role -> now_map());
       }
-      main_role.UpdateViewable();
+      main_role -> UpdateViewable();
       system("clear");
-      if (command_render_memory.is_executed()) {
-        kMainRenderer.RenderMemory(main_role.GetMemory());
+      if (render_memory_status.Status()) {
+        kMainRenderer -> RenderMemory(main_role -> GetMemory());
       } else {
-        kMainRenderer.RenderLivingThingsView(main_role);
+        kMainRenderer -> RenderCreaturesView(*main_role);
       }
       std::cout << std::flush;
     }

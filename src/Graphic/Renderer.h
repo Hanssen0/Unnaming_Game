@@ -18,23 +18,20 @@
 #define UNNAMING_GAME_SRC_GRAPHIC_RENDERER_H_
 #include "../Map/Map.h"
 #include "../Map/World.h"
-#include "../Interface/Object.h"
-#include <iostream>
-#include <cstdint>
+#include "../Object/Creature.h"
+#include <memory>
+class Renderer;
+typedef std::shared_ptr< Renderer > Renderer_ref;
 class Renderer {
  public:
-  void set_exterior_of_block(const char exterior, const Map::BlockType & type) {
-    exterior_of_block_[type] = exterior;
-  }
-  /*void set_exterior_of_race(const char exterior,
-                            const LivingThingsRace & type) {
-    exterior_of_race_[type] = exterior;
-  }*/
-  void RenderLivingThingsView(const Object&) const;
+  void set_exterior_of_block(const char exterior, const Map::BlockType& type);
+  void RenderCreaturesView(const Creature&) const;
   void RenderGameMap(const Map&) const;
-  void RenderMemory(const World::MemoryOfMap &) const;
+  void RenderMemory(const World::MemoryOfMap&) const;
+  static Renderer_ref Create();
  private:
+  Renderer();
+  Renderer& operator=(const Renderer&) = delete;
   char exterior_of_block_[Map::kBlockMax];
-  //char exterior_of_race_[kLivingThingsMax];
 };
 #endif  // UNNAMING_GAME_SRC_GRAPHIC_RENDERER_H_

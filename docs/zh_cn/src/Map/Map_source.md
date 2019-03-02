@@ -5,11 +5,13 @@
 ---
 
 ```cpp
-const Point Map::PickARandomPointInGroundOrPath(UniformIntRandom& ran) const;
+Point Map::PickARandomPointInGroundOrPath(
+    const std::function< int32_t(int32_t, int32_t) >& ran) const;
 ```
 
-> 这个函数会返回地图中一个完全随机的合法`Point（点）`。
-  合法表示它是`Ground（地面）`或`Path（路径）`。
+> 这个函数会返回地图中一个完全随机的合法`Point`（点）。
+  合法表示它是`Ground`（地面）或`Path`（路径）。`ran`是一个函数，
+  它返回一个在两个参数之间的随机数。
 
 ---
 
@@ -25,7 +27,7 @@ struct Point;
 strcut Rect;
 ```
 
-> 几乎和`Point（点）`一样，但两个整数分别代表`width（宽度）`和`height（长度）`。
+> 几乎和`Point`（点）一样，但两个整数分别代表`width`（宽度）和`height`（长度）。
 
 ---
 
@@ -33,7 +35,7 @@ strcut Rect;
 struct RectWithPos;
 ```
 
-> `Point（点）`和`Rect（矩形）`的结合，储存一个矩形以及它的位置。
+> `Point`（点）和`Rect`（矩形）的结合，储存一个矩形以及它的位置。
 
 ---
 
@@ -41,7 +43,7 @@ struct RectWithPos;
 inline bool operator<(const Point & a, const Point & b);
 ```
 
-> 两个`Point（点）`之间的比较，在物理上毫无意义。但我们需要它来做到更好的搜索。
+> 两个`Point`（点）之间的比较，在物理上毫无意义。但我们需要它来做到更好的搜索。
 
 ---
 

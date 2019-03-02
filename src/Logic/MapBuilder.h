@@ -17,13 +17,13 @@
 #ifndef UNNAMING_GAME_SRC_LOGIC_BUILDERINPUT_H_
 #define UNNAMING_GAME_SRC_LOGIC_BUILDERINPUT_H_
 #include "../Map/Map.h"
-#include "../Interface/Random.h"
 #include <cstdint>
+#include <functional>
 #include <vector>
 class MapBuilder {
  public:
-  MapBuilder(UniformIntRandom* const ran, const Rect min_room_size,
-             const Rect max_room_size) :
+  MapBuilder(const std::function< int32_t(int32_t, int32_t) >& ran,
+             const Rect min_room_size, const Rect max_room_size) :
       random_gen_(ran), min_room_size_(min_room_size),
       max_room_size_(max_room_size)  {
   }
@@ -39,13 +39,13 @@ class MapBuilder {
   void UpdateCheckedBuildAble(const Point & pos_to_update);
   // Build path by A*
   void BuildPath(const Point & from, const Point & to);
-  bool SelectRoomPosition(RectWithPos *);
+  bool SelectRoomPosition(RectWithPos*);
   // Build one room
   bool BuildRoom(Point * room_pos);
-  bool IsRectEmpty(const RectWithPos & rect_for_check);
+  bool IsRectEmpty(const RectWithPos& rect_for_check);
   inline Rect RandomRoomRect();
   inline const Rect & max(const Rect &, const Rect &);
-  UniformIntRandom* const random_gen_;
+  const std::function< int32_t(int32_t, int32_t) > random_gen_;
   const Rect min_room_size_;
   const Rect max_room_size_;
   // To speed up empty test
@@ -54,9 +54,9 @@ class MapBuilder {
 };
 inline void MapBuilder::set_target_map(Map* const target) {
   target_map_ = target;
-  checked_build_able_.resize(target_map_ -> width()); 
-  for (int32_t i = 0; i < target_map_ -> width(); ++i) {
-    checked_build_able_[i].resize(target_map_ -> height());
+  checked_build_able_.resize(target_map_ -> Width()); 
+  for (int32_t i = 0; i < target_map_ -> Width(); ++i) {
+    checked_build_able_[i].resize(target_map_ -> Height());
   }
 }
 #endif  // UNNAMING_GAME_SRC_LOGIC_BUILDERLOGIC_H_

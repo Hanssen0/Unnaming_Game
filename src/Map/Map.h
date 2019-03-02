@@ -16,11 +16,12 @@
 //    Email: handsome0hell@gmail.com
 #ifndef UNNAMING_GAME_SRC_MAP_MAP_H_
 #define UNNAMING_GAME_SRC_MAP_MAP_H_
-#include "../Interface/Random.h"
 #include <cstdint>
-#include <vector>
+#include <functional>
 #include <list>
 #include <map>
+#include <memory>
+#include <vector>
 struct Point {
   int32_t x, y;
 };
@@ -29,26 +30,20 @@ struct Rect {
 };
 struct RectWithPos {
   Point left_top;
-  int32_t w, h;
+  Rect size;
 };
-inline bool operator<(const Point & a, const Point & b) {
+inline bool operator<(const Point& a, const Point& b) {
   if (a.x == b.x) {
     return a.y < b.y;
   } else {
     return a.x < b.x;
   }
 }
-inline bool operator==(const Point & a, const Point & b) {
+inline bool operator==(const Point& a, const Point& b) {
   return a.x == b.x && a.y == b.y;
 }
-inline const Point CreatePoint(const int32_t& x, const int32_t& y) {
-  const Point tmp = {x, y};
-  return tmp;
-}
-inline const Rect CreateRect(const int32_t& w, const int32_t& h) {
-  const Rect tmp = {w, h};
-  return tmp;
-}
+class Map;
+typedef std::shared_ptr< Map > Map_ref;
 class Map final {
  public:
   enum BlockType {
@@ -66,34 +61,23 @@ class Map final {
     Map* map;
     Point pos;
   };
-  inline Map(const int32_t& w, const int32_t& h)
-      : width_(w), height_(h) {
-    block_.resize(w, std::vector< BlockType >(h));
-    is_got_id_ = false;
-  }
-  static inline const Target CreateTarget(Map* const map,
-                                          const Point& pos) {
-    const Target tmp = {map, pos};
-    return tmp;
-  }
-  inline const int32_t id();
-  inline const int32_t width() const {return width_;}
-  inline const int32_t height() const {return height_;}
-  inline const BlockType& block(const Point& pos) const;
-  inline void set_block(const Point& pos,
-                        const BlockType& block);
-  inline const BuildingType& building(const Point& pos) const;
-  inline void set_building(const Point& pos,
-                           const BuildingType& building);
-  inline const Target& portal_target(const Point& pos) const;
-  inline void set_portal_target(const Point& pos,
-                                const Target& target);
-  inline void FillWithBlock(const BlockType& block);
-  inline void FillWithBuilding(const BuildingType& building);
-  const Point PickARandomPointInGroundOrPath(UniformIntRandom&) const;
-
+  static Map_ref Create(int32_t w, int32_t h);
+  int32_t Id();
+  int32_t Width() const;
+  int32_t Height() const;
+  const BlockType& Block(const Point& pos) const;
+  void SetBlock(const Point& pos, const BlockType& block);
+  const BuildingType& Building(const Point& pos) const;
+  void SetBuilding(const Point& pos, const BuildingType& building);
+  const Target& PortalTarget(const Point& pos) const;
+  void SetPortalTarget(const Point& pos, const Target& target);
+  void ForEachBuilding(const std::function< void(BuildingType*) >& applier);
+  void ForEachBlock(const std::function< void(BlockType*) >& applier);
+  Point PickARandomPointInGroundOrPath(
+      const std::function< int32_t(int32_t, int32_t) >& ran) const;
  private:
-  inline void get_id();
+  Map(int32_t w, int32_t h);
+  void get_id();
   static int32_t kMapSize;
   const int32_t width_;
   const int32_t height_;
@@ -104,66 +88,4 @@ class Map final {
   std::vector< std::vector< BuildingType > > building_;
   std::map< Point, Target > portal_target_;
 };
-inline void Map::get_id() {
-  if (!is_got_id_) {
-    id_ = kMapSize++;
-    is_got_id_ = true;
-  }
-}
-inline const int32_t Map::id() {
-  if (!is_got_id_) get_id();
-  return id_;
-}
-inline const Map::BlockType& Map::block(const Point& pos) const {
-  return block_[pos.x][pos.y];
-}
-inline void Map::set_block(const Point& pos,
-                           const BlockType& block) {
-  block_[pos.x][pos.y] = block;
-}
-inline const Map::BuildingType& Map::building(const Point& pos) const {
-  return building_[pos.x][pos.y];
-}
-inline void Map::set_building(const Point& pos,
-                         const BuildingType& building) {
-  if (building_[pos.x][pos.y] == building) return;
-  if (building_[pos.x][pos.y] == kBuildingPortal) {
-    set_portal_target(pos, CreateTarget(nullptr, CreatePoint(0, 0)));
-  }
-  building_[pos.x][pos.y] = building;
-}
-inline const Map::Target& Map::portal_target(const Point& pos)
-    const {
-  auto ret = portal_target_.find(pos);
-  if (ret == portal_target_.end()) {
-    return kNullTarget;
-  } else {
-    return ret -> second;
-  }
-}
-inline void Map::set_portal_target(const Point& pos,
-                                   const Target& target) {
-  auto finder = portal_target_.find(pos);
-  if (target.map == nullptr) {
-    if (finder != portal_target_.end()) {
-      portal_target_.erase(finder);
-    }
-  } else {
-    portal_target_[pos] = target;
-  }
-}
-inline void Map::FillWithBlock(const BlockType& block) {
-  for (int32_t i = 0; i < width_; ++i) {
-    for (int32_t j = 0; j < height_; ++j) {
-      block_[i][j] = block;
-    }
-  }
-}
-inline void Map::FillWithBuilding(const BuildingType& building) {
-  for (int32_t i = 0; i < width_; ++i) {
-    for (int32_t j = 0; j < height_; ++j) {
-      building_[i][j] = building;
-    }
-  }
-}
 #endif  // UNNAMING_GAME_SRC_MAP_MAP_H_

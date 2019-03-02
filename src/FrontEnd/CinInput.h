@@ -14,21 +14,24 @@
 //    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 //    Email: handsome0hell@gmail.com
-#ifndef UNNAMING_GAME_SRC_INTERFACE_INPUT_H_
-#define UNNAMING_GAME_SRC_INTERFACE_INPUT_H_
-#include "Object.h"
-#include "../Map/Map.h"
+#ifndef UNNAMING_GAME_SRC_FRONTEND_CININPUT_H_
+#define UNNAMING_GAME_SRC_FRONTEND_CININPUT_H_
 #include <cstdint>
-class Input {
+#include <functional>
+#include <map>
+#include <memory>
+class CinInput;
+typedef std::shared_ptr< CinInput > CinInput_ref;
+class CinInput {
  public:
-  class Command {
-   public:
-    virtual ~Command() = default;
-    virtual void Execute(Object& obj) = 0;
-    virtual void Record(const Point& pos) {}
-    virtual void Record(const Map::BlockType& t) {}
-  };
-  virtual ~Input() = default;
-  virtual Command& HandleInput() = 0;
+  void HandleInput();
+  void BindKey(const char& key, const std::function< void() > function);
+  static CinInput_ref CreateCinInput(const std::function< void() >);
+ private:
+  CinInput() = delete;
+  CinInput& operator=(const CinInput&) = delete;
+  CinInput(const std::function< void() >);
+  std::map< char, std::function< void() > > function_for_key_;
+  const std::function< void() > null_function_;
 };
-#endif  // UNNAMING_GAME_SRC_INTERFACE_INPUT_H_
+#endif  // UNNAMING_GAME_SRC_FRONTEND_CININPUT_H_
