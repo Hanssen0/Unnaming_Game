@@ -73,6 +73,8 @@ class Map final {
   void SetPortalTarget(const Point& pos, const Target& target);
   void ForEachBuilding(const std::function< void(BuildingType*) >& applier);
   void ForEachBlock(const std::function< void(BlockType*) >& applier);
+  void ForEachBlockIn(const RectWithPos& region,
+                      const std::function< void(BlockType*) >& applier);
   Point PickARandomPointInGroundOrPath(
       const std::function< int32_t(int32_t, int32_t) >& ran) const;
  private:

@@ -104,3 +104,14 @@ MAP_EXPORT void Map::ForEachBlock(
     }
   }
 }
+MAP_EXPORT
+void Map::ForEachBlockIn(const RectWithPos& region,
+                         const std::function< void(BlockType*) >& applier) {
+  const int32_t end_y = region.left_top.y + region.size.h;
+  const int32_t end_x = region.left_top.x + region.size.w;
+  for (int32_t y = region.left_top.y; y < end_y; ++y) {
+    for (int32_t x = region.left_top.x; x < end_x; ++x) {
+      applier(&(block_[x][y]));
+    }
+  }
+}
