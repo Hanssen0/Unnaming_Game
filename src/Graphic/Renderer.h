@@ -17,7 +17,7 @@
 #ifndef UNNAMING_GAME_SRC_GRAPHIC_RENDERER_H_
 #define UNNAMING_GAME_SRC_GRAPHIC_RENDERER_H_
 #include "../Map/Map.h"
-#include "../Map/World.h"
+#include "../Map/Space.h"
 #include "../Object/Creature.h"
 #include <memory>
 #include <vector>
@@ -29,7 +29,7 @@ class Renderer {
   void set_exterior_of_block(const char exterior, const Map::BlockType& type);
   void RenderCreaturesView(const Creature&) const;
   void RenderGameMap(const Map&) const;
-  void RenderMemory(const World::MemoryOfMap&) const;
+  void RenderMemory(const Space::MemoryOfMap&) const;
   static Renderer_ref Create();
  private:
   Renderer();

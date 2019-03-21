@@ -1,11 +1,11 @@
-#ifndef UNNAMING_GAME_SRC_MAP_WORLD_H_
-#define UNNAMING_GAME_SRC_MAP_WORLD_H_
+#ifndef UNNAMING_GAME_SRC_MAP_SPACE_H_
+#define UNNAMING_GAME_SRC_MAP_SPACE_H_
 #include "Map.h"
 #include "../Logic/MapBuilder.h"
 #include <map>
 #include <cassert>
 #include <functional>
-class World {
+class Space {
  public:
   struct MemoryOfMap {
     Point left_top;
@@ -13,7 +13,7 @@ class World {
     std::vector< std::vector< bool > > is_seen;
     Map_ref detail;
   };
-  inline World(const std::function< int32_t(int32_t, int32_t) >& ran,
+  inline Space(const std::function< int32_t(int32_t, int32_t) >& ran,
                MapBuilder* builder, const Rect& nms) :
                builder_(builder), random_gen_(ran), next_map_size_(nms) {}
   inline void set_next_map_size(const Rect& si) {next_map_size_ = si;}
@@ -34,7 +34,7 @@ class World {
   const std::function< int32_t(int32_t, int32_t) > random_gen_;
   Rect next_map_size_;
 };
-inline Map* World::NewMap() {
+inline Map* Space::NewMap() {
   MapInformation tmp = {Map::Create(next_map_size_.w, next_map_size_.h), 0,
                         std::map< int32_t, MemoryOfMap>()};
   // TODO: Read block type from file
@@ -47,7 +47,7 @@ inline Map* World::NewMap() {
   auto inserter = id_to_map_.insert(std::make_pair(tmp.map -> Id(), tmp));
   return inserter.first -> second.map.get();
 }
-inline const Map::Target World::GetTarget(Map* map, const Point& pos) {
+inline const Map::Target Space::GetTarget(Map* map, const Point& pos) {
   Map::Target ret = map -> PortalTarget(pos);
   if (ret.map == nullptr) {
     ret.map = NewMap();
@@ -60,19 +60,19 @@ inline const Map::Target World::GetTarget(Map* map, const Point& pos) {
   }
   return ret;
 }
-inline void World::Arrive(Map* map) {
+inline void Space::Arrive(Map* map) {
   auto finder = id_to_map_.find(map -> Id());
   assert((finder != id_to_map_.end()));
   ++(finder -> second.connections_num);
 }
-inline void World::Left(Map* map) {
+inline void Space::Left(Map* map) {
   auto finder = id_to_map_.find(map -> Id());
   assert(finder != id_to_map_.end());
   if(--(finder -> second.connections_num) <= 0) {
     id_to_map_.erase(finder);
   }
 }
-inline World::MemoryOfMap& World::GetMemory(int32_t obj_id, Map* map) {
+inline Space::MemoryOfMap& Space::GetMemory(int32_t obj_id, Map* map) {
   auto info_finder = id_to_map_.find(map -> Id());
   assert(info_finder != id_to_map_.end());
   //For shorter code
@@ -92,4 +92,4 @@ inline World::MemoryOfMap& World::GetMemory(int32_t obj_id, Map* map) {
   }
   return obj_finder -> second;
 }
-#endif  // UNNAMING_GAME_SRC_MAP_WORLD_H_
+#endif  // UNNAMING_GAME_SRC_MAP_SPACE_H_

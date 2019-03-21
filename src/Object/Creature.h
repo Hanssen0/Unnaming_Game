@@ -16,7 +16,7 @@
 //    Email: handsome0hell@gmail.com
 #ifndef UNNAMING_GAME_SRC_OBJECT_CREATURE_H_
 #define UNNAMING_GAME_SRC_OBJECT_CREATURE_H_
-#include "../Map/World.h"
+#include "../Map/Space.h"
 #include "../Map/Map.h"
 #include <cstdint>
 #include <functional>
@@ -45,14 +45,14 @@ class Creature {
     std::function< int32_t() > see_through_;
   };
   static Creature_ref CreateCreature();
-  static Creature_ref CreateCreature(World* const world);
+  static Creature_ref CreateCreature(Space* const space);
   void set_now_map(Map* const map);
   Map* now_map() const;
   void set_now_position(const Point& position);
   template <int32_t x, int32_t y>
   void Move();
   const Point& now_position() const;
-  void set_now_world(World* const world);
+  void set_now_space(Space* const space);
   void set_view_dis(const int32_t& d);
   int32_t view_dis() const;
   void UpdateViewable();
@@ -62,12 +62,12 @@ class Creature {
   void set_now_energy(const int32_t& energy);
   void UpdateBlockTypeSize(size_t size);
   void set_cost(const Map::BlockType& type, const CostOfBlock_ref& cost);
-  World::MemoryOfMap& GetMemory();
+  Space::MemoryOfMap& GetMemory();
   constexpr static int32_t kMaxViewDis =
       (SIZE_MAX > INT32_MAX ? INT32_MAX : SIZE_MAX - 1) >> 1;
  private:
   Creature();
-  Creature(World* const world);
+  Creature(Space* const space);
   Creature& operator=(const Creature&) = delete;
   void get_id();
   void UpdateViewAbleOnALine(const Point& end);
@@ -76,8 +76,8 @@ class Creature {
   struct {
     Map* map;
     Point position;
-    World* world;
-    World::MemoryOfMap* memory;
+    Space* space;
+    Space::MemoryOfMap* memory;
   } now_;
   struct {
     int32_t view_dis;

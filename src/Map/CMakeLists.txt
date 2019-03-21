@@ -9,13 +9,10 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Use c++ 11
 add_library(Map SHARED Map.cc)
-add_library(World SHARED Map.cc)
 generate_export_header(Map)
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
   target_compile_options(Map PRIVATE -Wall -Wextra)
-  target_compile_options(World PRIVATE -Wall -Wextra)
 elseif(MSVC)
   target_compile_options(Map PRIVATE /W4)
-  target_compile_options(World PRIVATE /W4)
 endif()
 # More warnnings

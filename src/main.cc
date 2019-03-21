@@ -19,7 +19,7 @@
 #include "Object/Creature.h"
 #include "FrontEnd/CinInput.h"
 #include "Graphic/Renderer.h"
-#include "Map/World.h"
+#include "Map/Space.h"
 #include <list>
 #include <iostream>
 #include <functional>
@@ -71,10 +71,10 @@ int main() {
                        );
       };
   MapBuilder builder(GenerateRandom, {3, 3}, {8, 8});
-  World main_world(GenerateRandom, &builder, {32, 32});
-  Creature_ref main_role = Creature::CreateCreature(&main_world);
+  Space main_space(GenerateRandom, &builder, {32, 32});
+  Creature_ref main_role = Creature::CreateCreature(&main_space);
   Init(main_role.get());
-  main_role -> set_now_map(main_world.NewMap());
+  main_role -> set_now_map(main_space.NewMap());
   // TODO: Read block from file
   std::list< Map::BlockType > valid;
   valid.push_back(2);
@@ -82,7 +82,7 @@ int main() {
   main_role -> set_now_position(
                    main_role -> now_map()
                        -> PickARandomPointInGroundOrPath(GenerateRandom, valid));
-  main_world.Arrive(main_role -> now_map());
+  main_space.Arrive(main_role -> now_map());
   AutoResetStatus null_status;
   CinInput_ref input =
       CinInput::CreateCinInput([&null_status](){null_status.set_status();});
@@ -109,15 +109,15 @@ int main() {
       // TODO: Finish energy system
       main_role -> set_now_energy(10);
       if (new_map_status.Status()) {
-        Map::Target tmp = main_world.GetTarget(main_role -> now_map(),
+        Map::Target tmp = main_space.GetTarget(main_role -> now_map(),
                                                main_role -> now_position());
-        main_world.Left(main_role -> now_map());
+        main_space.Left(main_role -> now_map());
         main_role -> set_now_map(tmp.map);
         // TODO: Read block from file
         main_role -> set_now_position(
                          main_role -> now_map()
                              -> PickARandomPointInGroundOrPath(GenerateRandom, valid));
-        main_world.Arrive(main_role -> now_map());
+        main_space.Arrive(main_role -> now_map());
       }
       main_role -> UpdateViewable();
       system("clear");
