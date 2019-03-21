@@ -20,18 +20,15 @@
 constexpr Map::Target Map::kNullTarget;
 int32_t Map::kMapSize = 0;
 MAP_EXPORT Point Map::PickARandomPointInGroundOrPath(
-    const std::function< int32_t(int32_t, int32_t) >& ran) const {
-  for (int32_t i = 0; i < width_; ++i) {
-    if (ran(i + 1, width_) == width_) {
-      for (int32_t j = 0; j < height_; ++j) {
-        if (ran(j + 1, height_) == height_) {
-          if (Block({i, j}) == kBlockPath || Block({i, j}) == kBlockGround) {
-            return Point({i, j});
-          }
-        }
-      }
-    }
-  }
+    const std::function< int32_t(int32_t, int32_t) >& ran,
+    std::list< Map::BlockType > valid_list) const {
+  int32_t total_valid = 0;
+  ForEachBlock([&valid_list, &total_valid](BlockType* block){
+                 for (auto i : valid_list) {
+                   if (i == *block) ++total_valid;
+                 }
+               });
+  //      if (ran(j + 1, height_) == height_) {
   return Point({0, 0});
 }
 MAP_EXPORT Map_ref Map::Create(int32_t w, int32_t h) {

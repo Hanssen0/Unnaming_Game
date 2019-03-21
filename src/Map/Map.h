@@ -46,13 +46,7 @@ class Map;
 typedef std::shared_ptr< Map > Map_ref;
 class Map final {
  public:
-  enum BlockType {
-    kBlockEmpty,
-    kBlockWall,
-    kBlockGround,
-    kBlockPath,
-    kBlockMax
-  };
+  typedef int32_t BlockType;
   enum BuildingType {
     kBuildingEmpty,
     kBuildingPortal
