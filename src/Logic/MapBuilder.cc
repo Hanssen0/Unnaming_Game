@@ -20,6 +20,15 @@
 #include <cstdint>
 #include <list>
 #include <queue>
+void MapBuilder::SetWallBlock(const Map::BlockType wall) {
+  wall_block_ = wall;
+}
+void MapBuilder::SetPathBlock(const Map::BlockType path) {
+  path_block_ = path;
+}
+void MapBuilder::SetGroundBlock(const Map::BlockType ground) {
+  ground_block_ = ground;
+}
 void MapBuilder::BuildRoomsAndPath() {
   InitForEmptyTest();
   Point previous;
@@ -61,16 +70,16 @@ void MapBuilder::UpdateCheckedBuildAble(const Point & pos_to_update) {
 }
 void MapBuilder::BuildPath(const Point & from, const Point & to) {
   PathFinder path_designer;
-  path_designer.set_value(Map::kBlockWall, 10);
-  path_designer.set_value(Map::kBlockGround, 1);
-  path_designer.set_value(Map::kBlockPath, 3);
+  path_designer.set_value(wall_block_, 10);
+  path_designer.set_value(ground_block_, 1);
+  path_designer.set_value(path_block_, 3);
   path_designer.set_target_map(*target_map_);
   std::list< Point > shortest_path =
       path_designer.FindShortestPath(from, to);
   std::list< Point >::iterator path_builder = shortest_path.begin();
   while (path_builder != shortest_path.end()) {
-    if (target_map_ -> Block(*path_builder) == Map::kBlockWall) {
-        target_map_ -> SetBlock(*path_builder, Map::kBlockPath);
+    if (target_map_ -> Block(*path_builder) == wall_block_) {
+        target_map_ -> SetBlock(*path_builder, path_block_);
     }
     ++path_builder;
   }
@@ -103,14 +112,11 @@ bool MapBuilder::BuildRoom(Point* room_pos) {
   if (!SelectRoomPosition(&new_room)) {
     return false;
   }
-  for (int32_t i = 0; i < new_room.size.w; ++i) {
-    for (int32_t j = 0; j < new_room.size.h; ++j) {
+  for (int32_t i = 1; i < new_room.size.w - 1; ++i) {
+    for (int32_t j = 1; j < new_room.size.h - 1; ++j) {
       // Won't cause room adhesion
-      if (!(i == 0 || j == 0 ||
-            i + 1 == new_room.size.w || j + 1 == new_room.size.h)) {
         target_map_ -> SetBlock({new_room.left_top.x + i,
-                                 new_room.left_top.y + j}, Map::kBlockGround);
-      }
+                                 new_room.left_top.y + j}, ground_block_);
     }
   }
   // Keep the checked array correct
@@ -158,9 +164,9 @@ bool MapBuilder::IsRectEmpty(const RectWithPos& rect_for_check) {
     if (!is_max_w && now.w != rect_for_check.size.w) {
       for (int32_t i = 0; i < now.h; ++i) {
         if (target_map_ -> Block({rect_l_t.x + now.w, rect_l_t.y + i}) !=
-            Map::kBlockWall &&
+            wall_block_ &&
             target_map_ -> Block({rect_l_t.x + now.w, rect_l_t.y + i}) !=
-            Map::kBlockPath) {
+            path_block_) {
           is_max_w = true;  // Oops, can't expand anymore
           --now.w;  // Keep width
           break;
@@ -172,9 +178,9 @@ bool MapBuilder::IsRectEmpty(const RectWithPos& rect_for_check) {
     if (!is_max_h && now.h != rect_for_check.size.h) {
       for (int32_t i = 0; i < now.w; ++i) {
         if (target_map_ -> Block({rect_l_t.x + i, rect_l_t.y + now.h}) !=
-            Map::kBlockWall &&
+            wall_block_ &&
             target_map_ -> Block({rect_l_t.x + i, rect_l_t.y + now.h}) !=
-            Map::kBlockPath) {
+            path_block_) {
           is_max_h = true;  // Oops, can't expand anymore
           --now.h;  // Keep height
           break;

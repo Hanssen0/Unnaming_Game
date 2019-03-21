@@ -28,20 +28,24 @@ Renderer_ref kMainRenderer = Renderer::Create();
 void Init(Creature* role) {
   Creature::CostOfBlock_ref normal_cost = Creature::CostOfBlock::Create();
   Creature::CostOfBlock_ref stop_cost = Creature::CostOfBlock::Create();
+  // TODO: Read block from file
+  role -> UpdateBlockTypeSize(4);
   normal_cost -> BindMoveCost([]() -> int32_t {return 1;});
   normal_cost -> BindSeeThroughCost([]() -> int32_t {return 1;});
-  role -> set_cost(Map::kBlockPath, normal_cost);
-  role -> set_cost(Map::kBlockGround, normal_cost);
+  role -> set_cost(2, normal_cost);
+  role -> set_cost(3, normal_cost);
   stop_cost -> BindMoveCost([]() -> int32_t {return -1;});
   stop_cost -> BindSeeThroughCost([]() -> int32_t {return -1;});
-  role -> set_cost(Map::kBlockWall, stop_cost);
+  role -> set_cost(1, stop_cost);
   role -> set_max_energy(10);
   role -> set_now_energy(10);
   role -> set_view_dis(6);
-  kMainRenderer -> set_exterior_of_block(' ', Map::kBlockEmpty);
-  kMainRenderer -> set_exterior_of_block('#', Map::kBlockWall);
-  kMainRenderer -> set_exterior_of_block('.', Map::kBlockPath);
-  kMainRenderer -> set_exterior_of_block('+', Map::kBlockGround);
+  // TODO: Read block from file
+  kMainRenderer -> UpdateBlockTypeSize(4);
+  kMainRenderer -> set_exterior_of_block(' ', 0);
+  kMainRenderer -> set_exterior_of_block('#', 1);
+  kMainRenderer -> set_exterior_of_block('.', 2);
+  kMainRenderer -> set_exterior_of_block('+', 3);
 }
 class AutoResetStatus {
  public:
@@ -71,9 +75,13 @@ int main() {
   Creature_ref main_role = Creature::CreateCreature(&main_world);
   Init(main_role.get());
   main_role -> set_now_map(main_world.NewMap());
+  // TODO: Read block from file
+  std::list< Map::BlockType > valid;
+  valid.push_back(2);
+  valid.push_back(3);
   main_role -> set_now_position(
                    main_role -> now_map()
-                       -> PickARandomPointInGroundOrPath(GenerateRandom));
+                       -> PickARandomPointInGroundOrPath(GenerateRandom, valid));
   main_world.Arrive(main_role -> now_map());
   AutoResetStatus null_status;
   CinInput_ref input =
@@ -105,9 +113,10 @@ int main() {
                                                main_role -> now_position());
         main_world.Left(main_role -> now_map());
         main_role -> set_now_map(tmp.map);
+        // TODO: Read block from file
         main_role -> set_now_position(
                          main_role -> now_map()
-                             -> PickARandomPointInGroundOrPath(GenerateRandom));
+                             -> PickARandomPointInGroundOrPath(GenerateRandom, valid));
         main_world.Arrive(main_role -> now_map());
       }
       main_role -> UpdateViewable();

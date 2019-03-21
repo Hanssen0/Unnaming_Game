@@ -70,7 +70,8 @@ class Map final {
   void ForEachBlockIn(const RectWithPos& region,
                       const std::function< void(BlockType*) >& applier);
   Point PickARandomPointInGroundOrPath(
-      const std::function< int32_t(int32_t, int32_t) >& ran) const;
+    const std::function< int32_t(int32_t, int32_t) >& ran,
+    const std::list< BlockType >& valid_list) const;
  private:
   Map(int32_t w, int32_t h);
   void get_id();

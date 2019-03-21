@@ -19,6 +19,7 @@
 #include "../Map/Map.h"
 #include <cstdint>
 #include <list>
+#include <map>
 #include <vector>
 class PathFinder {
  public:
@@ -35,7 +36,7 @@ class PathFinder {
   bool TryAPoint(const Map::BlockType type, uint64_t walked_dis,
                  const Point & now);
   void PushPointToAstarList(const Point &);
-  int32_t value_[Map::kBlockMax];
+  std::map< Map::BlockType, int32_t > value_;
   // A star data
   std::vector< std::vector< bool > > walked_;
   std::vector< std::vector< uint64_t > > walked_dis_;

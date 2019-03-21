@@ -20,10 +20,12 @@
 #include "../Map/World.h"
 #include "../Object/Creature.h"
 #include <memory>
+#include <vector>
 class Renderer;
 typedef std::shared_ptr< Renderer > Renderer_ref;
 class Renderer {
  public:
+  void UpdateBlockTypeSize(size_t size);
   void set_exterior_of_block(const char exterior, const Map::BlockType& type);
   void RenderCreaturesView(const Creature&) const;
   void RenderGameMap(const Map&) const;
@@ -32,6 +34,6 @@ class Renderer {
  private:
   Renderer();
   Renderer& operator=(const Renderer&) = delete;
-  char exterior_of_block_[Map::kBlockMax];
+  std::vector< char > exterior_of_block_;
 };
 #endif  // UNNAMING_GAME_SRC_GRAPHIC_RENDERER_H_

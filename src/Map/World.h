@@ -37,7 +37,11 @@ class World {
 inline Map* World::NewMap() {
   MapInformation tmp = {Map::Create(next_map_size_.w, next_map_size_.h), 0,
                         std::map< int32_t, MemoryOfMap>()};
-  tmp.map -> ForEachBlock([](Map::BlockType* block){*block = Map::kBlockWall;});
+  // TODO: Read block type from file
+  tmp.map -> ForEachBlock([](Map::BlockType* block){*block = 1;});
+  builder_ -> SetWallBlock(1);
+  builder_ -> SetPathBlock(2);
+  builder_ -> SetGroundBlock(3);
   builder_ -> set_target_map(tmp.map.get());
   builder_ -> BuildRoomsAndPath();
   auto inserter = id_to_map_.insert(std::make_pair(tmp.map -> Id(), tmp));
@@ -47,7 +51,11 @@ inline const Map::Target World::GetTarget(Map* map, const Point& pos) {
   Map::Target ret = map -> PortalTarget(pos);
   if (ret.map == nullptr) {
     ret.map = NewMap();
-    ret.pos = ret.map -> PickARandomPointInGroundOrPath(random_gen_);
+    // TODO: Read block type from file
+    std::list< Map::BlockType > valid;
+    valid.push_back(2);
+    valid.push_back(3);
+    ret.pos = ret.map -> PickARandomPointInGroundOrPath(random_gen_, valid);
     map -> SetPortalTarget(pos, ret);
   }
   return ret;
