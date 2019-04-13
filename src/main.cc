@@ -29,11 +29,11 @@ void Init(Creature* role) {
   Creature::CostOfBlock_ref normal_cost = Creature::CostOfBlock::Create();
   Creature::CostOfBlock_ref stop_cost = Creature::CostOfBlock::Create();
   normal_cost -> BindMoveCost([]() -> int32_t {return 1;});
-  normal_cost -> BindSeeThroughCost([]() -> int32_t {return 1;});
+  normal_cost -> BindSeeThroughCost([]() -> int32_t {return 0;});
   role -> set_cost(Map::kBlockPath, normal_cost);
   role -> set_cost(Map::kBlockGround, normal_cost);
   stop_cost -> BindMoveCost([]() -> int32_t {return -1;});
-  stop_cost -> BindSeeThroughCost([]() -> int32_t {return -1;});
+  stop_cost -> BindSeeThroughCost([]() -> int32_t {return 0x3f3f3f3f;});
   role -> set_cost(Map::kBlockWall, stop_cost);
   role -> set_max_energy(10);
   role -> set_now_energy(10);
