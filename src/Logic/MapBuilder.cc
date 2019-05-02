@@ -20,6 +20,7 @@
 #include <cstdint>
 #include <list>
 #include <queue>
+MapBuilder::~MapBuilder() {}
 void MapBuilder::SetWallBlock(const Map::BlockType wall) {
   wall_block_ = wall;
 }

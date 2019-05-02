@@ -65,6 +65,7 @@ class Map final {
   void SetBuilding(const Point& pos, const BuildingType& building);
   const Target& PortalTarget(const Point& pos) const;
   void SetPortalTarget(const Point& pos, const Target& target);
+  ~Map();
   void ForEachBuilding(const std::function< void(BuildingType*) >& applier);
   void ForEachBlock(const std::function< void(BlockType*) >& applier);
   void ForEachBlockIn(const RectWithPos& region,

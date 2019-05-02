@@ -96,6 +96,7 @@ CREATURE_NO_EXPORT int32_t Creature::CostOfBlock::MoveCost() const {
 CREATURE_NO_EXPORT int32_t Creature::CostOfBlock::SeeThroughCost() const {
   return see_through_();
 }
+CREATURE_EXPORT Creature::CostOfBlock::~CostOfBlock() {}
 CREATURE_NO_EXPORT Creature::CostOfBlock::CostOfBlock() {};
 CREATURE_EXPORT Creature_ref Creature::CreateCreature() {
   return Creature_ref(new Creature());
@@ -221,6 +222,7 @@ CREATURE_EXPORT void Creature::set_cost(const Map::BlockType& type,
                                         const CostOfBlock_ref& cost) {
   information_.cost[type] = cost;
 }
+CREATURE_EXPORT Creature::~Creature() {};
 CREATURE_EXPORT Space::MemoryOfMap& Creature::GetMemory() {
   return now_.space -> GetMemory(id(), now_map());
 }

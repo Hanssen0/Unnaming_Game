@@ -90,6 +90,7 @@ MAP_EXPORT void Map::SetPortalTarget(const Point& pos, const Target& target) {
     portal_target_[pos] = target;
   }
 }
+MAP_EXPORT Map::~Map() {}
 MAP_NO_EXPORT void Map::get_id() {
   if (!is_got_id_) {
     id_ = kMapSize++;

@@ -27,6 +27,7 @@ class MapBuilder {
       random_gen_(ran), min_room_size_(min_room_size),
       max_room_size_(max_room_size)  {
   }
+  ~MapBuilder();
   // Make rooms
   void BuildRoomsAndPath();
   //void BuildBuildings();

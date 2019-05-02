@@ -24,6 +24,7 @@ class CinInput;
 typedef std::shared_ptr< CinInput > CinInput_ref;
 class CinInput {
  public:
+  ~CinInput();
   void HandleInput();
   void BindKey(const char& key, const std::function< void() > function);
   static CinInput_ref CreateCinInput(const std::function< void() >);

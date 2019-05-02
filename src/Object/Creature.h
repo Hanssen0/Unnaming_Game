@@ -38,6 +38,7 @@ class Creature {
     int32_t DestoryCost() const;
     int32_t MoveCost() const;
     int32_t SeeThroughCost() const;
+    ~CostOfBlock();
    private:
     CostOfBlock();
     std::function< int32_t() > destory_;
@@ -62,6 +63,7 @@ class Creature {
   void set_now_energy(const int32_t& energy);
   void UpdateBlockTypeSize(size_t size);
   void set_cost(const Map::BlockType& type, const CostOfBlock_ref& cost);
+  ~Creature();
   Space::MemoryOfMap& GetMemory();
   constexpr static int32_t kMaxViewDis =
       (SIZE_MAX > INT32_MAX ? INT32_MAX : SIZE_MAX - 1) >> 1;
