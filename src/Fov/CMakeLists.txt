@@ -8,7 +8,7 @@ project(Graphic_library CXX)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Use c++ 11
-add_library(Fov SHARED Fov.cc)
+add_library(Fov SHARED shadowcasting.cc)
 generate_export_header(Fov)
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
   target_compile_options(Fov PRIVATE -Wall -Wextra -g)

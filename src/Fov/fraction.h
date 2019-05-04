@@ -1,5 +1,5 @@
-#ifndef UNNAMING_GAME_SRC_FOV_FRACTION_HPP_
-#define UNNAMING_GAME_SRC_FOV_FRACTION_HPP_
+#ifndef UNNAMING_GAME_SRC_FOV_FRACTION_H_
+#define UNNAMING_GAME_SRC_FOV_FRACTION_H_
 
 #include <stdint.h>
 
@@ -11,7 +11,7 @@ struct Fraction {
   T num, den;
 
  public:
-  inline Fraction &Reduce();
+  Fraction &Reduce();
 
  public:
   inline Fraction &operator=(const Fraction &x);
@@ -65,18 +65,14 @@ struct Fraction {
 };
 
 template <typename T>
-inline Fraction<T> &Fraction<T>::Reduce() {
+Fraction<T> &Fraction<T>::Reduce() {
   T x = (num < 0 ? -num : num), y = (den < 0 ? -den : den);
   while (y != 0) {  // x = Gcd(x, y)
     x %= y;
     x ^= y, y ^= x, x ^= y;  // Swap(x, y)
   }
-  if (x != 0) {
-    num /= x, den /= x;
-  }
-  if (den < 0) {
-    num = -num, den = -den;
-  }
+  if (x != 0) num /= x, den /= x;
+  if (den < 0) num = -num, den = -den;
   return *this;
 }
 
@@ -252,4 +248,4 @@ inline bool Fraction<T>::operator>=(const T &x) const {
 
 };  // namespace number
 
-#endif  // UNNAMING_GAME_SRC_FOV_FRACTION_HPP_
+#endif  // UNNAMING_GAME_SRC_FOV_FRACTION_H_

@@ -10,6 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Use c++ 11
 add_library(Creature SHARED Creature.cc)
 generate_export_header(Creature)
+target_link_libraries(Creature ${CMAKE_SOURCE_DIR}/build/lib/libFov.so)
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
   target_compile_options(Creature PRIVATE -Wall -Wextra -g)
 elseif(MSVC)
