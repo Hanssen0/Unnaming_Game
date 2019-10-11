@@ -32,39 +32,6 @@ CREATURE_NO_EXPORT inline int32_t GetDifference(const int32_t& a,
   if (a > b) return a - b;
   return b - a;
 }
-// All a, b and c should be positive
-CREATURE_NO_EXPORT inline bool IsAPlusBBiggerThanC(int64_t a, int64_t b,
-                                                   int64_t c) {
-  if (a > c || b > c) return true;
-  return b > (c - a);
-}
-CREATURE_NO_EXPORT int32_t RoundingOfAMulBDivideC(int32_t a, int32_t b,
-                                                  int32_t c) {
-  if (c == 0) return INT32_MAX;
-  bool is_positive = true;
-  if (a < 0) {
-    is_positive = !is_positive;
-    a = -a;
-  }
-  if (b < 0) {
-    is_positive = !is_positive;
-    b = -b;
-  }
-  if (c < 0) {
-    is_positive = !is_positive;
-    c = -c;
-  }
-  uint64_t tmp = a * 10;
-  tmp *= b;
-  tmp /= c;
-  if (tmp % 10 < 5) {
-    tmp /= 10;
-  } else {
-    tmp /= 10;
-    tmp += 1;
-  }
-  return (is_positive ? 1 : -1) * tmp;
-}
 CREATURE_EXPORT Creature::CostOfBlock_ref Creature::CostOfBlock::Create() {
   return CostOfBlock_ref(new CostOfBlock());
 }
@@ -145,58 +112,18 @@ CREATURE_EXPORT void Creature::set_view_dis(const int32_t& d) {
 CREATURE_EXPORT int32_t Creature::view_dis() const {return ability_.view_dis;} 
 CREATURE_EXPORT void Creature::UpdateViewable() {
   const size_t dis_array_size = information_.is_viewable.size();
-  std::vector< std::vector< bool > > is_tested(dis_array_size, 
-                                               std::vector< bool >(
-                                                   dis_array_size,
-                                                   false));
-  std::queue< Point > waiting;
-  is_tested[view_dis()][view_dis()] = true;
-  waiting.push({view_dis(), view_dis()});
   for (size_t i = 0; i < dis_array_size; ++i) {
     for (size_t j = 0; j < dis_array_size; ++j) {
       information_.is_viewable[i][j] = false;
     }
   }
-  information_.is_viewable[view_dis()][view_dis()] = true;
-  // Prevent additional computation
-  const int32_t min_x = now_position().x < view_dis() ?
-                            view_dis() - now_position().x : 0;
-  const int32_t min_y = now_position().y < view_dis() ?
-                            view_dis() - now_position().y : 0;
-  const int32_t max_x = now_position().x + view_dis() >= now_map() -> Width() ?
-                            view_dis() +
-                                (now_map() -> Width() - 1 - now_position().x) :
-                            dis_array_size - 1;
-  const int32_t max_y = now_position().y + view_dis() >= now_map() -> Height() ?
-                            view_dis() +
-                                (now_map() -> Height() - 1 - now_position().y) :
-                            dis_array_size - 1;
-  int64_t square_view_dis = Square(view_dis());
-  while (!waiting.empty()) {
-    Point tmp = waiting.front();
-    waiting.pop();
-    if (IsAPlusBBiggerThanC(Square(GetDifference(tmp.x, view_dis())),
-                            Square(GetDifference(tmp.y, view_dis())),
-                            square_view_dis)) continue;
-    //Four directions
-    for (int32_t i = 0; i < 4; ++i) {
-      tmp.x += kWASD[i].x;
-      tmp.y += kWASD[i].y;
-      if (tmp.x >= min_x && tmp.y >= min_y &&
-          tmp.x <= max_x && tmp.y <= max_y && (!is_tested[tmp.x][tmp.y])) {
-        waiting.push(tmp);
-        is_tested[tmp.x][tmp.y] = true;
-      }
-      tmp.x -= kWASD[i].x;
-      tmp.y -= kWASD[i].y;
-    }
-    tmp.x -= view_dis();
-    tmp.y -= view_dis();
-    UpdateViewAbleOnALine(tmp);
-  }
+  shadow_casting({now_position().x, now_position().y}, view_dis());
   UpdateMemory();
 }
 CREATURE_EXPORT bool Creature::is_viewable(const Point& pos) const {
+  if (0 > pos.x || pos.x >= now_.map -> Width()
+    || 0 > pos.y || pos.y >= now_.map -> Height()) return false;
+
   const Point target = {pos.x - now_position().x + view_dis(),
                         pos.y - now_position().y + view_dis()};
   const int32_t viewable_size = information_.is_viewable.size();
@@ -232,40 +159,6 @@ CREATURE_NO_EXPORT Creature::Creature(Space* const space) {
   information_.is_have_id = false;
 }
 CREATURE_NO_EXPORT void Creature::get_id() {information_.id = kCreatureSize++;}
-CREATURE_NO_EXPORT void Creature::UpdateViewAbleOnALine(const Point& end) {
-  const int32_t* max_det;
-  const int32_t* min_det;
-  int i;
-  int result;
-  int32_t* testing_x;
-  int32_t* testing_y;
-  int32_t positive;
-  if (std::abs(end.x) > std::abs(end.y)) {
-    max_det = &(end.x);
-    min_det = &(end.y);
-    testing_x = &i;
-    testing_y = &result;
-  } else {
-    max_det = &(end.y);
-    min_det = &(end.x);
-    testing_x = &result;
-    testing_y = &i;
-  }
-  positive = (*max_det) < 0 ? -1 : 1;
-  int32_t energy = view_dis();
-  for (i = positive; i != ((*max_det) + positive); i += positive) {
-    result = RoundingOfAMulBDivideC(i , *min_det, *max_det);
-    information_.is_viewable[view_dis() + *testing_x]
-                            [view_dis() + *testing_y] = true;
-    const int32_t c_s =
-        information_.cost[now_map() -> Block({now_position().x + *testing_x,
-                                              now_position().y + *testing_y})
-                         ] -> SeeThroughCost();
-    if (c_s < 0) break;
-    energy -= c_s;
-    if (energy <= 0) break;
-  }
-}
 CREATURE_NO_EXPORT void Creature::UpdateMemory() {
   Space::MemoryOfMap& now_mem = GetMemory();
   for (size_t i = 0; i < information_.is_viewable.size(); ++i) {
@@ -284,4 +177,26 @@ CREATURE_NO_EXPORT void Creature::UpdateMemory() {
       }
     }
   }
+}
+
+CREATURE_NO_EXPORT bool Creature::is_valid(const Point &pos) {
+  const Point target = {pos.x - now_position().x + view_dis(),
+                        pos.y - now_position().y + view_dis()};
+  const int32_t viewable_size = information_.is_viewable.size();
+  return 0 <= target.x && target.x < viewable_size
+      && 0 <= target.y && target.y < viewable_size;
+}
+
+CREATURE_NO_EXPORT void Creature::set_viewable(const Point &pos) {
+  if (is_valid(pos)) {
+    information_.is_viewable[pos.x - now_position().x + view_dis()]
+      [pos.y - now_position().y + view_dis()] = true;
+  }
+}
+
+CREATURE_NO_EXPORT int32_t Creature::get_cost(const Point &pos) {
+  return 0 <= pos.x && pos.x < now_.map -> Width()
+      && 0 <= pos.y && pos.y < now_.map -> Height()
+        ? information_.cost[now_map() -> Block({pos.x, pos.y})
+        ] -> SeeThroughCost() : 0x3f3f3f3f;
 }

@@ -31,11 +31,11 @@ void Init(Creature* role) {
   // TODO: Read block from file
   role -> UpdateBlockTypeSize(4);
   normal_cost -> BindMoveCost([]() -> int32_t {return 1;});
-  normal_cost -> BindSeeThroughCost([]() -> int32_t {return 1;});
+  normal_cost -> BindSeeThroughCost([]() -> int32_t {return 0;});
   role -> set_cost(2, normal_cost);
   role -> set_cost(3, normal_cost);
   stop_cost -> BindMoveCost([]() -> int32_t {return -1;});
-  stop_cost -> BindSeeThroughCost([]() -> int32_t {return -1;});
+  stop_cost -> BindSeeThroughCost([]() -> int32_t {return 0x3f3f3f3f;});
   role -> set_cost(1, stop_cost);
   role -> set_max_energy(10);
   role -> set_now_energy(10);

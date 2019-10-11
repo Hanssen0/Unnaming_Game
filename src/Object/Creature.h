@@ -18,6 +18,7 @@
 #define UNNAMING_GAME_SRC_OBJECT_CREATURE_H_
 #include "../Map/Space.h"
 #include "../Map/Map.h"
+#include "../Fov/shadowcasting.h"
 #include <cstdint>
 #include <functional>
 #include <memory>
@@ -72,7 +73,6 @@ class Creature {
   Creature(Space* const space);
   Creature& operator=(const Creature&) = delete;
   void get_id();
-  void UpdateViewAbleOnALine(const Point& end);
   void UpdateMemory();
   static int32_t kCreatureSize;
   struct {
@@ -92,5 +92,17 @@ class Creature {
     std::vector< CostOfBlock_ref > cost;
     std::vector< std::vector< bool > > is_viewable;
   } information_;
+
+ private:
+  bool is_valid(const Point& pos);
+  void set_viewable(const Point& pos);
+  int32_t get_cost(const Point& pos);
+  FunctorShadowCasting shadow_casting = FunctorShadowCasting()
+    .SetFunction_IsValid(
+      std::bind(&Creature::is_valid, this, std::placeholders::_1))
+    .SetFunction_SetViewable(
+      std::bind(&Creature::set_viewable, this, std::placeholders::_1))
+    .SetFunction_GetCost(
+      std::bind(&Creature::get_cost, this, std::placeholders::_1));
 };
 #endif  // UNNAMING_GAME_SRC_OBJECT_CREATURE_H_
