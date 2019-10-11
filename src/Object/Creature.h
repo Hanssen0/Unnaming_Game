@@ -91,10 +91,10 @@ class Creature {
   } information_;
 
  private:
-  bool is_valid(const fov::Point &pos);
-  void set_viewable(const fov::Point &pos);
-  int32_t get_cost(const fov::Point &pos);
-  fov::FunctorShadowCasting shadow_casting = fov::FunctorShadowCasting()
+  bool is_valid(const Point& pos);
+  void set_viewable(const Point& pos);
+  int32_t get_cost(const Point& pos);
+  FunctorShadowCasting shadow_casting = FunctorShadowCasting()
     .SetFunction_IsValid(
       std::bind(&Creature::is_valid, this, std::placeholders::_1))
     .SetFunction_SetViewable(

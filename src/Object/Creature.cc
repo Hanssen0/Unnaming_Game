@@ -174,22 +174,22 @@ CREATURE_NO_EXPORT void Creature::UpdateMemory() {
   }
 }
 
-CREATURE_NO_EXPORT bool Creature::is_valid(const fov::Point &pos) {
+CREATURE_NO_EXPORT bool Creature::is_valid(const Point &pos) {
   const Point target = {pos.x - now_position().x + view_dis(),
                         pos.y - now_position().y + view_dis()};
-  const int32_t &&viewable_size = information_.is_viewable.size();
+  const int32_t viewable_size = information_.is_viewable.size();
   return 0 <= target.x && target.x < viewable_size
       && 0 <= target.y && target.y < viewable_size;
 }
 
-CREATURE_NO_EXPORT void Creature::set_viewable(const fov::Point &pos) {
+CREATURE_NO_EXPORT void Creature::set_viewable(const Point &pos) {
   if (is_valid(pos)) {
     information_.is_viewable[pos.x - now_position().x + view_dis()]
       [pos.y - now_position().y + view_dis()] = true;
   }
 }
 
-CREATURE_NO_EXPORT int32_t Creature::get_cost(const fov::Point &pos) {
+CREATURE_NO_EXPORT int32_t Creature::get_cost(const Point &pos) {
   return 0 <= pos.x && pos.x < now_.map -> Width()
       && 0 <= pos.y && pos.y < now_.map -> Height()
         ? information_.cost[now_map() -> Block({pos.x, pos.y})

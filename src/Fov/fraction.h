@@ -1,251 +1,100 @@
 #ifndef UNNAMING_GAME_SRC_FOV_FRACTION_H_
 #define UNNAMING_GAME_SRC_FOV_FRACTION_H_
-
-#include <stdint.h>
-
-namespace number {
-
+#include <cstdint>
+#include <cmath>
+#include <algorithm>
+#include <iostream> //TODO: Delete it
 template <typename T = int32_t>
 struct Fraction {
  public:
-  T num, den;
-
- public:
-  Fraction &Reduce();
-
- public:
-  inline Fraction &operator=(const Fraction &x);
-  inline Fraction &operator=(const T &x);
-
- public:
-  inline Fraction &operator+=(const Fraction &x);
-  inline Fraction &operator-=(const Fraction &x);
-  inline Fraction &operator*=(const Fraction &x);
-  inline Fraction &operator/=(const Fraction &x);
-
-  inline Fraction &operator+=(const T &x);
-  inline Fraction &operator-=(const T &x);
-  inline Fraction &operator*=(const T &x);
-  inline Fraction &operator/=(const T &x);
-
- public:
-  inline Fraction operator+(const Fraction &x) const;
-  inline Fraction operator-(const Fraction &x) const;
-  inline Fraction operator*(const Fraction &x) const;
-  inline Fraction operator/(const Fraction &x) const;
-
-  inline Fraction operator+(const T &x) const;
-  inline Fraction operator-(const T &x) const;
-  inline Fraction operator*(const T &x) const;
-  inline Fraction operator/(const T &x) const;
-
- public:
-  inline bool operator<(const Fraction &x) const;
-  inline bool operator>(const Fraction &x) const;
-  inline bool operator==(const Fraction &x) const;
-  inline bool operator!=(const Fraction &x) const;
-  inline bool operator<=(const Fraction &x) const;
-  inline bool operator>=(const Fraction &x) const;
-
-  inline bool operator<(const T &x) const;
-  inline bool operator>(const T &x) const;
-  inline bool operator==(const T &x) const;
-  inline bool operator!=(const T &x) const;
-  inline bool operator<=(const T &x) const;
-  inline bool operator>=(const T &x) const;
-
- public:
-  inline Fraction(const T &num_ = 0, const T &den_ = 1)
-      : num(num_), den(den_) {}
-
+  T number_, denominator_;
+  void Reduce();
+  inline void operator=(const Fraction& fraction);
+  inline void operator=(const T& x);
+  inline Fraction operator+(const Fraction& fraction) const;
+  inline Fraction operator-(const Fraction& fraction) const;
+  inline bool operator>(const Fraction& fraction) const;
+  inline bool operator<(const Fraction& fraction) const;
+  inline bool operator>=(const Fraction& fraction) const;
+  inline bool operator<=(const Fraction& fraction) const;
+  inline Fraction(const T& number, const T& denominator = 1)
+      : number_(number), denominator_(denominator) {}
   template <typename TT>
   inline operator TT() const {
-    return den == 0 ? 0 : static_cast<TT>(num) / den;
+    return denominator_ == 0 ? 0 : static_cast<TT>(number_) / denominator_;
+  }
+  inline void Print() const {
+    std::cout << number_ << "/" << denominator_;
   }
 };
-
 template <typename T>
-Fraction<T> &Fraction<T>::Reduce() {
-  T x = (num < 0 ? -num : num), y = (den < 0 ? -den : den);
+void Fraction<T>::Reduce() {
+  T x = std::abs(number_), y = std::abs(denominator_);
   while (y != 0) {  // x = Gcd(x, y)
     x %= y;
-    x ^= y, y ^= x, x ^= y;  // Swap(x, y)
+    std::swap(x, y);
   }
-  if (x != 0) num /= x, den /= x;
-  if (den < 0) num = -num, den = -den;
-  return *this;
+  if (x != 0) number_ /= x, denominator_ /= x;
+  if (denominator_ < 0) number_ = -number_, denominator_ = -denominator_;
 }
-
 template <typename T>
-inline Fraction<T> &Fraction<T>::operator=(const Fraction &x) {
-  num = x.num;
-  den = x.den;
-  return *this;
+inline void Fraction<T>::operator=(const Fraction& fraction) {
+  number_ = fraction.number_;
+  denominator_ = fraction.denominator_;
 }
-
 template <typename T>
-inline Fraction<T> &Fraction<T>::operator=(const T &x) {
-  num = x;
-  den = 1;
-  return *this;
+inline void Fraction<T>::operator=(const T& number) {
+  number_ = number;
+  denominator_ = 1;
 }
-
 template <typename T>
-inline Fraction<T> Fraction<T>::operator+(const Fraction &x) const {
-  return Fraction(num * x.den + x.num * den, den * x.den);
+inline Fraction<T> Fraction<T>::operator+(const Fraction& fraction) const {
+  return Fraction(number_ * fraction.denominator_ +
+                  fraction.number_ * denominator_,
+                  denominator_ * fraction.denominator_);
+  // a/b + c/d = (ad + cb) / bd
 }
-
 template <typename T>
-inline Fraction<T> Fraction<T>::operator-(const Fraction &x) const {
-  return Fraction(num * x.den - x.num * den, den * x.den);
+inline Fraction<T> Fraction<T>::operator-(const Fraction& fraction) const {
+  return Fraction(number_ * fraction.denominator_ -
+                  fraction.number_ * denominator_,
+                  denominator_ * fraction.denominator_);
+  // a/b - c/d = (ad - cb) / bd
 }
-
 template <typename T>
-inline Fraction<T> Fraction<T>::operator*(const Fraction &x) const {
-  return Fraction(num * x.num, den * x.den);
+inline bool Fraction<T>::operator<(const Fraction& fraction) const {
+  return (fraction.denominator_ * denominator_ > 0 ?
+          number_ * fraction.denominator_ < fraction.number_ * denominator_ :
+          number_ * fraction.denominator_ > fraction.number_ * denominator_);
+  // a/b < c/d :
+  // ad < cb (same sign)
+  // ad > cb (different sign)
 }
-
 template <typename T>
-inline Fraction<T> Fraction<T>::operator/(const Fraction &x) const {
-  return Fraction(num * x.den, den * x.num);
+inline bool Fraction<T>::operator>(const Fraction& fraction) const {
+  return (fraction.denominator_ * denominator_ > 0 ?
+          number_ * fraction.denominator_ > fraction.number_ * denominator_ :
+          number_ * fraction.denominator_ < fraction.number_ * denominator_);
+  // a/b > c/d :
+  // ad > cb (same sign)
+  // ad < cb (different sign)
 }
-
 template <typename T>
-inline Fraction<T> Fraction<T>::operator+(const T &x) const {
-  return Fraction<T>(num + x * den, 1);
+inline bool Fraction<T>::operator<=(const Fraction& fraction) const {
+  return (fraction.denominator_ * denominator_ > 0 ?
+          number_ * fraction.denominator_ <= fraction.number_ * denominator_ :
+          number_ * fraction.denominator_ >= fraction.number_ * denominator_);
+  // a/b <= c/d :
+  // ad <= cb (same sign)
+  // ad >= cb (different sign)
 }
-
 template <typename T>
-inline Fraction<T> Fraction<T>::operator-(const T &x) const {
-  return Fraction<T>(num - x * den, 1);
+inline bool Fraction<T>::operator>=(const Fraction& fraction) const {
+  return (fraction.denominator_ * denominator_ > 0 ?
+          number_ * fraction.denominator_ >= fraction.number_ * denominator_ :
+          number_ * fraction.denominator_ <= fraction.number_ * denominator_);
+  // a/b >= c/d :
+  // ad >= cb (same sign)
+  // ad <= cb (different sign)
 }
-
-template <typename T>
-inline Fraction<T> Fraction<T>::operator*(const T &x) const {
-  return Fraction<T>(num * x, den);
-}
-
-template <typename T>
-inline Fraction<T> Fraction<T>::operator/(const T &x) const {
-  return Fraction<T>(num, den * x);
-}
-
-template <typename T>
-inline Fraction<T> &Fraction<T>::operator+=(const Fraction &x) {
-  num = num * x.den + x.num * den;
-  den *= x.den;
-  return *this;
-}
-
-template <typename T>
-inline Fraction<T> &Fraction<T>::operator-=(const Fraction &x) {
-  num = num * x.den - x.num * den;
-  den *= x.den;
-  return *this;
-}
-
-template <typename T>
-inline Fraction<T> &Fraction<T>::operator*=(const Fraction &x) {
-  num *= x.num;
-  den *= x.den;
-  return *this;
-}
-
-template <typename T>
-inline Fraction<T> &Fraction<T>::operator/=(const Fraction &x) {
-  num *= x.den;
-  den *= x.num;
-  return *this;
-}
-
-template <typename T>
-inline Fraction<T> &Fraction<T>::operator+=(const T &x) {
-  num += x * den;
-  return *this;
-}
-
-template <typename T>
-inline Fraction<T> &Fraction<T>::operator-=(const T &x) {
-  num -= x * den;
-  return *this;
-}
-
-template <typename T>
-inline Fraction<T> &Fraction<T>::operator*=(const T &x) {
-  num *= x;
-  return *this;
-}
-
-template <typename T>
-inline Fraction<T> &Fraction<T>::operator/=(const T &x) {
-  den *= x;
-  return *this;
-}
-
-template <typename T>
-inline bool Fraction<T>::operator<(const Fraction &x) const {
-  return (x.den * den > 0 ? num * x.den < x.num * den
-                          : num * x.den > x.num * den);
-}
-
-template <typename T>
-inline bool Fraction<T>::operator>(const Fraction &x) const {
-  return (x.den * den > 0 ? num * x.den > x.num * den
-                          : num * x.den < x.num * den);
-}
-
-template <typename T>
-inline bool Fraction<T>::operator==(const Fraction &x) const {
-  return num * x.den == x.num * den;
-}
-
-template <typename T>
-inline bool Fraction<T>::operator!=(const Fraction &x) const {
-  return num * x.den != x.num * den;
-}
-
-template <typename T>
-inline bool Fraction<T>::operator<=(const Fraction &x) const {
-  return (x.den * den > 0 ? num * x.den <= x.num * den
-                          : num * x.den >= x.num * den);
-}
-
-template <typename T>
-inline bool Fraction<T>::operator>=(const Fraction &x) const {
-  return (x.den * den > 0 ? num * x.den >= x.num * den
-                          : num * x.den <= x.num * den);
-}
-
-template <typename T>
-inline bool Fraction<T>::operator<(const T &x) const {
-  return (den > 0 ? num < x * den : num > x * den);
-}
-
-template <typename T>
-inline bool Fraction<T>::operator>(const T &x) const {
-  return (den > 0 ? num > x * den : num < x * den);
-}
-
-template <typename T>
-inline bool Fraction<T>::operator==(const T &x) const {
-  return num == x * den;
-}
-
-template <typename T>
-inline bool Fraction<T>::operator!=(const T &x) const {
-  return num != x * den;
-}
-
-template <typename T>
-inline bool Fraction<T>::operator<=(const T &x) const {
-  return (den > 0 ? num <= x * den : num >= x * den);
-}
-
-template <typename T>
-inline bool Fraction<T>::operator>=(const T &x) const {
-  return (den > 0 ? num >= x * den : num <= x * den);
-}
-
-};  // namespace number
-
 #endif  // UNNAMING_GAME_SRC_FOV_FRACTION_H_
