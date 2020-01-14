@@ -7,11 +7,12 @@
   #include <iostream>
 #endif
 template <typename T = int32_t>
-struct Fraction {
+class Fraction {
  public:
   T number_, denominator_;
   void Reduce();
-  inline void operator=(const Fraction& fraction);
+  template <typename TT>
+  inline void operator=(const Fraction<TT>& fraction);
   inline void operator=(const T& x);
   inline Fraction operator+(const Fraction& fraction) const;
   inline Fraction operator-(const Fraction& fraction) const;
@@ -22,9 +23,7 @@ struct Fraction {
   inline Fraction(const T& number, const T& denominator = 1)
       : number_(number), denominator_(denominator) {}
   template <typename TT>
-  inline operator TT() const {
-    return denominator_ == 0 ? 0 : static_cast<TT>(number_)/denominator_;
-  }
+  inline operator TT() const;
 #ifndef NDEBUG
   inline void Print() const {
     std::cout << number_ << "/" << denominator_;
@@ -42,7 +41,8 @@ void Fraction<T>::Reduce() {
   if (denominator_ < 0) number_ = -number_, denominator_ = -denominator_;
 }
 template <typename T>
-inline void Fraction<T>::operator=(const Fraction& fraction) {
+template <typename TT>
+inline void Fraction<T>::operator=(const Fraction<TT>& fraction) {
   number_ = fraction.number_;
   denominator_ = fraction.denominator_;
 }
@@ -100,5 +100,10 @@ inline bool Fraction<T>::operator>=(const Fraction& fraction) const {
   // a/b >= c/d :
   // ad >= cb (same sign)
   // ad <= cb (different sign)
+}
+template <typename T>
+template <typename TT>
+inline Fraction<T>::operator TT() const {
+  return denominator_ == 0 ? 0 : static_cast<TT>(number_)/denominator_;
 }
 #endif  // UNNAMING_GAME_SRC_FOV_FRACTION_H_
