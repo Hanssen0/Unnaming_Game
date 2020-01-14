@@ -40,7 +40,7 @@ struct RectWithPos;
 ---
 
 ```cpp
-inline bool operator<(const Point & a, const Point & b);
+inline bool operator<(const Point& a, const Point& b);
 ```
 
 > 两个`Point`（点）之间的比较，在物理上毫无意义。但我们需要它来做到更好的搜索。

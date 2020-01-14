@@ -34,8 +34,8 @@ class PathFinder {
   };
   void UpdateNearby(const Point& now);
   bool TryAPoint(const Map::BlockType type, uint64_t walked_dis,
-                 const Point & now);
-  void PushPointToAstarList(const Point &);
+                 const Point& now);
+  void PushPointToAstarList(const Point&);
   std::map< Map::BlockType, int32_t > value_;
   // A star data
   std::vector< std::vector< bool > > walked_;

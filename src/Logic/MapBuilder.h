@@ -40,15 +40,15 @@ class MapBuilder {
   // Init to speed up empty test
   void InitForEmptyTest();
   // Update array to speed up empty test
-  void UpdateCheckedBuildAble(const Point & pos_to_update);
+  void UpdateCheckedBuildAble(const Point& pos_to_update);
   // Build path by A*
-  void BuildPath(const Point & from, const Point & to);
+  void BuildPath(const Point& from, const Point& to);
   bool SelectRoomPosition(RectWithPos*);
   // Build one room
-  bool BuildRoom(Point * room_pos);
+  bool BuildRoom(Point* room_pos);
   bool IsRectEmpty(const RectWithPos& rect_for_check);
   inline Rect RandomRoomRect();
-  inline const Rect & max(const Rect &, const Rect &);
+  inline const Rect& max(const Rect&, const Rect&);
   const std::function< int32_t(int32_t, int32_t) > random_gen_;
   const Rect min_room_size_;
   const Rect max_room_size_;

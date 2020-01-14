@@ -3,7 +3,9 @@
 #include <cstdint>
 #include <cmath>
 #include <algorithm>
-#include <iostream> //TODO: Delete it
+#ifndef NDEBUG
+  #include <iostream>
+#endif
 template <typename T = int32_t>
 struct Fraction {
  public:
@@ -21,11 +23,13 @@ struct Fraction {
       : number_(number), denominator_(denominator) {}
   template <typename TT>
   inline operator TT() const {
-    return denominator_ == 0 ? 0 : static_cast<TT>(number_) / denominator_;
+    return denominator_ == 0 ? 0 : static_cast<TT>(number_)/denominator_;
   }
+#ifndef NDEBUG
   inline void Print() const {
     std::cout << number_ << "/" << denominator_;
   }
+#endif
 };
 template <typename T>
 void Fraction<T>::Reduce() {
@@ -49,50 +53,50 @@ inline void Fraction<T>::operator=(const T& number) {
 }
 template <typename T>
 inline Fraction<T> Fraction<T>::operator+(const Fraction& fraction) const {
-  return Fraction(number_ * fraction.denominator_ +
-                  fraction.number_ * denominator_,
-                  denominator_ * fraction.denominator_);
-  // a/b + c/d = (ad + cb) / bd
+  return Fraction(number_*fraction.denominator_ +
+                  fraction.number_*denominator_,
+                  denominator_*fraction.denominator_);
+  // a/b + c/d = (ad + cb)/bd
 }
 template <typename T>
 inline Fraction<T> Fraction<T>::operator-(const Fraction& fraction) const {
-  return Fraction(number_ * fraction.denominator_ -
-                  fraction.number_ * denominator_,
-                  denominator_ * fraction.denominator_);
-  // a/b - c/d = (ad - cb) / bd
+  return Fraction(number_*fraction.denominator_ -
+                  fraction.number_*denominator_,
+                  denominator_*fraction.denominator_);
+  // a/b - c/d = (ad - cb)/bd
 }
 template <typename T>
 inline bool Fraction<T>::operator<(const Fraction& fraction) const {
-  return (fraction.denominator_ * denominator_ > 0 ?
-          number_ * fraction.denominator_ < fraction.number_ * denominator_ :
-          number_ * fraction.denominator_ > fraction.number_ * denominator_);
+  return (fraction.denominator_*denominator_ > 0 ?
+          number_*fraction.denominator_ < fraction.number_*denominator_ :
+          number_*fraction.denominator_ > fraction.number_*denominator_);
   // a/b < c/d :
   // ad < cb (same sign)
   // ad > cb (different sign)
 }
 template <typename T>
 inline bool Fraction<T>::operator>(const Fraction& fraction) const {
-  return (fraction.denominator_ * denominator_ > 0 ?
-          number_ * fraction.denominator_ > fraction.number_ * denominator_ :
-          number_ * fraction.denominator_ < fraction.number_ * denominator_);
+  return (fraction.denominator_*denominator_ > 0 ?
+          number_*fraction.denominator_ > fraction.number_*denominator_ :
+          number_*fraction.denominator_ < fraction.number_*denominator_);
   // a/b > c/d :
   // ad > cb (same sign)
   // ad < cb (different sign)
 }
 template <typename T>
 inline bool Fraction<T>::operator<=(const Fraction& fraction) const {
-  return (fraction.denominator_ * denominator_ > 0 ?
-          number_ * fraction.denominator_ <= fraction.number_ * denominator_ :
-          number_ * fraction.denominator_ >= fraction.number_ * denominator_);
+  return (fraction.denominator_*denominator_ > 0 ?
+          number_*fraction.denominator_ <= fraction.number_*denominator_ :
+          number_*fraction.denominator_ >= fraction.number_*denominator_);
   // a/b <= c/d :
   // ad <= cb (same sign)
   // ad >= cb (different sign)
 }
 template <typename T>
 inline bool Fraction<T>::operator>=(const Fraction& fraction) const {
-  return (fraction.denominator_ * denominator_ > 0 ?
-          number_ * fraction.denominator_ >= fraction.number_ * denominator_ :
-          number_ * fraction.denominator_ <= fraction.number_ * denominator_);
+  return (fraction.denominator_*denominator_ > 0 ?
+          number_*fraction.denominator_ >= fraction.number_*denominator_ :
+          number_*fraction.denominator_ <= fraction.number_*denominator_);
   // a/b >= c/d :
   // ad >= cb (same sign)
   // ad <= cb (different sign)

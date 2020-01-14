@@ -41,7 +41,7 @@ struct RectWithPos;
 ---
 
 ```cpp
-inline bool operator<(const Point & a, const Point & b);
+inline bool operator<(const Point& a, const Point& b);
 ```
 
 > Comparation between two `Point`, totally meaningless in physics. However we

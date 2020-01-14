@@ -24,7 +24,7 @@
 int32_t Creature::kCreatureSize = 0;
 constexpr int32_t Creature::kMaxViewDis;
 CREATURE_NO_EXPORT inline int64_t Square(const int32_t& in) {
-  return static_cast< int64_t >(in) * static_cast< int64_t >(in);
+  return static_cast< int64_t >(in)*static_cast< int64_t >(in);
 }
 // Both a and b should be positive
 CREATURE_NO_EXPORT inline int32_t GetDifference(const int32_t& a,
@@ -179,7 +179,7 @@ CREATURE_NO_EXPORT void Creature::UpdateMemory() {
   }
 }
 
-CREATURE_NO_EXPORT bool Creature::is_valid(const Point &pos) {
+CREATURE_NO_EXPORT bool Creature::is_valid(const Point& pos) {
   const Point target = {pos.x - now_position().x + view_dis(),
                         pos.y - now_position().y + view_dis()};
   const int32_t viewable_size = information_.is_viewable.size();
@@ -187,14 +187,14 @@ CREATURE_NO_EXPORT bool Creature::is_valid(const Point &pos) {
       && 0 <= target.y && target.y < viewable_size;
 }
 
-CREATURE_NO_EXPORT void Creature::set_viewable(const Point &pos) {
+CREATURE_NO_EXPORT void Creature::set_viewable(const Point& pos) {
   if (is_valid(pos)) {
     information_.is_viewable[pos.x - now_position().x + view_dis()]
       [pos.y - now_position().y + view_dis()] = true;
   }
 }
 
-CREATURE_NO_EXPORT int32_t Creature::get_cost(const Point &pos) {
+CREATURE_NO_EXPORT int32_t Creature::get_cost(const Point& pos) {
   return 0 <= pos.x && pos.x < now_.map -> Width()
       && 0 <= pos.y && pos.y < now_.map -> Height()
         ? information_.cost[now_map() -> Block({pos.x, pos.y})

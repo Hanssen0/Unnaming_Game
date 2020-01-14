@@ -53,7 +53,7 @@ void MapBuilder::InitForEmptyTest() {
     }
   }
 }
-void MapBuilder::UpdateCheckedBuildAble(const Point & pos_to_update) {
+void MapBuilder::UpdateCheckedBuildAble(const Point& pos_to_update) {
   Rect& now = checked_build_able_[pos_to_update.x][pos_to_update.y];
   if (pos_to_update.x > 0) {
     now = checked_build_able_[pos_to_update.x - 1][pos_to_update.y];
@@ -69,7 +69,7 @@ void MapBuilder::UpdateCheckedBuildAble(const Point & pos_to_update) {
     if (now.h > 0) --now.h;
   }
 }
-void MapBuilder::BuildPath(const Point & from, const Point & to) {
+void MapBuilder::BuildPath(const Point& from, const Point& to) {
   PathFinder path_designer;
   path_designer.set_value(wall_block_, 10);
   path_designer.set_value(ground_block_, 1);
@@ -148,12 +148,12 @@ bool MapBuilder::BuildRoom(Point* room_pos) {
   return true;
 }
 bool MapBuilder::IsRectEmpty(const RectWithPos& rect_for_check) {
-  const Point & rect_l_t = rect_for_check.left_top;  // Shorter code
+  const Point& rect_l_t = rect_for_check.left_top;  // Shorter code
   if ((rect_for_check.size.w + rect_l_t.x > target_map_ -> Width()) ||
       (rect_for_check.size.h + rect_l_t.y > target_map_ -> Height())) return false;
   UpdateCheckedBuildAble(rect_l_t);
   // Shorter code, the result will be saved to the checked array
-  Rect & now = checked_build_able_[rect_l_t.x][rect_l_t.y];
+  Rect& now = checked_build_able_[rect_l_t.x][rect_l_t.y];
   // Can I continue to expand the width or height?
   bool is_max_w = false, is_max_h = false;
   // Won't check too much area
@@ -202,7 +202,7 @@ inline Rect MapBuilder::RandomRoomRect() {
                     random_gen_(min_room_size_.h + 2, max_room_size_.h + 2)};
   return ret;
 }
-inline const Rect & MapBuilder::max(const Rect & a, const Rect & b) {
+inline const Rect& MapBuilder::max(const Rect& a, const Rect& b) {
   if (a.w < 0 || a.h < 0) return b;
   if (b.w < 0 || b.h < 0) return a;
   int64_t a_area = a.w, b_area = b.w;
