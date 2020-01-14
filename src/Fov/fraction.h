@@ -6,7 +6,7 @@
 #ifndef NDEBUG
   #include <iostream>
 #endif
-template <typename T = int32_t>
+template <typename T>
 class Fraction {
  public:
   T number_, denominator_;

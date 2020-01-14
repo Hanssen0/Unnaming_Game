@@ -8,7 +8,7 @@
 #include "fraction.h"
 #include "../Map/Map.h"
 class FunctorShadowCasting final {
-  typedef Fraction<int32_t> FractionType;
+  typedef Fraction<int32_t> IntFraction;
  public:
   inline FunctorShadowCasting& SetFunction_IsValid(
       const std::function<bool(const Point&)>& func) {
@@ -34,7 +34,7 @@ class FunctorShadowCasting final {
   void operator()(const Point& pos, const int32_t& radius);
  private:
   void CastLight(const Point& pos, const int32_t& radius, const int32_t& column,
-                 FractionType start, FractionType end, const int8_t mult[4]);
+                 IntFraction start, IntFraction end, const int8_t mult[4]);
   std::function<bool(const Point&)> IsValid;
   std::function<void(const Point&)> SetViewable;
   std::function<int32_t(const Point&)> GetCost;

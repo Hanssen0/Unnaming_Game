@@ -17,7 +17,7 @@ FOV_EXPORT void FunctorShadowCasting::operator()(const Point& pos,
 }
 FOV_EXPORT void FunctorShadowCasting::CastLight(
     const Point& pos, const int32_t& radius, const int32_t& column,
-    FractionType start, FractionType end, const int8_t mult[4]) {
+    IntFraction start, IntFraction end, const int8_t mult[4]) {
   if (start < 0) start = 0;
   if (end > 1) end = 1;
   if (start >= end || radius <= 0) return;
@@ -26,13 +26,13 @@ FOV_EXPORT void FunctorShadowCasting::CastLight(
   uint64_t radius_squared = static_cast<uint64_t>(radius)*radius;
   uint64_t dx_squared = static_cast<uint64_t>(column)*column;
   bool costly = false;
-  FractionType new_start = start;
+  IntFraction new_start = start;
   for (int32_t dy = 0; dy <= column; ++dy) {
     // Translate the dx, dy coordinates into map coordinates.
     // *dx equals to column
     Point now_pos = {pos.x + column*mult[0] + dy*mult[1],
                      pos.y + column*mult[2] + dy*mult[3]};
-    FractionType lower_slope(2*dy - 1, 2*column + 1),
+    IntFraction lower_slope(2*dy - 1, 2*column + 1),
                  upper_slope(2*dy + 1, 2*column - 1);
     // Store the slopes of the lower and upper
     // extremities of the block we're considering.
@@ -52,7 +52,7 @@ FOV_EXPORT void FunctorShadowCasting::CastLight(
       // we're scanning a column of costly blocks.
       if (now_cost != 0) {
         CastLight(pos, radius - now_cost, column + 1,
-                  FractionType(2*dy - 1, 2*column - 1), upper_slope, mult);
+                  IntFraction(2*dy - 1, 2*column - 1), upper_slope, mult);
         new_start = upper_slope;
         continue;
       }else {
