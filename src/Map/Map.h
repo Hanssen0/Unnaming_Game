@@ -73,6 +73,7 @@ class Map final {
   Point PickARandomPointInGroundOrPath(
     const std::function< int32_t(int32_t, int32_t) >& ran,
     const std::list< BlockType >& valid_list) const;
+
  private:
   Map(int32_t w, int32_t h);
   void get_id();

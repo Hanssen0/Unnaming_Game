@@ -16,11 +16,11 @@
 //    Email: handsome0hell@gmail.com
 #ifndef UNNAMING_GAME_SRC_GRAPHIC_RENDERER_H_
 #define UNNAMING_GAME_SRC_GRAPHIC_RENDERER_H_
+#include <memory>
+#include <vector>
 #include "../Map/Map.h"
 #include "../Map/Space.h"
 #include "../Object/Creature.h"
-#include <memory>
-#include <vector>
 class Renderer;
 typedef std::shared_ptr< Renderer > Renderer_ref;
 class Renderer {

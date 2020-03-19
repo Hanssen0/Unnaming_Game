@@ -16,13 +16,13 @@
 //    Email: handsome0hell@gmail.com
 #ifndef UNNAMING_GAME_SRC_OBJECT_CREATURE_H_
 #define UNNAMING_GAME_SRC_OBJECT_CREATURE_H_
-#include "../Map/Space.h"
-#include "../Map/Map.h"
-#include "../Fov/shadowcasting.h"
 #include <cstdint>
 #include <functional>
 #include <memory>
 #include <vector>
+#include "../Map/Space.h"
+#include "../Map/Map.h"
+#include "../Fov/shadowcasting.h"
 class Creature;
 typedef std::shared_ptr< Creature > Creature_ref;
 class Creature {
@@ -68,6 +68,7 @@ class Creature {
   Space::MemoryOfMap& GetMemory();
   constexpr static int32_t kMaxViewDis =
       (SIZE_MAX > INT32_MAX ? INT32_MAX : SIZE_MAX - 1) >> 1;
+
  private:
   Creature();
   Creature(Space* const space);

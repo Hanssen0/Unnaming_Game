@@ -14,12 +14,13 @@
 //    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 //    Email: handsome0hell@gmail.com
-#ifndef UNNAMING_GAME_SRC_LOGIC_BUILDERINPUT_H_
-#define UNNAMING_GAME_SRC_LOGIC_BUILDERINPUT_H_
-#include "../Map/Map.h"
+#ifndef UNNAMING_GAME_SRC_LOGIC_MAPBUILDER_H_
+#define UNNAMING_GAME_SRC_LOGIC_MAPBUILDER_H_
 #include <cstdint>
+#include <algorithm>
 #include <functional>
 #include <vector>
+#include "../Map/Map.h"
 class MapBuilder {
  public:
   MapBuilder(const std::function< int32_t(int32_t, int32_t) >& ran,
@@ -30,7 +31,7 @@ class MapBuilder {
   ~MapBuilder();
   // Make rooms
   void BuildRoomsAndPath();
-  //void BuildBuildings();
+  // void BuildBuildings();
   inline void set_target_map(Map* const target);
   void SetWallBlock(const Map::BlockType wall);
   void SetPathBlock(const Map::BlockType path);
@@ -61,9 +62,9 @@ class MapBuilder {
 };
 inline void MapBuilder::set_target_map(Map* const target) {
   target_map_ = target;
-  checked_build_able_.resize(target_map_ -> Width()); 
-  for (int32_t i = 0; i < target_map_ -> Width(); ++i) {
-    checked_build_able_[i].resize(target_map_ -> Height());
+  checked_build_able_.resize(target_map_->Width());
+  for (int32_t i = 0; i < target_map_->Width(); ++i) {
+    checked_build_able_[i].resize(target_map_->Height());
   }
 }
-#endif  // UNNAMING_GAME_SRC_LOGIC_BUILDERLOGIC_H_
+#endif  // UNNAMING_GAME_SRC_LOGIC_MAPBUILDER_H_

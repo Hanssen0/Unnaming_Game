@@ -16,11 +16,11 @@
 //    Email: handsome0hell@gmail.com
 #ifndef UNNAMING_GAME_SRC_LOGIC_PATHFINDER_H_
 #define UNNAMING_GAME_SRC_LOGIC_PATHFINDER_H_
-#include "../Map/Map.h"
 #include <cstdint>
 #include <list>
 #include <map>
 #include <vector>
+#include "../Map/Map.h"
 class PathFinder {
  public:
   std::list< Point > FindShortestPath(const Point& from, const Point& to);

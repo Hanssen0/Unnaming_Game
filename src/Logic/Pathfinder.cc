@@ -26,19 +26,19 @@ inline uint32_t EvaulateValue(const Point& po) {
 }
 std::list< Point > PathFinder::FindShortestPath(const Point& from,
                                                 const Point& to) {
-  for (int32_t i = 0; i < target_map_ -> Width(); ++i) {
-    for (int32_t j = 0; j < target_map_ -> Height(); ++j) {
+  for (int32_t i = 0; i < target_map_->Width(); ++i) {
+    for (int32_t j = 0; j < target_map_->Height(); ++j) {
       is_first_check_[i][j] = true;
     }
   }
-  for (int32_t i = 0; i < target_map_ -> Width(); ++i) {
-    for (int32_t j = 0; j < target_map_ -> Height(); ++j) {
+  for (int32_t i = 0; i < target_map_->Width(); ++i) {
+    for (int32_t j = 0; j < target_map_->Height(); ++j) {
       walked_[i][j] = false;
     }
   }
   evaulate_to = to;
   walked_dis_[from.x][from.y] =
-      static_cast< uint64_t >(value_[target_map_ -> Block(from)]);
+      static_cast< uint64_t >(value_[target_map_->Block(from)]);
   father_[from.x][from.y] = from;
   searching_list.push_back(from);
   Point min_dis;
@@ -66,7 +66,7 @@ void PathFinder::UpdateNearby(const Point& now) {
   Point tmp = now;
   if (tmp.x > 0) {
     --tmp.x;
-    if (TryAPoint(target_map_ -> Block(tmp),
+    if (TryAPoint(target_map_->Block(tmp),
                   walked_dis_[now.x][now.y] +
                   (father_[now.x][now.y].x - 1 == now.x ? 0 : 1),
                   tmp)) {
@@ -76,7 +76,7 @@ void PathFinder::UpdateNearby(const Point& now) {
   }
   if (tmp.y > 0) {
     --tmp.y;
-    if (TryAPoint(target_map_ -> Block(tmp),
+    if (TryAPoint(target_map_->Block(tmp),
                   walked_dis_[now.x][now.y] +
                   (father_[now.x][now.y].y - 1 == now.y ? 0 : 1),
                   tmp)) {
@@ -84,9 +84,9 @@ void PathFinder::UpdateNearby(const Point& now) {
     }
     ++tmp.y;
   }
-  if (tmp.x < target_map_ -> Width() - 1) {
+  if (tmp.x < target_map_->Width() - 1) {
     ++tmp.x;
-    if (TryAPoint(target_map_ -> Block(tmp),
+    if (TryAPoint(target_map_->Block(tmp),
                   walked_dis_[now.x][now.y] +
                   (father_[now.x][now.y].x + 1 == now.x ? 0 : 1),
                   tmp)) {
@@ -94,9 +94,9 @@ void PathFinder::UpdateNearby(const Point& now) {
     }
     --tmp.x;
   }
-  if (tmp.y < target_map_ -> Height() - 1) {
+  if (tmp.y < target_map_->Height() - 1) {
     ++tmp.y;
-    if (TryAPoint(target_map_ -> Block(tmp),
+    if (TryAPoint(target_map_->Block(tmp),
                   walked_dis_[now.x][now.y] +
                   (father_[now.x][now.y].y + 1 == now.y ? 0 : 1),
                   tmp)) {

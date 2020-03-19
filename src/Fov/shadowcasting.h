@@ -1,15 +1,15 @@
-#ifndef UNNAMING_GAME_SRC_FOV_SHADOWCASTING_H
-#define UNNAMING_GAME_SRC_FOV_SHADOWCASTING_H
+#ifndef UNNAMING_GAME_SRC_FOV_SHADOWCASTING_H_
+#define UNNAMING_GAME_SRC_FOV_SHADOWCASTING_H_
 /**
  * Adapted from: FOV using recursive shadowcasting
  * http://www.roguebasin.com/index.php?title=FOV_using_recursive_shadowcasting
  */
 #include <functional>
-#include "fraction.h"
+#include "./fraction.h"
 #include "../Map/Map.h"
 class FunctorShadowCasting final {
-  typedef Fraction<int32_t> IntFraction;
  public:
+  typedef Fraction<int32_t> IntFraction;
   inline FunctorShadowCasting& SetFunction_IsValid(
       const std::function<bool(const Point&)>& func) {
     IsValid = func;
@@ -32,6 +32,7 @@ class FunctorShadowCasting final {
    * @param radius: radius of Point Lights.
    */
   void operator()(const Point& pos, const int32_t& radius);
+
  private:
   void CastLight(const Point& pos, const int32_t& radius, const int32_t& column,
                  IntFraction start, IntFraction end, const int8_t mult[4]);
@@ -39,4 +40,4 @@ class FunctorShadowCasting final {
   std::function<void(const Point&)> SetViewable;
   std::function<int32_t(const Point&)> GetCost;
 };
-#endif  // SRC_FOV_SHADOWCASTING_H
+#endif  // UNNAMING_GAME_SRC_FOV_SHADOWCASTING_H_

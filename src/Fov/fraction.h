@@ -2,7 +2,7 @@
 #define UNNAMING_GAME_SRC_FOV_FRACTION_H_
 #include <cstdint>
 #include <cmath>
-#include <algorithm>
+#include <utility>
 #ifndef NDEBUG
   #include <iostream>
 #endif
