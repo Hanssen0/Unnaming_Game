@@ -55,14 +55,25 @@ MAP_EXPORT int32_t Map::Id() {
 }
 MAP_EXPORT int32_t Map::Width() const {return width_;}
 MAP_EXPORT int32_t Map::Height() const {return height_;}
-MAP_EXPORT BlockPtr* Map::BlockPtrIn(const Point& pos) {
+// Layer operators
+MAP_NO_EXPORT BlockPtr* Map::BlockPtrIn(const Point& pos) {
   return &blocks_[GetIndex(pos)];
+}
+MAP_NO_EXPORT BuildingPtr* Map::BuildingPtrIn(const Point& pos) {
+  return &buildings_[GetIndex(pos)];
 }
 MAP_EXPORT const BlockPtr& Map::BlockIn(const Point& pos) const {
   return blocks_[GetIndex(pos)];
 }
+MAP_EXPORT const BuildingPtr& Map::BuildingIn(const Point& pos) const {
+  return buildings_[GetIndex(pos)];
+}
 MAP_EXPORT void Map::SetBlockIn(const Point& pos, const BlockPtr& block) {
   *BlockPtrIn(pos) = block;
+}
+MAP_EXPORT void Map::SetBuildingIn(const Point& pos,
+                                   const BuildingPtr& building) {
+  *BuildingPtrIn(pos) = building;
 }
 MAP_EXPORT Map::~Map() {}
 MAP_NO_EXPORT void Map::get_id() {
