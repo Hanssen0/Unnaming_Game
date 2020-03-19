@@ -24,10 +24,11 @@ class CinInput {
   void HandleInput();
   void BindKey(const char& key, const std::function< void() > function);
   static CinInput_ref CreateCinInput(const std::function< void() >);
+
  private:
   CinInput() = delete;
   CinInput& operator=(const CinInput&) = delete;
-  CinInput(const std::function< void() >);
+  explicit CinInput(const std::function< void() >);
   std::map< char, std::function< void() > > function_for_key_;
   const std::function< void() > null_function_;
 };

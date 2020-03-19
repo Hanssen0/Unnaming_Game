@@ -21,7 +21,7 @@ class PathFinder {
  public:
   std::list< Point > FindShortestPath(const Point& from, const Point& to);
   inline void set_value(Map::BlockType type, int32_t value);
-  void set_target_map(Map& target);
+  void set_target_map(const Map& target);
 
  private:
   struct AstarStat {
@@ -39,7 +39,7 @@ class PathFinder {
   std::vector< std::vector< bool > > is_first_check_;
   std::vector< std::vector< Point > > father_;
   std::list< Point > searching_list;
-  Map* target_map_;
+  const Map* target_map_;
 };
 inline void PathFinder::set_value(Map::BlockType type, int32_t value) {
   value_[type] = value;

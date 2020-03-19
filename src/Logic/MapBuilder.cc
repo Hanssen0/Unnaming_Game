@@ -10,11 +10,11 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#include "MapBuilder.h"
 #include <cstdint>
 #include <algorithm>
 #include <list>
 #include <queue>
-#include "./MapBuilder.h"
 #include "./Pathfinder.h"
 #include "../Map/Map.h"
 MapBuilder::~MapBuilder() {}

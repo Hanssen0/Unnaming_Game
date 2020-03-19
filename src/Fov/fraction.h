@@ -32,7 +32,7 @@ class Fraction {
   inline bool operator<(const Fraction& fraction) const;
   inline bool operator>=(const Fraction& fraction) const;
   inline bool operator<=(const Fraction& fraction) const;
-  inline Fraction(const T& number, const T& denominator = 1)
+  inline Fraction(const T& number, const T& denominator = 1) // NOLINT
       : number_(number), denominator_(denominator) {}
   template <typename TT>
   inline operator TT() const;

@@ -67,7 +67,7 @@ class Creature {
 
  private:
   Creature();
-  Creature(Space* const space);
+  explicit Creature(Space* const space);
   Creature& operator=(const Creature&) = delete;
   void get_id();
   void UpdateMemory();

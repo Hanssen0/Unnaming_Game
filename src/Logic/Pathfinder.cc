@@ -13,7 +13,7 @@
 #include "Pathfinder.h"
 #include <algorithm>
 Point evaulate_to;
-void PathFinder::set_target_map(Map& target) {
+void PathFinder::set_target_map(const Map& target) {
   target_map_ = &target;
   walked_.resize(target.Width());
   walked_dis_.resize(target.Width());
