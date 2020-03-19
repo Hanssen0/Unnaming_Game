@@ -58,8 +58,7 @@ class Creature {
   int32_t id();
   void set_max_energy(const int32_t& energy);
   void set_now_energy(const int32_t& energy);
-  void UpdateBlockTypeSize(size_t size);
-  void set_cost(const Map::BlockType& type, const CostOfBlock_ref& cost);
+  void set_cost(const BlockPtr& type, const CostOfBlock_ref& cost);
   ~Creature();
   Space::MemoryOfMap& GetMemory();
   constexpr static int32_t kMaxViewDis =

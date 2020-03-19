@@ -21,8 +21,7 @@ class Renderer;
 typedef std::shared_ptr< Renderer > Renderer_ref;
 class Renderer {
  public:
-  void set_exterior_of_block(const char exterior, const Map::BlockType& type);
-  void UpdateBlockTypeSize(size_t size);
+  void set_exterior_of_block(const char exterior, const BlockPtr& type);
   ~Renderer();
   void RenderCreaturesView(const Creature&) const;
   void RenderGameMap(const Map&) const;

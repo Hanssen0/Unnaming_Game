@@ -12,12 +12,14 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef UNNAMING_GAME_SRC_MAP_MAP_H_
 #define UNNAMING_GAME_SRC_MAP_MAP_H_
+#include <cassert>
 #include <cstdint>
 #include <functional>
 #include <list>
 #include <map>
 #include <memory>
 #include <vector>
+#include "./Block.h"
 struct Point {
   int32_t x, y;
 };
@@ -42,45 +44,35 @@ class Map;
 typedef std::shared_ptr< Map > Map_ref;
 class Map final {
  public:
-  typedef int32_t BlockType;
-  enum BuildingType {
-    kBuildingEmpty,
-    kBuildingPortal
-  };
-  struct Target {
-    Map* map;
-    Point pos;
-  };
   static Map_ref Create(int32_t w, int32_t h);
+  // Basic attributes
   int32_t Id();
   int32_t Width() const;
   int32_t Height() const;
-  const BlockType& Block(const Point& pos) const;
-  void SetBlock(const Point& pos, const BlockType& block);
-  const BuildingType& Building(const Point& pos) const;
-  void SetBuilding(const Point& pos, const BuildingType& building);
-  const Target& PortalTarget(const Point& pos) const;
-  void SetPortalTarget(const Point& pos, const Target& target);
+  // Layer
+  const BlockPtr& BlockIn(const Point& pos) const;
+  void SetBlock(const Point& pos, const BlockPtr& block);
   ~Map();
-  void ForEachBuilding(const std::function< void(BuildingType*) >& applier);
-  void ForEachBlock(const std::function< void(BlockType*) >& applier);
+  void ForEachBlock(const std::function< void(BlockPtr*) >& applier);
   void ForEachBlockIn(const RectWithPos& region,
-                      const std::function< void(BlockType*) >& applier);
-  Point PickARandomPointInGroundOrPath(
-    const std::function< int32_t(int32_t, int32_t) >& ran,
-    const std::list< BlockType >& valid_list) const;
+                      const std::function< void(BlockPtr*) >& applier);
+  Point PickRandomPointIn(const std::function< int32_t(int32_t, int32_t) >& ran,
+                          const std::list<BlockPtr>& valid_list) const;
 
  private:
   Map(int32_t w, int32_t h);
   void get_id();
+  size_t GetIndex(const Point& pos) const {
+    assert(pos.y < Height());
+    assert(pos.x < Width());
+    return pos.y*Width() + pos.x;
+  }
+  BlockPtr* BlockPtrIn(const Point& pos);
   static int32_t kMapSize;
   const int32_t width_;
   const int32_t height_;
-  constexpr static Target kNullTarget = {nullptr, {0, 0}};
   bool is_got_id_;
   int32_t id_;
-  std::vector< std::vector< BlockType > > block_;
-  std::vector< std::vector< BuildingType > > building_;
-  std::map< Point, Target > portal_target_;
+  std::vector<BlockPtr> block_;
 };
 #endif  // UNNAMING_GAME_SRC_MAP_MAP_H_

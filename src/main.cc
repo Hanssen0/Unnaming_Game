@@ -21,27 +21,27 @@
 #include "Graphic/Renderer.h"
 #include "Map/Space.h"
 Renderer_ref kMainRenderer = Renderer::Create();
+// TODO(handsome0hell): Read block from file
+BlockPtr ground = Block::Create();
+BlockPtr path = Block::Create();
+BlockPtr wall = Block::Create();
 void Init(Creature* role) {
   Creature::CostOfBlock_ref normal_cost = Creature::CostOfBlock::Create();
   Creature::CostOfBlock_ref stop_cost = Creature::CostOfBlock::Create();
-  // TODO(handsome0hell): Read block from file
-  role->UpdateBlockTypeSize(4);
   normal_cost->BindMoveCost([]()->int32_t {return 1;});
   normal_cost->BindSeeThroughCost([]()->int32_t {return 0;});
-  role->set_cost(2, normal_cost);
-  role->set_cost(3, normal_cost);
+  role->set_cost(path, normal_cost);
+  role->set_cost(ground, normal_cost);
   stop_cost->BindMoveCost([]()->int32_t {return -1;});
   stop_cost->BindSeeThroughCost([]()->int32_t {return 0x3f3f3f3f;});
-  role->set_cost(1, stop_cost);
+  role->set_cost(wall, stop_cost);
   role->set_max_energy(10);
   role->set_now_energy(10);
   role->set_view_dis(6);
   // TODO(handsome0hell): Read block from file
-  kMainRenderer->UpdateBlockTypeSize(4);
-  kMainRenderer->set_exterior_of_block(' ', 0);
-  kMainRenderer->set_exterior_of_block('#', 1);
-  kMainRenderer->set_exterior_of_block('.', 2);
-  kMainRenderer->set_exterior_of_block('+', 3);
+  kMainRenderer->set_exterior_of_block('#', wall);
+  kMainRenderer->set_exterior_of_block('.', ground);
+  kMainRenderer->set_exterior_of_block('+', path);
 }
 class AutoResetStatus {
  public:
@@ -66,17 +66,20 @@ int main() {
                                                                          to));
       };
   MapBuilder builder(GenerateRandom, {3, 3}, {8, 8});
+  builder.SetGroundBlock(ground);
+  builder.SetPathBlock(path);
+  builder.SetWallBlock(wall);
   Space main_space(GenerateRandom, &builder, {32, 32});
   Creature_ref main_role = Creature::CreateCreature(&main_space);
   Init(main_role.get());
   main_role->set_now_map(main_space.NewMap());
   // TODO(handsome0hell): Read block from file
-  std::list< Map::BlockType > valid;
-  valid.push_back(2);
-  valid.push_back(3);
+  std::list<BlockPtr> valid;
+  valid.push_back(path);
+  valid.push_back(ground);
   main_role->set_now_position(
                  main_role->now_map()
-                     ->PickARandomPointInGroundOrPath(GenerateRandom, valid));
+                     ->PickRandomPointIn(GenerateRandom, valid));
   main_space.Arrive(main_role->now_map());
   AutoResetStatus null_status;
   CinInput_ref input =
@@ -104,14 +107,12 @@ int main() {
       // TODO(handsome0hell): Finish energy system
       main_role->set_now_energy(10);
       if (new_map_status.Status()) {
-        Map::Target tmp = main_space.GetTarget(main_role->now_map(),
-                                               main_role->now_position());
         main_space.Left(main_role->now_map());
-        main_role->set_now_map(tmp.map);
+        main_role->set_now_map(main_space.NewMap());
         // TODO(handsome0hell): Read block from file
         main_role->set_now_position(
                        main_role->now_map()
-                           ->PickARandomPointInGroundOrPath(GenerateRandom,
+                           ->PickRandomPointIn(GenerateRandom,
                                                             valid));
         main_space.Arrive(main_role->now_map());
       }

@@ -16,20 +16,23 @@
 #include <list>
 #include <queue>
 #include "./Pathfinder.h"
+#include "../Map/Block.h"
 #include "../Map/Map.h"
 MapBuilder::~MapBuilder() {}
-void MapBuilder::SetWallBlock(const Map::BlockType wall) {
+void MapBuilder::SetWallBlock(const BlockPtr& wall) {
   wall_block_ = wall;
 }
-void MapBuilder::SetPathBlock(const Map::BlockType path) {
+void MapBuilder::SetPathBlock(const BlockPtr& path) {
   path_block_ = path;
 }
-void MapBuilder::SetGroundBlock(const Map::BlockType ground) {
+void MapBuilder::SetGroundBlock(const BlockPtr& ground) {
   ground_block_ = ground;
 }
 void MapBuilder::BuildRoomsAndPath() {
   InitForEmptyTest();
   Point previous;
+  const BlockPtr& wall = this->wall_block_;
+  target_map_->ForEachBlock([&wall](BlockPtr* block){*block = wall;});
   bool is_first = true;
   while (true) {
     Point tmp;
@@ -76,7 +79,7 @@ void MapBuilder::BuildPath(const Point& from, const Point& to) {
       path_designer.FindShortestPath(from, to);
   std::list< Point >::iterator path_builder = shortest_path.begin();
   while (path_builder != shortest_path.end()) {
-    if (target_map_->Block(*path_builder) == wall_block_) {
+    if (target_map_->BlockIn(*path_builder) == wall_block_) {
         target_map_->SetBlock(*path_builder, path_block_);
     }
     ++path_builder;
@@ -163,9 +166,9 @@ bool MapBuilder::IsRectEmpty(const RectWithPos& rect_for_check) {
     // Try to expand width
     if (!is_max_w && now.w != rect_for_check.size.w) {
       for (int32_t i = 0; i < now.h; ++i) {
-        if (target_map_->Block({rect_l_t.x + now.w, rect_l_t.y + i}) !=
+        if (target_map_->BlockIn({rect_l_t.x + now.w, rect_l_t.y + i}) !=
             wall_block_ &&
-            target_map_->Block({rect_l_t.x + now.w, rect_l_t.y + i}) !=
+            target_map_->BlockIn({rect_l_t.x + now.w, rect_l_t.y + i}) !=
             path_block_) {
           is_max_w = true;  // Oops, can't expand anymore
           --now.w;  // Keep width
@@ -177,9 +180,9 @@ bool MapBuilder::IsRectEmpty(const RectWithPos& rect_for_check) {
     // Try to expand height
     if (!is_max_h && now.h != rect_for_check.size.h) {
       for (int32_t i = 0; i < now.w; ++i) {
-        if (target_map_->Block({rect_l_t.x + i, rect_l_t.y + now.h}) !=
+        if (target_map_->BlockIn({rect_l_t.x + i, rect_l_t.y + now.h}) !=
             wall_block_ &&
-            target_map_->Block({rect_l_t.x + i, rect_l_t.y + now.h}) !=
+            target_map_->BlockIn({rect_l_t.x + i, rect_l_t.y + now.h}) !=
             path_block_) {
           is_max_h = true;  // Oops, can't expand anymore
           --now.h;  // Keep height

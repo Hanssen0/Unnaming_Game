@@ -80,7 +80,8 @@ CREATURE_NO_EXPORT void Creature::Move() {
   des.y += y;
   if (des.x < 0 || des.y < 0 ||
       des.x >= now_.map->Width() || des.y >= now_.map->Height()) return;
-  const int32_t c_m = information_.cost[now_map()->Block(des)]->MoveCost();
+  const int32_t c_m =
+      information_.cost[now_map()->BlockIn(des)->index()]->MoveCost();
   if (c_m < 0 || c_m > ability_.now_energy) return;
   ability_.now_energy -= c_m;
   set_now_position(des);
@@ -139,12 +140,13 @@ CREATURE_EXPORT void Creature::set_max_energy(const int32_t& energy) {
 CREATURE_EXPORT void Creature::set_now_energy(const int32_t& energy) {
   ability_.now_energy = std::min(energy, ability_.max_energy);
 }
-CREATURE_EXPORT void Creature::UpdateBlockTypeSize(size_t size) {
-  information_.cost.resize(size);
-}
-CREATURE_EXPORT void Creature::set_cost(const Map::BlockType& type,
+CREATURE_EXPORT void Creature::set_cost(const BlockPtr& type,
                                         const CostOfBlock_ref& cost) {
-  information_.cost[type] = cost;
+  const auto block_size = Block::BlockSize();
+  if (information_.cost.size() < block_size) {
+    information_.cost.resize(block_size);
+  }
+  information_.cost[type->index()] = cost;
 }
 CREATURE_EXPORT Creature::~Creature() {}
 CREATURE_EXPORT Space::MemoryOfMap& Creature::GetMemory() {
@@ -170,7 +172,7 @@ CREATURE_NO_EXPORT void Creature::UpdateMemory() {
         now_mem.right_bottom.x = std::max(now_mem.right_bottom.x, tmp.x);
         now_mem.right_bottom.y = std::max(now_mem.right_bottom.y, tmp.y);
         now_mem.is_seen[tmp.x][tmp.y] = true;
-        now_mem.detail->SetBlock(tmp, now_map()->Block(tmp));
+        now_mem.detail->SetBlock(tmp, now_map()->BlockIn(tmp));
       }
     }
   }
@@ -194,6 +196,6 @@ CREATURE_NO_EXPORT void Creature::set_viewable(const Point& pos) {
 CREATURE_NO_EXPORT int32_t Creature::get_cost(const Point& pos) {
   return 0 <= pos.x && pos.x < now_.map->Width()
       && 0 <= pos.y && pos.y < now_.map->Height()
-        ? information_.cost[now_map()->Block({pos.x, pos.y})
-        ]->SeeThroughCost() : 0x3f3f3f3f;
+        ? information_.cost[now_map()->BlockIn({pos.x, pos.y})->index()]
+              ->SeeThroughCost() : 0x3f3f3f3f;
 }

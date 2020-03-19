@@ -50,7 +50,7 @@ std::list< Point > PathFinder::FindShortestPath(const Point& from,
   }
   evaulate_to = to;
   walked_dis_[from.x][from.y] =
-      static_cast< uint64_t >(value_[target_map_->Block(from)]);
+      static_cast< uint64_t >(value_[target_map_->BlockIn(from)->index()]);
   father_[from.x][from.y] = from;
   searching_list.push_back(from);
   Point min_dis;
@@ -78,7 +78,7 @@ void PathFinder::UpdateNearby(const Point& now) {
   Point tmp = now;
   if (tmp.x > 0) {
     --tmp.x;
-    if (TryAPoint(target_map_->Block(tmp),
+    if (TryAPoint(target_map_->BlockIn(tmp),
                   walked_dis_[now.x][now.y] +
                   (father_[now.x][now.y].x - 1 == now.x ? 0 : 1),
                   tmp)) {
@@ -88,7 +88,7 @@ void PathFinder::UpdateNearby(const Point& now) {
   }
   if (tmp.y > 0) {
     --tmp.y;
-    if (TryAPoint(target_map_->Block(tmp),
+    if (TryAPoint(target_map_->BlockIn(tmp),
                   walked_dis_[now.x][now.y] +
                   (father_[now.x][now.y].y - 1 == now.y ? 0 : 1),
                   tmp)) {
@@ -98,7 +98,7 @@ void PathFinder::UpdateNearby(const Point& now) {
   }
   if (tmp.x < target_map_->Width() - 1) {
     ++tmp.x;
-    if (TryAPoint(target_map_->Block(tmp),
+    if (TryAPoint(target_map_->BlockIn(tmp),
                   walked_dis_[now.x][now.y] +
                   (father_[now.x][now.y].x + 1 == now.x ? 0 : 1),
                   tmp)) {
@@ -108,7 +108,7 @@ void PathFinder::UpdateNearby(const Point& now) {
   }
   if (tmp.y < target_map_->Height() - 1) {
     ++tmp.y;
-    if (TryAPoint(target_map_->Block(tmp),
+    if (TryAPoint(target_map_->BlockIn(tmp),
                   walked_dis_[now.x][now.y] +
                   (father_[now.x][now.y].y + 1 == now.y ? 0 : 1),
                   tmp)) {
@@ -117,17 +117,17 @@ void PathFinder::UpdateNearby(const Point& now) {
     --tmp.y;
   }
 }
-bool PathFinder::TryAPoint(const Map::BlockType type, uint64_t walked_dis,
+bool PathFinder::TryAPoint(const BlockPtr& type, uint64_t walked_dis,
                            const Point& now) {
-  if (!walked_[now.x][now.y] && value_[type] >= 0) {
+  if (!walked_[now.x][now.y] && value_[type->index()] >= 0) {
     if (is_first_check_[now.x][now.y] == true) {
-      walked_dis_[now.x][now.y] = walked_dis + value_[type];
+      walked_dis_[now.x][now.y] = walked_dis + value_[type->index()];
       PushPointToAstarList(now);
       is_first_check_[now.x][now.y] = false;
       return true;
     }
-    if (walked_dis_[now.x][now.y] > walked_dis + value_[type]) {
-      walked_dis_[now.x][now.y] = walked_dis + value_[type];
+    if (walked_dis_[now.x][now.y] > walked_dis + value_[type->index()]) {
+      walked_dis_[now.x][now.y] = walked_dis + value_[type->index()];
       searching_list.erase(std::find(searching_list.begin(),
                                      searching_list.end(),
                                      now));

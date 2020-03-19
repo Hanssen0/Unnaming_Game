@@ -17,13 +17,14 @@
 #include "../Map/Map.h"
 #include "../Object/Creature.h"
 RENDERER_EXPORT Renderer::~Renderer() {}
-RENDERER_EXPORT void Renderer::UpdateBlockTypeSize(size_t size) {
-  exterior_of_block_.resize(size);
-}
 RENDERER_EXPORT
 void Renderer::set_exterior_of_block(const char exterior,
-                                     const Map::BlockType& type) {
-  exterior_of_block_[type] = exterior;
+                                     const BlockPtr& type) {
+  const auto block_size = Block::BlockSize();
+  if (exterior_of_block_.size() < block_size) {
+    exterior_of_block_.resize(block_size);
+  }
+  exterior_of_block_[type->index()] = exterior;
 }
 RENDERER_EXPORT void Renderer::RenderCreaturesView(const Creature& obj) const {
   for (int32_t j = 0; j < ((obj.view_dis() << 1) | 1); ++j) {
@@ -35,7 +36,7 @@ RENDERER_EXPORT void Renderer::RenderCreaturesView(const Creature& obj) const {
       if (tmp == obj.now_position()) {
         std::cout << "@";
       } else if (obj.is_viewable(tmp)) {
-        std::cout << exterior_of_block_[obj.now_map()->Block(tmp)];
+        std::cout << exterior_of_block_[obj.now_map()->BlockIn(tmp)->index()];
       } else {
         std::cout << ' ';
       }
@@ -46,8 +47,7 @@ RENDERER_EXPORT void Renderer::RenderCreaturesView(const Creature& obj) const {
 RENDERER_EXPORT void Renderer::RenderGameMap(const Map& map) const {
   for (int32_t j = 0; j < map.Height(); ++j) {
     for (int32_t i = 0; i < map.Width(); ++i) {
-      Map::BlockType now_block = map.Block({i, j});
-      std::cout << exterior_of_block_[now_block];
+      std::cout << exterior_of_block_[map.BlockIn({i, j})->index()];
     }
     std::cout << "\n";
   }
@@ -57,8 +57,7 @@ RENDERER_EXPORT void Renderer::RenderMemory(
   for (int32_t j = mem.left_top.y; j <= mem.right_bottom.y; ++j) {
     for (int32_t i = mem.left_top.x; i <= mem.right_bottom.x; ++i) {
       if (mem.is_seen[i][j]) {
-        Map::BlockType now_block = mem.detail->Block({i, j});
-        std::cout << exterior_of_block_[now_block];
+        std::cout << exterior_of_block_[mem.detail->BlockIn({i, j})->index()];
       } else {
         std::cout << ' ';
       }

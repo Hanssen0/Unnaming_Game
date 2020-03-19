@@ -33,7 +33,6 @@ class Space {
                builder_(builder), random_gen_(ran), next_map_size_(nms) {}
   inline void set_next_map_size(const Rect& si) {next_map_size_ = si;}
   inline Map* NewMap();
-  inline const Map::Target GetTarget(Map* map, const Point& pos);
   inline void Arrive(Map* map);
   inline void Left(Map* map);
   inline MemoryOfMap& GetMemory(int32_t obj_id, Map* map);
@@ -53,27 +52,10 @@ inline Map* Space::NewMap() {
   MapInformation tmp = {Map::Create(next_map_size_.w, next_map_size_.h), 0,
                         std::map< int32_t, MemoryOfMap>()};
   // TODO(handsome0hell): Read block type from file
-  tmp.map->ForEachBlock([](Map::BlockType* block){*block = 1;});
-  builder_->SetWallBlock(1);
-  builder_->SetPathBlock(2);
-  builder_->SetGroundBlock(3);
   builder_->set_target_map(tmp.map.get());
   builder_->BuildRoomsAndPath();
   auto inserter = id_to_map_.insert(std::make_pair(tmp.map->Id(), tmp));
   return inserter.first->second.map.get();
-}
-inline const Map::Target Space::GetTarget(Map* map, const Point& pos) {
-  Map::Target ret = map->PortalTarget(pos);
-  if (ret.map == nullptr) {
-    ret.map = NewMap();
-    // TODO(handsome0hell): Read block type from file
-    std::list< Map::BlockType > valid;
-    valid.push_back(2);
-    valid.push_back(3);
-    ret.pos = ret.map->PickARandomPointInGroundOrPath(random_gen_, valid);
-    map->SetPortalTarget(pos, ret);
-  }
-  return ret;
 }
 inline void Space::Arrive(Map* map) {
   auto finder = id_to_map_.find(map->Id());
