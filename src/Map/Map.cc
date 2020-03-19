@@ -44,9 +44,9 @@ MAP_EXPORT Map_ref Map::Create(int32_t w, int32_t h) {
 MAP_NO_EXPORT Map::Map(int32_t w, int32_t h) : width_(w), height_(h) {
   // TODO(handsome0hell): Use size_t instead of int32_t for map width and
   // height.
-  assert(block_.max_size()/w >= static_cast<size_t>(h));
+  assert(blocks_.max_size()/w >= static_cast<size_t>(h));
   const auto map_size = w*h;
-  block_.resize(map_size);
+  blocks_.resize(map_size);
   is_got_id_ = false;
 }
 MAP_EXPORT int32_t Map::Id() {
@@ -56,12 +56,12 @@ MAP_EXPORT int32_t Map::Id() {
 MAP_EXPORT int32_t Map::Width() const {return width_;}
 MAP_EXPORT int32_t Map::Height() const {return height_;}
 MAP_EXPORT BlockPtr* Map::BlockPtrIn(const Point& pos) {
-  return &block_[GetIndex(pos)];
+  return &blocks_[GetIndex(pos)];
 }
 MAP_EXPORT const BlockPtr& Map::BlockIn(const Point& pos) const {
-  return block_[GetIndex(pos)];
+  return blocks_[GetIndex(pos)];
 }
-MAP_EXPORT void Map::SetBlock(const Point& pos, const BlockPtr& block) {
+MAP_EXPORT void Map::SetBlockIn(const Point& pos, const BlockPtr& block) {
   *BlockPtrIn(pos) = block;
 }
 MAP_EXPORT Map::~Map() {}

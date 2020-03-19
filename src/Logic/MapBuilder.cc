@@ -80,7 +80,7 @@ void MapBuilder::BuildPath(const Point& from, const Point& to) {
   std::list< Point >::iterator path_builder = shortest_path.begin();
   while (path_builder != shortest_path.end()) {
     if (target_map_->BlockIn(*path_builder) == wall_block_) {
-        target_map_->SetBlock(*path_builder, path_block_);
+        target_map_->SetBlockIn(*path_builder, path_block_);
     }
     ++path_builder;
   }
@@ -116,7 +116,7 @@ bool MapBuilder::BuildRoom(Point* room_pos) {
   for (int32_t i = 1; i < new_room.size.w - 1; ++i) {
     for (int32_t j = 1; j < new_room.size.h - 1; ++j) {
       // Won't cause room adhesion
-        target_map_->SetBlock({new_room.left_top.x + i,
+        target_map_->SetBlockIn({new_room.left_top.x + i,
                                  new_room.left_top.y + j}, ground_block_);
     }
   }

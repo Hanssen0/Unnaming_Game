@@ -51,7 +51,7 @@ class Map final {
   int32_t Height() const;
   // Layer
   const BlockPtr& BlockIn(const Point& pos) const;
-  void SetBlock(const Point& pos, const BlockPtr& block);
+  void SetBlockIn(const Point& pos, const BlockPtr& block);
   ~Map();
   void ForEachBlock(const std::function< void(BlockPtr*) >& applier);
   void ForEachBlockIn(const RectWithPos& region,
@@ -73,6 +73,6 @@ class Map final {
   const int32_t height_;
   bool is_got_id_;
   int32_t id_;
-  std::vector<BlockPtr> block_;
+  std::vector<BlockPtr> blocks_;
 };
 #endif  // UNNAMING_GAME_SRC_MAP_MAP_H_

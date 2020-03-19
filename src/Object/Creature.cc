@@ -172,7 +172,7 @@ CREATURE_NO_EXPORT void Creature::UpdateMemory() {
         now_mem.right_bottom.x = std::max(now_mem.right_bottom.x, tmp.x);
         now_mem.right_bottom.y = std::max(now_mem.right_bottom.y, tmp.y);
         now_mem.is_seen[tmp.x][tmp.y] = true;
-        now_mem.detail->SetBlock(tmp, now_map()->BlockIn(tmp));
+        now_mem.detail->SetBlockIn(tmp, now_map()->BlockIn(tmp));
       }
     }
   }
