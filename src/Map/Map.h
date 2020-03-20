@@ -21,6 +21,7 @@
 #include <vector>
 #include "./Block.h"
 #include "./Building/Building.h"
+// It's actually a structure with operators
 class Point {
  public:
   inline bool operator<(const Point& b) const {
@@ -98,7 +99,7 @@ class Map final {
   }
 
  private:
-  Map(const Rect&);
+  explicit Map(const Rect&);
   void Init();
   void get_id();
   size_t GetIndex(const Point& pos) const {

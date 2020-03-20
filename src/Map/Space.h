@@ -17,15 +17,15 @@
 #include <functional>
 #include <list>
 #include <vector>
-#include <utility>
 #include "./Block.h"
 #include "./Building/Building.h"
 #include "./Map.h"
 #include "../Logic/MapBuilder.h"
 class Space {
  public:
-  inline Space(MapBuilder* builder, const Rect& nms, const BlockPtr& empty_block) :
-               builder_(builder), empty_block_(empty_block), next_map_size_(nms) {}
+  inline Space(MapBuilder* builder, const Rect& nms,
+               const BlockPtr& empty_block) : builder_(builder),
+      empty_block_(empty_block), next_map_size_(nms) {}
   inline void set_empty_block(const BlockPtr& block) {empty_block_ = block;}
   inline void set_empty_building(const Building& building) {
     empty_building_ = &building;
@@ -42,7 +42,6 @@ class Space {
   std::list<Map_ref> maps_;
   Rect next_map_size_;
 };
-#include <iostream>
 inline Map_ref Space::NewMap() {
   Map_ref tmp = Map::Create(next_map_size_);
   maps_.push_front(tmp);
