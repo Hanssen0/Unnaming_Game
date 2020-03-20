@@ -7,18 +7,16 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef UNNAMING_GAME_SRC_MAP_BUILDING_H_
 #define UNNAMING_GAME_SRC_MAP_BUILDING_H_
-#include <memory>
-class Building;
-typedef std::shared_ptr<Building> BuildingPtr;
-class Building final {
+#include <cstddef>
+class BuildingImplementation;
+class BuildingPtr final {
  public:
-  static BuildingPtr Create();
-  static size_t BuildingSize();
-  inline size_t index() const {return index_;}
+  size_t index() const;
+  BuildingPtr(BuildingImplementation* const impl = nullptr): impl_(impl) {}
+  BuildingImplementation* impl() const {return impl_;}
+  operator bool() const {return impl_ != nullptr;}
 
  private:
-  Building();
-  static size_t kBuildingSize;
-  size_t index_;
+  BuildingImplementation* impl_;
 };
 #endif  // UNNAMING_GAME_SRC_MAP_BUILDING_H_

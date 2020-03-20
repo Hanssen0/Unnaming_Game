@@ -14,6 +14,7 @@
 #include <iostream>
 #include <functional>
 #include <random>
+#include "Map/BaseBuilding.h"
 #include "Map/Map.h"
 #include "Logic/MapBuilder.h"
 #include "Object/Creature.h"
@@ -25,7 +26,7 @@ Renderer_ref kMainRenderer = Renderer::Create();
 auto ground = Block::Create();
 auto path = Block::Create();
 auto wall = Block::Create();
-auto portal = Building::Create();
+auto portal = BaseBuilding();
 void Init(Creature* role) {
   Creature::CostOfBlock_ref normal_cost = Creature::CostOfBlock::Create();
   Creature::CostOfBlock_ref stop_cost = Creature::CostOfBlock::Create();

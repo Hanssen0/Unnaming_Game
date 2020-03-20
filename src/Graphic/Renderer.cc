@@ -14,6 +14,7 @@
 #include <Renderer.h>
 #include <cstdint>
 #include <iostream>
+#include "../Map/BaseBuilding.h"
 #include "../Map/Map.h"
 #include "../Object/Creature.h"
 template<typename T> void Expand(std::vector<T>& vec, size_t size) {
@@ -29,14 +30,14 @@ void Renderer::set_exterior_of_block(const char exterior,
 RENDERER_EXPORT
 void Renderer::set_exterior_of_building(const char exterior,
                                         const BuildingPtr& type) {
-  Expand(exterior_of_building_, Building::BuildingSize());
-  exterior_of_building_[type->index()] = exterior;
+  Expand(exterior_of_building_, BaseBuilding::BaseBuildingSize());
+  exterior_of_building_[type.index()] = exterior;
 }
 RENDERER_EXPORT void Renderer::RenderPosition(const Map& map,
                                               const Point& pos) const {
  auto building = map.BuildingIn(pos);
  if (building) {
-   std::cout << exterior_of_building_[building->index()];
+   std::cout << exterior_of_building_[building.index()];
  } else {
    std::cout << exterior_of_block_[map.BlockIn(pos)->index()];
  }
