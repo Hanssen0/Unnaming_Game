@@ -20,7 +20,7 @@
 #include <memory>
 #include <vector>
 #include "./Block.h"
-#include "./Building/BuildingPtr.h"
+#include "./Building/Building.h"
 struct Point {
   int32_t x, y;
 };
@@ -51,14 +51,15 @@ class Map final {
   int32_t Width() const;
   int32_t Height() const;
   // Layer
-  const BlockPtr& BlockIn(const Point& pos) const;
-  const BuildingPtr& BuildingIn(const Point& pos) const;
-  void SetBlockIn(const Point& pos, const BlockPtr& block);
-  void SetBuildingIn(const Point& pos, const BuildingPtr& buiilding);
+  const BlockPtr& BlockIn(const Point&) const;
+  const Building& BuildingIn(const Point&) const;
+  void SetBlockIn(const Point&, const BlockPtr&);
+  void SetBuildingIn(const Point&, const Building&);
   ~Map();
   void ForEachBlock(const std::function< void(BlockPtr*) >& applier);
   void ForEachBlockIn(const RectWithPos& region,
                       const std::function< void(BlockPtr*) >& applier);
+  void ForEachBuilding(const std::function< void(const Building**) >& applier);
   Point PickRandomPointIn(const std::function< int32_t(int32_t, int32_t) >& ran,
                           const std::list<BlockPtr>& valid_list) const;
   void CopyFromIn(const Map&, const Point&);
@@ -72,13 +73,13 @@ class Map final {
     return pos.y*Width() + pos.x;
   }
   BlockPtr* BlockPtrIn(const Point& pos);
-  BuildingPtr* BuildingPtrIn(const Point& pos);
+  const Building** BuildingPtrIn(const Point& pos);
   static int32_t kMapSize;
   const int32_t width_;
   const int32_t height_;
   bool is_got_id_;
   int32_t id_;
   std::vector<BlockPtr> blocks_;
-  std::vector<BuildingPtr> buildings_;
+  std::vector<const Building*> buildings_;
 };
 #endif  // UNNAMING_GAME_SRC_MAP_MAP_H_

@@ -10,10 +10,10 @@
 #include <cstddef>
 #include <memory>
 class BuildingImplementation;
-class BuildingPtr final {
+class Building final {
  public:
   size_t index() const;
-  BuildingPtr(std::shared_ptr<BuildingImplementation> const impl = nullptr):
+  Building(std::shared_ptr<BuildingImplementation> const impl = nullptr):
       impl_(impl) {}
   std::shared_ptr<BuildingImplementation> impl() const {return impl_;}
   operator bool() const {return impl_ != nullptr;}

@@ -29,18 +29,18 @@ void Renderer::set_exterior_of_block(const char exterior,
 }
 RENDERER_EXPORT
 void Renderer::set_exterior_of_building(const char exterior,
-                                        const BuildingPtr& type) {
+                                        const Building& type) {
   Expand(exterior_of_building_, BaseBuilding::BaseBuildingSize());
   exterior_of_building_[type.index()] = exterior;
 }
 RENDERER_EXPORT void Renderer::RenderPosition(const Map& map,
                                               const Point& pos) const {
- auto building = map.BuildingIn(pos);
- if (building) {
-   std::cout << exterior_of_building_[building.index()];
- } else {
-   std::cout << exterior_of_block_[map.BlockIn(pos)->index()];
- }
+  auto building = exterior_of_building_[map.BuildingIn(pos).index()];
+  if (building != 0) {
+    std::cout << building;
+  } else {
+    std::cout << exterior_of_block_[map.BlockIn(pos)->index()];
+  }
 }
 RENDERER_EXPORT void Renderer::RenderCreaturesView(const Creature& obj) const {
   for (int32_t j = 0; j < ((obj.view_dis() << 1) | 1); ++j) {

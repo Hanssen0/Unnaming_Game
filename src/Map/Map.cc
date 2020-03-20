@@ -60,21 +60,22 @@ MAP_EXPORT int32_t Map::Height() const {return height_;}
 MAP_NO_EXPORT BlockPtr* Map::BlockPtrIn(const Point& pos) {
   return &blocks_[GetIndex(pos)];
 }
-MAP_NO_EXPORT BuildingPtr* Map::BuildingPtrIn(const Point& pos) {
+MAP_NO_EXPORT const Building** Map::BuildingPtrIn(const Point& pos) {
   return &buildings_[GetIndex(pos)];
 }
 MAP_EXPORT const BlockPtr& Map::BlockIn(const Point& pos) const {
   return blocks_[GetIndex(pos)];
 }
-MAP_EXPORT const BuildingPtr& Map::BuildingIn(const Point& pos) const {
-  return buildings_[GetIndex(pos)];
+MAP_EXPORT const Building& Map::BuildingIn(const Point& pos) const {
+  assert(buildings_[GetIndex(pos)] != nullptr);
+  return *buildings_[GetIndex(pos)];
 }
 MAP_EXPORT void Map::SetBlockIn(const Point& pos, const BlockPtr& block) {
   *BlockPtrIn(pos) = block;
 }
 MAP_EXPORT void Map::SetBuildingIn(const Point& pos,
-                                   const BuildingPtr& building) {
-  *BuildingPtrIn(pos) = building;
+                                   const Building& building) {
+  *BuildingPtrIn(pos) = &building;
 }
 MAP_EXPORT Map::~Map() {}
 MAP_NO_EXPORT void Map::get_id() {
@@ -102,6 +103,15 @@ void Map::ForEachBlockIn(const RectWithPos& region,
     }
   }
 }
+MAP_EXPORT void Map::ForEachBuilding(
+    const std::function<void(const Building**)>& applier) {
+  for (int32_t y = 0; y < height_; ++y) {
+    for (int32_t x = 0; x < width_; ++x) {
+      applier(BuildingPtrIn({x, y}));
+    }
+  }
+}
+
 MAP_EXPORT void Map::CopyFromIn(const Map& map, const Point& pos) {
   SetBlockIn(pos, map.BlockIn(pos));
   SetBuildingIn(pos, map.BuildingIn(pos));

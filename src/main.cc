@@ -26,7 +26,10 @@ Renderer_ref kMainRenderer = Renderer::Create();
 auto ground = Block::Create();
 auto path = Block::Create();
 auto wall = Block::Create();
+auto empty = BaseBuilding();
 auto portal = BaseBuilding();
+auto empty_building = static_cast<Building>(empty);
+auto portal_building = static_cast<Building>(portal);
 void Init(Creature* role) {
   Creature::CostOfBlock_ref normal_cost = Creature::CostOfBlock::Create();
   Creature::CostOfBlock_ref stop_cost = Creature::CostOfBlock::Create();
@@ -44,7 +47,7 @@ void Init(Creature* role) {
   kMainRenderer->set_exterior_of_block('#', wall);
   kMainRenderer->set_exterior_of_block('.', ground);
   kMainRenderer->set_exterior_of_block('+', path);
-  kMainRenderer->set_exterior_of_building('0', portal);
+  kMainRenderer->set_exterior_of_building('0', portal_building);
 }
 class AutoResetStatus {
  public:
@@ -72,7 +75,8 @@ int main() {
   builder.SetGroundBlock(ground);
   builder.SetPathBlock(path);
   builder.SetWallBlock(wall);
-  builder.SetPortalBuilding(portal);
+  builder.SetEmptyBuilding(empty_building);
+  builder.SetPortalBuilding(portal_building);
   Space main_space(GenerateRandom, &builder, {32, 32});
   Creature_ref main_role = Creature::CreateCreature(&main_space);
   Init(main_role.get());
