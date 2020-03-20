@@ -21,7 +21,6 @@
 #include <vector>
 #include "./Block.h"
 #include "./Building/Building.h"
-class Space;
 struct Point {
   int32_t x, y;
 };
@@ -46,12 +45,19 @@ class Map;
 typedef std::shared_ptr< Map > Map_ref;
 class Map final {
  public:
+  struct MemoryOfMap {
+    Point left_top;
+    Point right_bottom;
+    std::vector< std::vector< bool > > is_seen;
+    Map_ref detail;
+  };
   static Map_ref Create(int32_t, int32_t);
-  static Map_ref Create(const Space&, int32_t, int32_t);
   // Basic attributes
   int32_t Id();
   int32_t Width() const;
   int32_t Height() const;
+  void SetDestory(const std::function<void()>&);
+  void SetEmptyBlock(const BlockPtr&);
   // Layer
   const BlockPtr& BlockIn(const Point&) const;
   const Building& BuildingIn(const Point&) const;
@@ -63,16 +69,18 @@ class Map final {
   void ForEachBlockIn(const RectWithPos& region,
                       const std::function< void(BlockPtr*) >& applier);
   void ForEachBuilding(const std::function< void(const Building**) >& applier);
+  void Link();
+  void Unlink();
   Point PickRandomPointIn(const std::function< int32_t(int32_t, int32_t) >& ran,
                           const std::list<BlockPtr>& valid_list) const;
   void CopyFromIn(const Map&, const Point&);
+  MemoryOfMap& GetMemory(int32_t);
   inline bool has(const Point& pos) const {
     return 0 <= pos.x && pos.x < Width() && 0 <= pos.y && pos.y < Height();
   }
 
  private:
   Map(int32_t, int32_t);
-  Map(const Space&, int32_t, int32_t);
   void Init();
   void get_id();
   size_t GetIndex(const Point& pos) const {
@@ -83,12 +91,15 @@ class Map final {
   BlockPtr* BlockPtrIn(const Point& pos);
   const Building** BuildingPtrIn(const Point& pos);
   static int32_t kMapSize;
-  const Space* space_;
   const int32_t width_;
   const int32_t height_;
   bool is_got_id_;
   int32_t id_;
+  int32_t links_num_;
+  std::function<void()> destory_;
+  std::map<int32_t, MemoryOfMap> memories_;
   std::vector<BlockPtr> blocks_;
   std::vector<const Building*> buildings_;
+  BlockPtr empty_block_;
 };
 #endif  // UNNAMING_GAME_SRC_MAP_MAP_H_

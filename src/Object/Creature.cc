@@ -78,13 +78,13 @@ template <int32_t x, int32_t y> CREATURE_NO_EXPORT void Creature::Move() {
   ability_.now_energy -= c_m;
   set_position(des);
 }
-CREATURE_NO_EXPORT Creature::Creature(Space* const space) {
-  now_.space = space;
-  information_.is_have_id = false;
+CREATURE_NO_EXPORT Creature::Creature() {information_.is_have_id = false;}
+CREATURE_NO_EXPORT void Creature::get_id() {
+  information_.is_have_id = true;
+  information_.id = kCreatureSize++;
 }
-CREATURE_NO_EXPORT void Creature::get_id() {information_.id = kCreatureSize++;}
 CREATURE_NO_EXPORT void Creature::UpdateMemory() {
-  Space::MemoryOfMap& now_mem = GetMemory();
+  Map::MemoryOfMap& now_mem = GetMemory();
   for (size_t i = 0; i < information_.is_viewable.size(); ++i) {
     for (size_t j = 0; j < information_.is_viewable.size(); ++j) {
       if (information_.is_viewable[i][j]) {
@@ -125,16 +125,16 @@ template CREATURE_EXPORT void Creature::Move<kWASD[0].x, kWASD[0].y>();
 template CREATURE_EXPORT void Creature::Move<kWASD[1].x, kWASD[1].y>();
 template CREATURE_EXPORT void Creature::Move<kWASD[2].x, kWASD[2].y>();
 template CREATURE_EXPORT void Creature::Move<kWASD[3].x, kWASD[3].y>();
-CREATURE_EXPORT Creature_ref Creature::Create(Space* const space) {
-  return Creature_ref(new Creature(space));
+CREATURE_EXPORT Creature_ref Creature::Create() {
+  return Creature_ref(new Creature());
 }
-CREATURE_EXPORT void Creature::Teleport(Map* const map, const Point& pos) {
-  if (map_ != nullptr) now_.space->Left(map_);
-  now_.space->Arrive(map);
+CREATURE_EXPORT void Creature::Teleport(const Map_ref& map, const Point& pos) {
+  if (map_) map_->Unlink();
+  map->Link();
   map_ = map;
   set_position(pos);
 }
-CREATURE_EXPORT Map* Creature::map() const {return map_;}
+CREATURE_EXPORT const Map_ref& Creature::map() const {return map_;}
 CREATURE_EXPORT const Point& Creature::position() const {return position_;}
 CREATURE_EXPORT void Creature::set_view_dis(const int32_t& d) {
   ability_.view_dis = std::min(kMaxViewDis, d);
@@ -188,6 +188,6 @@ CREATURE_EXPORT void Creature::set_cost(const BlockPtr& type,
   information_.cost[type->index()] = cost;
 }
 CREATURE_EXPORT Creature::~Creature() {}
-CREATURE_EXPORT Space::MemoryOfMap& Creature::GetMemory() {
-  return now_.space->GetMemory(id(), map());
+CREATURE_EXPORT Map::MemoryOfMap& Creature::GetMemory() {
+  return map()->GetMemory(id());
 }

@@ -17,7 +17,6 @@
 #include "../Map/Block.h"
 #include "../Map/Building/Building.h"
 #include "../Map/Map.h"
-#include "../Map/Space.h"
 #include "../Object/Creature.h"
 class Renderer;
 typedef std::shared_ptr< Renderer > Renderer_ref;
@@ -28,7 +27,7 @@ class Renderer {
   ~Renderer();
   void RenderCreaturesView(const Creature&) const;
   void RenderGameMap(const Map&) const;
-  void RenderMemory(const Space::MemoryOfMap&) const;
+  void RenderMemory(const Map::MemoryOfMap&) const;
   static Renderer_ref Create();
  private:
   Renderer();

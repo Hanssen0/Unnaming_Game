@@ -43,9 +43,9 @@ class Creature {
     std::function< int32_t() > move_;
     std::function< int32_t() > see_through_;
   };
-  static Creature_ref Create(Space* const space);
+  static Creature_ref Create();
   int32_t id();
-  Map* map() const;
+  const Map_ref& map() const;
   const Point& position() const;
   int32_t view_dis() const;
   void set_cost(const BlockPtr& type, const CostOfBlock_ref& cost);
@@ -55,25 +55,21 @@ class Creature {
   ~Creature();
   bool is_viewable(const Point& pos) const;
   void Destory(const Point&);
-  Space::MemoryOfMap& GetMemory();
+  Map::MemoryOfMap& GetMemory();
   template <int32_t x, int32_t y> void Move();
-  void Teleport(Map* const, const Point&);
+  void Teleport(const Map_ref&, const Point&);
   void UpdateViewable();
   constexpr static int32_t kMaxViewDis =
       (SIZE_MAX > INT32_MAX ? INT32_MAX : SIZE_MAX - 1) >> 1;
 
  private:
-  explicit Creature(Space* const space);
+  Creature();
   Creature& operator=(const Creature&) = delete;
   void get_id();
   void UpdateMemory();
   static int32_t kCreatureSize;
-  Map* map_;
+  Map_ref map_;
   Point position_;
-  struct {
-    Space* space;
-    Space::MemoryOfMap* memory;
-  } now_;
   struct {
     int32_t view_dis;
     int32_t now_energy;

@@ -78,7 +78,7 @@ int main() {
   builder.SetEmptyBuilding(empty_building);
   builder.SetPortalBuilding(portal_building);
   Space main_space(&builder, {32, 32}, ground);
-  Creature_ref main_role = Creature::Create(&main_space);
+  Creature_ref main_role = Creature::Create();
   Init(main_role.get());
   // TODO(handsome0hell): Read block from file
   std::list<BlockPtr> valid;

@@ -14,7 +14,6 @@
 #include <cassert>
 #include <functional>
 #include <Map.h>
-#include "./Space.h"
 int32_t Map::kMapSize = 0;
 MAP_EXPORT Point Map::PickRandomPointIn(
     const std::function< int32_t(int32_t, int32_t) >& ran,
@@ -42,14 +41,7 @@ MAP_EXPORT Point Map::PickRandomPointIn(
 MAP_EXPORT Map_ref Map::Create(int32_t w, int32_t h) {
   return Map_ref(new Map(w, h));
 }
-MAP_EXPORT Map_ref Map::Create(const Space& space, int32_t w, int32_t h) {
-  return Map_ref(new Map(space, w, h));
-}
-MAP_NO_EXPORT Map::Map(int32_t w, int32_t h):
-    width_(w), height_(h) {Init();}
-MAP_NO_EXPORT Map::Map(const Space& space, int32_t w, int32_t h):
-    space_(&space), width_(w), height_(h) {Init();}
-MAP_NO_EXPORT void Map::Init() {
+MAP_NO_EXPORT Map::Map(int32_t w, int32_t h): width_(w), height_(h) {
   // TODO(handsome0hell): Use size_t instead of int32_t for map width and
   // height.
   assert(blocks_.max_size()/width_ >= static_cast<size_t>(height_));
@@ -64,6 +56,12 @@ MAP_EXPORT int32_t Map::Id() {
 }
 MAP_EXPORT int32_t Map::Width() const {return width_;}
 MAP_EXPORT int32_t Map::Height() const {return height_;}
+MAP_EXPORT void Map::SetDestory(const std::function<void()>& destory) {
+  destory_ = destory;
+}
+MAP_EXPORT void Map::SetEmptyBlock(const BlockPtr& block) {
+  empty_block_ = block;
+}
 // Layer operators
 MAP_NO_EXPORT BlockPtr* Map::BlockPtrIn(const Point& pos) {
   return &blocks_[GetIndex(pos)];
@@ -85,7 +83,7 @@ MAP_EXPORT void Map::SetBuildingIn(const Point& pos, const Building& building) {
   *BuildingPtrIn(pos) = &building;
 }
 MAP_EXPORT void Map::DestoryBlockIn(const Point& pos) {
-  *BlockPtrIn(pos) = space_->empty_block();
+  SetBlockIn(pos, empty_block_);
 }
 MAP_EXPORT Map::~Map() {}
 MAP_NO_EXPORT void Map::get_id() {
@@ -121,7 +119,22 @@ MAP_EXPORT void Map::ForEachBuilding(
     }
   }
 }
+MAP_EXPORT void Map::Link() {++links_num_;}
+MAP_EXPORT void Map::Unlink() {
+  if (--links_num_ == 0 && destory_) destory_();
+}
 MAP_EXPORT void Map::CopyFromIn(const Map& map, const Point& pos) {
   SetBlockIn(pos, map.BlockIn(pos));
   SetBuildingIn(pos, map.BuildingIn(pos));
+}
+MAP_EXPORT Map::MemoryOfMap& Map::GetMemory(int32_t id) {
+  auto memory = memories_.find(id);
+  if (memory == memories_.end()) {
+    const MemoryOfMap tmp = {{Width(), Height()}, {0, 0},
+                             std::vector< std::vector<bool> >(Width(),
+                                 std::vector< bool >(Height(), false)),
+                             Map::Create(Width(), Height())};
+    memory = memories_.insert(std::make_pair(id, tmp)).first;
+  }
+  return memory->second;
 }
