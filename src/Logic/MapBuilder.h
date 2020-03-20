@@ -19,7 +19,7 @@
 #include "../Map/Map.h"
 class MapBuilder {
  public:
-  MapBuilder(const std::function< int32_t(int32_t, int32_t) >& ran,
+  MapBuilder(const std::function<size_t(size_t, size_t)>& ran,
              const Rect min_room_size, const Rect max_room_size) :
       random_gen_(ran), min_room_size_(min_room_size),
       max_room_size_(max_room_size)  {
@@ -49,7 +49,7 @@ class MapBuilder {
   bool IsRectEmpty(const RectWithPos& rect_for_check);
   inline Rect RandomRoomRect();
   inline const Rect& max(const Rect&, const Rect&);
-  const std::function< int32_t(int32_t, int32_t) > random_gen_;
+  const std::function<size_t(size_t, size_t)> random_gen_;
   const Rect min_room_size_;
   const Rect max_room_size_;
   // To speed up empty test
@@ -64,7 +64,7 @@ class MapBuilder {
 inline void MapBuilder::set_target_map(Map* const target) {
   target_map_ = target;
   checked_build_able_.resize(target_map_->Width());
-  for (int32_t i = 0; i < target_map_->Width(); ++i) {
+  for (size_t i = 0; i < target_map_->Width(); ++i) {
     checked_build_able_[i].resize(target_map_->Height());
   }
 }

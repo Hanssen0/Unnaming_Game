@@ -18,25 +18,16 @@
 #include <queue>
 #include "../Map/Map.h"
 #include "../Map/Space.h"
-int32_t Creature::kCreatureSize = 0;
-constexpr int32_t Creature::kMaxViewDis;
-CREATURE_NO_EXPORT inline int64_t Square(const int32_t& in) {
-  return static_cast< int64_t >(in)*static_cast< int64_t >(in);
-}
-// Both a and b should be positive
-CREATURE_NO_EXPORT inline int32_t GetDifference(const int32_t& a,
-                                                const int32_t& b) {
-  if (a > b) return a - b;
-  return b - a;
-}
+size_t Creature::kCreatureSize = 0;
+constexpr size_t Creature::kMaxViewDis;
 // Creature::CostofBlock
-CREATURE_NO_EXPORT int32_t Creature::CostOfBlock::DestoryCost() const {
+CREATURE_NO_EXPORT int Creature::CostOfBlock::DestoryCost() const {
   return destory_();
 }
-CREATURE_NO_EXPORT int32_t Creature::CostOfBlock::MoveCost() const {
+CREATURE_NO_EXPORT int Creature::CostOfBlock::MoveCost() const {
   return move_();
 }
-CREATURE_NO_EXPORT int32_t Creature::CostOfBlock::SeeThroughCost() const {
+CREATURE_NO_EXPORT int Creature::CostOfBlock::SeeThroughCost() const {
   return see_through_();
 }
 CREATURE_NO_EXPORT Creature::CostOfBlock::CostOfBlock() {}
@@ -51,15 +42,15 @@ CREATURE_EXPORT Creature::CostOfBlock& Creature::CostOfBlock::operator=(
   return *this;
 }
 CREATURE_EXPORT void Creature::CostOfBlock::BindDestoryCost(
-    const std::function< int32_t() >& function) {
+    const std::function< int() >& function) {
   destory_ = function;
 }
 CREATURE_EXPORT void Creature::CostOfBlock::BindMoveCost(
-    const std::function< int32_t() >& function) {
+    const std::function< int() >& function) {
   move_ = function;
 }
 CREATURE_EXPORT void Creature::CostOfBlock::BindSeeThroughCost(
-    const std::function< int32_t() >& function) {
+    const std::function< int() >& function) {
   see_through_ = function;
 }
 CREATURE_EXPORT Creature::CostOfBlock::~CostOfBlock() {}
@@ -67,13 +58,12 @@ CREATURE_EXPORT Creature::CostOfBlock::~CostOfBlock() {}
 CREATURE_NO_EXPORT void Creature::set_position(const Point& pos) {
   position_ = pos;
 }
-template <int32_t x, int32_t y> CREATURE_NO_EXPORT void Creature::Move() {
+template <int x, int y> CREATURE_NO_EXPORT void Creature::Move() {
   Point des = position();
   des.x += x;
   des.y += y;
   if (!map()->has(des)) return;
-  const int32_t c_m =
-      information_.cost[map()->BlockIn(des)->index()]->MoveCost();
+  const int c_m = information_.cost[map()->BlockIn(des)->index()]->MoveCost();
   if (c_m < 0 || c_m > ability_.now_energy) return;
   ability_.now_energy -= c_m;
   set_position(des);
@@ -88,10 +78,8 @@ CREATURE_NO_EXPORT void Creature::UpdateMemory() {
   for (size_t i = 0; i < information_.is_viewable.size(); ++i) {
     for (size_t j = 0; j < information_.is_viewable.size(); ++j) {
       if (information_.is_viewable[i][j]) {
-        const Point tmp = {position().x - view_dis() +
-                           static_cast< int32_t >(i),
-                           position().y - view_dis() +
-                           static_cast< int32_t >(j)};
+        const Point tmp = {position().x + i - view_dis(),
+                           position().y + j - view_dis()};
         now_mem.left_top.x = std::min(now_mem.left_top.x, tmp.x);
         now_mem.left_top.y = std::min(now_mem.left_top.y, tmp.y);
         now_mem.right_bottom.x = std::max(now_mem.right_bottom.x, tmp.x);
@@ -102,29 +90,27 @@ CREATURE_NO_EXPORT void Creature::UpdateMemory() {
     }
   }
 }
-CREATURE_NO_EXPORT bool Creature::is_valid(const Point& pos) {
-  const Point target = {pos.x - position().x + view_dis(),
-                        pos.y - position().y + view_dis()};
-  const int32_t viewable_size = information_.is_viewable.size();
-  return 0 <= target.x && target.x < viewable_size &&
-         0 <= target.y && target.y < viewable_size;
+CREATURE_NO_EXPORT bool Creature::is_valid(const Point& pos) const {
+  const Point target = pos + view_dis() - position();
+  const size_t viewable_size = information_.is_viewable.size();
+  return target > 0 && target < viewable_size;
 }
 CREATURE_NO_EXPORT void Creature::set_viewable(const Point& pos) {
   if (!is_valid(pos)) return;
   information_.is_viewable[pos.x - position().x + view_dis()]
                           [pos.y - position().y + view_dis()] = true;
 }
-CREATURE_NO_EXPORT int32_t Creature::get_cost(const Point& pos) {
+CREATURE_NO_EXPORT int Creature::get_cost(const Point& pos) {
   return map_->has(pos)? information_.cost[map()->BlockIn(pos)->index()]
                              ->SeeThroughCost() : 0x3f3f3f3f;
 }
-constexpr Point kWASD[4] = {{0, -1}, {-1, 0}, {0, 1}, {1, 0}};
+constexpr int kWASD[4][2] = {{0, -1}, {-1, 0}, {0, 1}, {1, 0}};
 //   W         UP
 // A S D Left Down Right
-template CREATURE_EXPORT void Creature::Move<kWASD[0].x, kWASD[0].y>();
-template CREATURE_EXPORT void Creature::Move<kWASD[1].x, kWASD[1].y>();
-template CREATURE_EXPORT void Creature::Move<kWASD[2].x, kWASD[2].y>();
-template CREATURE_EXPORT void Creature::Move<kWASD[3].x, kWASD[3].y>();
+template CREATURE_EXPORT void Creature::Move<kWASD[0][0], kWASD[0][1]>();
+template CREATURE_EXPORT void Creature::Move<kWASD[1][0], kWASD[1][1]>();
+template CREATURE_EXPORT void Creature::Move<kWASD[2][0], kWASD[2][1]>();
+template CREATURE_EXPORT void Creature::Move<kWASD[3][0], kWASD[3][1]>();
 CREATURE_EXPORT Creature_ref Creature::Create() {
   return Creature_ref(new Creature());
 }
@@ -136,7 +122,7 @@ CREATURE_EXPORT void Creature::Teleport(const Map_ref& map, const Point& pos) {
 }
 CREATURE_EXPORT const Map_ref& Creature::map() const {return map_;}
 CREATURE_EXPORT const Point& Creature::position() const {return position_;}
-CREATURE_EXPORT void Creature::set_view_dis(const int32_t& d) {
+CREATURE_EXPORT void Creature::set_view_dis(const size_t& d) {
   ability_.view_dis = std::min(kMaxViewDis, d);
   const size_t view_size = ((ability_.view_dis << 1) | 1);
   information_.is_viewable.resize(view_size);
@@ -144,7 +130,7 @@ CREATURE_EXPORT void Creature::set_view_dis(const int32_t& d) {
     information_.is_viewable[i].resize(view_size);
   }
 }
-CREATURE_EXPORT int32_t Creature::view_dis() const {return ability_.view_dis;}
+CREATURE_EXPORT size_t Creature::view_dis() const {return ability_.view_dis;}
 CREATURE_EXPORT void Creature::UpdateViewable() {
   const size_t dis_array_size = information_.is_viewable.size();
   for (size_t i = 0; i < dis_array_size; ++i) {
@@ -157,26 +143,24 @@ CREATURE_EXPORT void Creature::UpdateViewable() {
 }
 CREATURE_EXPORT bool Creature::is_viewable(const Point& pos) const {
   if (!map_->has(pos)) return false;
-  const Point target = {pos.x - position().x + view_dis(),
-                        pos.y - position().y + view_dis()};
-  const int32_t viewable_size = information_.is_viewable.size();
-  if (target.x >= viewable_size || target.y >= viewable_size ||
-      target.x < 0 || target.y < 0) return false;
+  Point target = pos + view_dis() - position();
+  const size_t viewable_size = information_.is_viewable.size();
+  if (target < 0 || target > viewable_size) return false;
   return information_.is_viewable[target.x][target.y];
 }
 CREATURE_EXPORT void Creature::Destory(const Point& pos) {
   if (!map()->has(pos)) return;
   map()->DestoryBlockIn(pos);
 }
-CREATURE_EXPORT int32_t Creature::id() {
+CREATURE_EXPORT size_t Creature::id() {
   if (!information_.is_have_id) get_id();
   return information_.id;
 }
-CREATURE_EXPORT void Creature::set_max_energy(const int32_t& energy) {
+CREATURE_EXPORT void Creature::set_max_energy(const int& energy) {
   ability_.max_energy = energy;
   ability_.now_energy = std::min(ability_.now_energy, ability_.max_energy);
 }
-CREATURE_EXPORT void Creature::set_now_energy(const int32_t& energy) {
+CREATURE_EXPORT void Creature::set_now_energy(const int& energy) {
   ability_.now_energy = std::min(energy, ability_.max_energy);
 }
 CREATURE_EXPORT void Creature::set_cost(const BlockPtr& type,

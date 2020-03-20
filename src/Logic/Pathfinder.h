@@ -20,7 +20,7 @@
 class PathFinder {
  public:
   std::list< Point > FindShortestPath(const Point& from, const Point& to);
-  inline void set_value(const BlockPtr& type, int32_t value);
+  inline void set_value(const BlockPtr& type, int value);
   void set_target_map(const Map& target);
 
  private:
@@ -32,7 +32,7 @@ class PathFinder {
   bool TryAPoint(const BlockPtr& type, uint64_t walked_dis,
                  const Point& now);
   void PushPointToAstarList(const Point&);
-  std::vector<int32_t> value_;
+  std::vector<int> value_;
   // A star data
   std::vector< std::vector< bool > > walked_;
   std::vector< std::vector< uint64_t > > walked_dis_;
@@ -41,7 +41,7 @@ class PathFinder {
   std::list< Point > searching_list;
   const Map* target_map_;
 };
-inline void PathFinder::set_value(const BlockPtr& type, int32_t value) {
+inline void PathFinder::set_value(const BlockPtr& type, int value) {
   const auto block_size = Block::BlockSize();
   if (value_.size() < block_size) value_.resize(block_size);
   value_[type->index()] = value;

@@ -21,7 +21,7 @@
 #include "../Map/Map.h"
 class FunctorShadowCasting final {
  public:
-  typedef Fraction<int32_t> IntFraction;
+  typedef Fraction<int> IntFraction;
   inline FunctorShadowCasting& SetFunction_IsValid(
       const std::function<bool(const Point&)>& func) {
     IsValid = func;
@@ -33,7 +33,7 @@ class FunctorShadowCasting final {
     return *this;
   }
   inline FunctorShadowCasting& SetFunction_GetCost(
-      const std::function<int32_t(const Point&)>& func) {
+      const std::function<int(const Point&)>& func) {
     GetCost = func;
     return *this;
   }
@@ -43,13 +43,13 @@ class FunctorShadowCasting final {
    * @param pos: position of Point Lights.
    * @param radius: radius of Point Lights.
    */
-  void operator()(const Point& pos, const int32_t& radius);
+  void operator()(const Point& pos, const int& radius);
 
  private:
-  void CastLight(const Point& pos, const int32_t& radius, const int32_t& column,
-                 IntFraction start, IntFraction end, const int8_t mult[4]);
+  void CastLight(const Point& pos, const int& radius, const int& column,
+                 IntFraction start, IntFraction end, const int mult[4]);
   std::function<bool(const Point&)> IsValid;
   std::function<void(const Point&)> SetViewable;
-  std::function<int32_t(const Point&)> GetCost;
+  std::function<int(const Point&)> GetCost;
 };
 #endif  // UNNAMING_GAME_SRC_FOV_SHADOWCASTING_H_

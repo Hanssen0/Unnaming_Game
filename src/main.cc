@@ -33,12 +33,12 @@ auto portal_building = static_cast<Building>(portal);
 void Init(Creature* role) {
   Creature::CostOfBlock_ref normal_cost = Creature::CostOfBlock::Create();
   Creature::CostOfBlock_ref stop_cost = Creature::CostOfBlock::Create();
-  normal_cost->BindMoveCost([]()->int32_t {return 1;});
-  normal_cost->BindSeeThroughCost([]()->int32_t {return 0;});
+  normal_cost->BindMoveCost([]()->int {return 1;});
+  normal_cost->BindSeeThroughCost([]()->int {return 0;});
   role->set_cost(path, normal_cost);
   role->set_cost(ground, normal_cost);
-  stop_cost->BindMoveCost([]()->int32_t {return -1;});
-  stop_cost->BindSeeThroughCost([]()->int32_t {return 0x3f3f3f3f;});
+  stop_cost->BindMoveCost([]()->int {return -1;});
+  stop_cost->BindSeeThroughCost([]()->int {return 0x3f3f3f3f;});
   role->set_cost(wall, stop_cost);
   role->set_max_energy(10);
   role->set_now_energy(10);
@@ -63,13 +63,13 @@ class AutoResetStatus {
 };
 int main() {
   std::default_random_engine random_engine;
-  std::uniform_int_distribution< int > rand_dis;
+  std::uniform_int_distribution<int> rand_dis;
   random_engine.seed(time(0));
-  std::function< int32_t(int32_t, int32_t) > GenerateRandom =
-      [&random_engine, &rand_dis](int32_t from, int32_t to)->int32_t {
+  std::function<int(int, int)> GenerateRandom =
+      [&random_engine, &rand_dis](int from, int to)->int {
         return rand_dis(random_engine,
-                        std::uniform_int_distribution< int >::param_type(from,
-                                                                         to));
+                        std::uniform_int_distribution<int>::param_type(from,
+                                                                       to));
       };
   MapBuilder builder(GenerateRandom, {3, 3}, {8, 8});
   builder.SetGroundBlock(ground);

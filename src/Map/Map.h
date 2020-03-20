@@ -21,26 +21,39 @@
 #include <vector>
 #include "./Block.h"
 #include "./Building/Building.h"
-struct Point {
-  int32_t x, y;
+class Point {
+ public:
+  inline bool operator<(const Point& b) const {
+    if (x == b.x) {
+      return y < b.y;
+    } else {
+      return x < b.x;
+    }
+  }
+  inline bool operator==(const Point& b) const {
+    return x == b.x && y == b.y;
+  }
+  inline Point operator-(const Point& b) const {
+    return Point(x - b.x, y - b.y);
+  }
+  inline Point operator+(const Point& b) const {
+    return Point(x + b.x, y + b.y);
+  }
+  inline Point operator-(int b) const {return Point(x - b, y - b);}
+  inline Point operator+(int b) const {return Point(x + b, y + b);}
+  inline bool operator<(int b) const {return x < b && y < b;}
+  inline bool operator>(int b) const {return x > b && y > b;}
+  template<typename T> inline Point(T x, T y): x(x), y(y) {}
+  inline Point() {}
+  int x, y;
 };
 struct Rect {
-  int32_t w, h;
+  size_t w, h;
 };
 struct RectWithPos {
   Point left_top;
   Rect size;
 };
-inline bool operator<(const Point& a, const Point& b) {
-  if (a.x == b.x) {
-    return a.y < b.y;
-  } else {
-    return a.x < b.x;
-  }
-}
-inline bool operator==(const Point& a, const Point& b) {
-  return a.x == b.x && a.y == b.y;
-}
 class Map;
 typedef std::shared_ptr< Map > Map_ref;
 class Map final {
@@ -56,10 +69,10 @@ class Map final {
   };
   static Map_ref Create(const Rect&);
   // Basic attributes
-  int32_t Id();
+  size_t Id();
   const Rect& Size() const;
-  int32_t Width() const;
-  int32_t Height() const;
+  size_t Width() const;
+  size_t Height() const;
   void SetDestory(const std::function<void()>&);
   void SetEmptyBlock(const BlockPtr&);
   // Layer
@@ -75,12 +88,13 @@ class Map final {
   void ForEachBuilding(const std::function< void(const Building**) >& applier);
   void Link();
   void Unlink();
-  Point PickRandomPointIn(const std::function< int32_t(int32_t, int32_t) >& ran,
+  Point PickRandomPointIn(const std::function<int(int, int)>& ran,
                           const std::list<BlockPtr>& valid_list) const;
   void CopyFromIn(const Map&, const Point&);
-  MemoryOfMap& GetMemory(int32_t);
+  MemoryOfMap& GetMemory(int);
   inline bool has(const Point& pos) const {
-    return 0 <= pos.x && pos.x < Width() && 0 <= pos.y && pos.y < Height();
+    return 0 <= pos.x && static_cast<size_t>(pos.x) < Width() &&
+           0 <= pos.y && static_cast<size_t>(pos.y) < Height();
   }
 
  private:
@@ -88,20 +102,19 @@ class Map final {
   void Init();
   void get_id();
   size_t GetIndex(const Point& pos) const {
-    assert(pos.y < Height());
-    assert(pos.x < Width());
+    assert(has(pos));
     return pos.y*Width() + pos.x;
   }
   BlockPtr* BlockPtrIn(const Point& pos);
   const Building** BuildingPtrIn(const Point& pos);
-  static int32_t kMapSize;
+  static size_t kMapSize;
   const Rect size_;
   bool is_got_id_;
-  int32_t id_;
-  int32_t links_num_;
+  size_t id_;
+  int links_num_;
   BlockPtr empty_block_;
   std::function<void()> destory_;
-  std::map<int32_t, MemoryOfMap> memories_;
+  std::map<int, MemoryOfMap> memories_;
   std::vector<BlockPtr> blocks_;
   std::vector<const Building*> buildings_;
 };

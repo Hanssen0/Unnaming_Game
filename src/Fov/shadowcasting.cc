@@ -15,12 +15,12 @@
 #include <cstring>
 #include <cassert>
 #include <cmath>
-static const int8_t kMult[8][4] = {
+static const int kMult[8][4] = {
     {-1, 0, 0, -1}, {1, 0, 0, -1}, {-1, 0, 0, 1}, {1, 0, 0, 1},
     {0, -1, -1, 0}, {0, -1, 1, 0}, {0, 1, 1, 0}, {0, 1, -1, 0}
 };
 FOV_EXPORT void FunctorShadowCasting::operator()(const Point& pos,
-                                                 const int32_t& radius) {
+                                                 const int& radius) {
   if (IsValid(pos)) {
     for (int i = 0; i < 8; ++i) {
       CastLight(pos, radius, 1, 0, 1, kMult[i]);
@@ -28,18 +28,18 @@ FOV_EXPORT void FunctorShadowCasting::operator()(const Point& pos,
   }
 }
 FOV_EXPORT void FunctorShadowCasting::CastLight(
-    const Point& pos, const int32_t& radius, const int32_t& column,
-    IntFraction start, IntFraction end, const int8_t mult[4]) {
+    const Point& pos, const int& radius, const int& column,
+    IntFraction start, IntFraction end, const int mult[4]) {
   if (start < 0) start = 0;
   if (end > 1) end = 1;
   if (start >= end || radius <= 0) return;
   // Hold 0 < start < end < 1
   // Too far to see
-  uint64_t radius_squared = static_cast<uint64_t>(radius)*radius;
-  uint64_t dx_squared = static_cast<uint64_t>(column)*column;
+  uint64_t radius_squared = static_cast<int64_t>(radius)*radius;
+  uint64_t dx_squared = static_cast<int64_t>(column)*column;
   bool costly = false;
   IntFraction new_start = start;
-  for (int32_t dy = 0; dy <= column; ++dy) {
+  for (int dy = 0; dy <= column; ++dy) {
     // Translate the dx, dy coordinates into map coordinates.
     // *dx equals to column
     Point now_pos = {pos.x + column*mult[0] + dy*mult[1],
@@ -58,7 +58,7 @@ FOV_EXPORT void FunctorShadowCasting::CastLight(
     else if (end <= lower_slope) break;
     if (static_cast<uint64_t>(dy)*dy + dx_squared > radius_squared) continue;
     // Our light beam is touching this block; light it.
-    int32_t now_cost = GetCost(now_pos);
+    int now_cost = GetCost(now_pos);
     SetViewable(now_pos);
     if (costly) {
       // we're scanning a column of costly blocks.

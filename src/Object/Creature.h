@@ -29,62 +29,61 @@ class Creature {
    public:
     static CostOfBlock_ref Create();
     CostOfBlock& operator=(const CostOfBlock& a);
-    void BindDestoryCost(const std::function< int32_t() >& function);
-    void BindMoveCost(const std::function< int32_t() >& function);
-    void BindSeeThroughCost(const std::function< int32_t() >& function);
-    int32_t DestoryCost() const;
-    int32_t MoveCost() const;
-    int32_t SeeThroughCost() const;
+    void BindDestoryCost(const std::function< int() >& function);
+    void BindMoveCost(const std::function< int() >& function);
+    void BindSeeThroughCost(const std::function< int() >& function);
+    int DestoryCost() const;
+    int MoveCost() const;
+    int SeeThroughCost() const;
     ~CostOfBlock();
 
    private:
     CostOfBlock();
-    std::function< int32_t() > destory_;
-    std::function< int32_t() > move_;
-    std::function< int32_t() > see_through_;
+    std::function< int() > destory_;
+    std::function< int() > move_;
+    std::function< int() > see_through_;
   };
   static Creature_ref Create();
-  int32_t id();
+  size_t id();
   const Map_ref& map() const;
   const Point& position() const;
-  int32_t view_dis() const;
+  size_t view_dis() const;
   void set_cost(const BlockPtr& type, const CostOfBlock_ref& cost);
-  void set_max_energy(const int32_t& energy);
-  void set_now_energy(const int32_t& energy);
-  void set_view_dis(const int32_t& d);
+  void set_max_energy(const int& energy);
+  void set_now_energy(const int& energy);
+  void set_view_dis(const size_t& d);
   ~Creature();
   bool is_viewable(const Point& pos) const;
   void Destory(const Point&);
   Map::MemoryOfMap& GetMemory();
-  template <int32_t x, int32_t y> void Move();
+  template <int x, int y> void Move();
   void Teleport(const Map_ref&, const Point&);
   void UpdateViewable();
-  constexpr static int32_t kMaxViewDis =
-      (SIZE_MAX > INT32_MAX ? INT32_MAX : SIZE_MAX - 1) >> 1;
+  constexpr static size_t kMaxViewDis = (SIZE_MAX - 1) >> 1;
 
  private:
   Creature();
   Creature& operator=(const Creature&) = delete;
   void get_id();
   void UpdateMemory();
-  static int32_t kCreatureSize;
+  static size_t kCreatureSize;
   Map_ref map_;
   Point position_;
   struct {
-    int32_t view_dis;
-    int32_t now_energy;
-    int32_t max_energy;
+    size_t view_dis;
+    int now_energy;
+    int max_energy;
   } ability_;
   struct {
-    int32_t id;
+    size_t id;
     bool is_have_id;
     std::vector< CostOfBlock_ref > cost;
     std::vector< std::vector< bool > > is_viewable;
   } information_;
   void set_position(const Point&);
-  bool is_valid(const Point& pos);
+  bool is_valid(const Point& pos) const;
   void set_viewable(const Point& pos);
-  int32_t get_cost(const Point& pos);
+  int get_cost(const Point& pos);
   FunctorShadowCasting shadow_casting = FunctorShadowCasting()
     .SetFunction_IsValid(
       std::bind(&Creature::is_valid, this, std::placeholders::_1))

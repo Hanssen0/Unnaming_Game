@@ -43,12 +43,10 @@ RENDERER_EXPORT void Renderer::RenderPosition(const Map& map,
   }
 }
 RENDERER_EXPORT void Renderer::RenderCreaturesView(const Creature& obj) const {
-  for (int32_t j = 0; j < ((obj.view_dis() << 1) | 1); ++j) {
-    for (int32_t i = 0; i < ((obj.view_dis() << 1) | 1); ++i) {
-      const Point tmp = {obj.position().x - obj.view_dis() +
-                         static_cast< int32_t >(i),
-                         obj.position().y - obj.view_dis() +
-                         static_cast< int32_t >(j)};
+  for (size_t j = 0; j < ((obj.view_dis() << 1) | 1); ++j) {
+    for (size_t i = 0; i < ((obj.view_dis() << 1) | 1); ++i) {
+      const Point tmp = {obj.position().x + i - obj.view_dis(),
+                         obj.position().y + j - obj.view_dis()};
       if (tmp == obj.position()) {
         std::cout << "@";
       } else if (obj.is_viewable(tmp)) {
@@ -61,8 +59,8 @@ RENDERER_EXPORT void Renderer::RenderCreaturesView(const Creature& obj) const {
   }
 }
 RENDERER_EXPORT void Renderer::RenderGameMap(const Map& map) const {
-  for (int32_t j = 0; j < map.Height(); ++j) {
-    for (int32_t i = 0; i < map.Width(); ++i) {
+  for (size_t j = 0; j < map.Height(); ++j) {
+    for (size_t i = 0; i < map.Width(); ++i) {
       RenderPosition(map, {i, j});
     }
     std::cout << "\n";
@@ -70,8 +68,8 @@ RENDERER_EXPORT void Renderer::RenderGameMap(const Map& map) const {
 }
 RENDERER_EXPORT void Renderer::RenderMemory(
                          const Map::MemoryOfMap& mem) const {
-  for (int32_t j = mem.left_top.y; j <= mem.right_bottom.y; ++j) {
-    for (int32_t i = mem.left_top.x; i <= mem.right_bottom.x; ++i) {
+  for (auto j = mem.left_top.y; j <= mem.right_bottom.y; ++j) {
+    for (auto i = mem.left_top.x; i <= mem.right_bottom.x; ++i) {
       if (mem.is_seen[i][j]) {
         RenderPosition(*mem.detail, {i, j});
       } else {

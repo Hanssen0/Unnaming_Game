@@ -12,7 +12,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef UNNAMING_GAME_SRC_FOV_FRACTION_H_
 #define UNNAMING_GAME_SRC_FOV_FRACTION_H_
-#include <cstdint>
 #include <cmath>
 #include <utility>
 #ifndef NDEBUG

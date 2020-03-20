@@ -59,8 +59,8 @@ void MapBuilder::Build() {
   target_map_->SetBuildingIn(pos, *portal_building_);
 }
 void MapBuilder::InitForEmptyTest() {
-  for (int32_t i = 0; i < target_map_->Width(); ++i) {
-    for (int32_t j = 0; j < target_map_->Height(); ++j) {
+  for (size_t i = 0; i < target_map_->Width(); ++i) {
+    for (size_t j = 0; j < target_map_->Height(); ++j) {
       checked_build_able_[i][j].w = 0;
       checked_build_able_[i][j].h = 0;
     }
@@ -126,8 +126,8 @@ bool MapBuilder::BuildRoom(Point* room_pos) {
   if (!SelectRoomPosition(&new_room)) {
     return false;
   }
-  for (int32_t i = 1; i < new_room.size.w - 1; ++i) {
-    for (int32_t j = 1; j < new_room.size.h - 1; ++j) {
+  for (size_t i = 1; i < new_room.size.w - 1; ++i) {
+    for (size_t j = 1; j < new_room.size.h - 1; ++j) {
       // Won't cause room adhesion
         target_map_->SetBlockIn({new_room.left_top.x + i,
                                  new_room.left_top.y + j}, ground_block_);
@@ -147,11 +147,11 @@ bool MapBuilder::BuildRoom(Point* room_pos) {
       } else if (now.x < new_room.left_top.x) {
         checked_build_able_[now.x][now.y].w =
             std::min(checked_build_able_[now.x][now.y].w,
-                     new_room.left_top.x - now.x);
+                     static_cast<size_t>(new_room.left_top.x - now.x));
       } else {
         checked_build_able_[now.x][now.y].h =
             std::min(checked_build_able_[now.x][now.y].h,
-                     new_room.left_top.y - now.y);
+                     static_cast<size_t>(new_room.left_top.y - now.y));
       }
     }
   }
@@ -178,7 +178,7 @@ bool MapBuilder::IsRectEmpty(const RectWithPos& rect_for_check) {
          !(now.h == rect_for_check.size.h || is_max_h)) {
     // Try to expand width
     if (!is_max_w && now.w != rect_for_check.size.w) {
-      for (int32_t i = 0; i < now.h; ++i) {
+      for (size_t i = 0; i < now.h; ++i) {
         if (target_map_->BlockIn({rect_l_t.x + now.w, rect_l_t.y + i}) !=
             wall_block_ &&
             target_map_->BlockIn({rect_l_t.x + now.w, rect_l_t.y + i}) !=
@@ -192,7 +192,7 @@ bool MapBuilder::IsRectEmpty(const RectWithPos& rect_for_check) {
     }
     // Try to expand height
     if (!is_max_h && now.h != rect_for_check.size.h) {
-      for (int32_t i = 0; i < now.w; ++i) {
+      for (size_t i = 0; i < now.w; ++i) {
         if (target_map_->BlockIn({rect_l_t.x + i, rect_l_t.y + now.h}) !=
             wall_block_ &&
             target_map_->BlockIn({rect_l_t.x + i, rect_l_t.y + now.h}) !=

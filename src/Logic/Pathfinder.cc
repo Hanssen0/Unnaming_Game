@@ -19,32 +19,25 @@ void PathFinder::set_target_map(const Map& target) {
   walked_dis_.resize(target.Width());
   is_first_check_.resize(target.Width());
   father_.resize(target.Width());
-  for (int32_t i = 0; i < target.Height(); ++i) {
+  for (size_t i = 0; i < target.Height(); ++i) {
     walked_[i].resize(target.Height());
-  }
-  for (int32_t i = 0; i < target.Height(); ++i) {
     walked_dis_[i].resize(target.Height());
-  }
-  for (int32_t i = 0; i < target.Height(); ++i) {
     is_first_check_[i].resize(target.Height());
-  }
-  for (int32_t i = 0; i < target.Height(); ++i) {
     father_[i].resize(target.Height());
   }
 }
-inline uint32_t EvaulateValue(const Point& po) {
-  uint32_t ret = abs(po.x - evaulate_to.x) + abs(po.y - evaulate_to.y);
-  return ret;
+inline uint64_t EvaulateValue(const Point& po) {
+  return abs(po.x - evaulate_to.x) + abs(po.y - evaulate_to.y);
 }
 std::list< Point > PathFinder::FindShortestPath(const Point& from,
                                                 const Point& to) {
-  for (int32_t i = 0; i < target_map_->Width(); ++i) {
-    for (int32_t j = 0; j < target_map_->Height(); ++j) {
+  for (size_t i = 0; i < target_map_->Width(); ++i) {
+    for (size_t j = 0; j < target_map_->Height(); ++j) {
       is_first_check_[i][j] = true;
     }
   }
-  for (int32_t i = 0; i < target_map_->Width(); ++i) {
-    for (int32_t j = 0; j < target_map_->Height(); ++j) {
+  for (size_t i = 0; i < target_map_->Width(); ++i) {
+    for (size_t j = 0; j < target_map_->Height(); ++j) {
       walked_[i][j] = false;
     }
   }
