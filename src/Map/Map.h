@@ -20,7 +20,7 @@
 #include <memory>
 #include <vector>
 #include "./Block.h"
-#include "./Building.h"
+#include "./Building/BuildingPtr.h"
 struct Point {
   int32_t x, y;
 };

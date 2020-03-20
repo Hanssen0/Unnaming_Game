@@ -14,7 +14,7 @@
 #include <Renderer.h>
 #include <cstdint>
 #include <iostream>
-#include "../Map/BaseBuilding.h"
+#include "../Map/Building/BaseBuilding.h"
 #include "../Map/Map.h"
 #include "../Object/Creature.h"
 template<typename T> void Expand(std::vector<T>& vec, size_t size) {

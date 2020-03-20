@@ -8,7 +8,7 @@
 #ifndef UNNAMING_GAME_SRC_MAP_BASEBUILDING_H_
 #define UNNAMING_GAME_SRC_MAP_BASEBUILDING_H_
 #include <memory>
-#include "./Building.h"
+#include "./BuildingPtr.h"
 class BaseBuilding final {
  public:
   static size_t BaseBuildingSize();

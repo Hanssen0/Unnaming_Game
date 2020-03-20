@@ -14,7 +14,7 @@
 #include <iostream>
 #include <functional>
 #include <random>
-#include "Map/BaseBuilding.h"
+#include "Map/Building/BaseBuilding.h"
 #include "Map/Map.h"
 #include "Logic/MapBuilder.h"
 #include "Object/Creature.h"

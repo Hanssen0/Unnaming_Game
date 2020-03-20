@@ -15,7 +15,7 @@
 #include <memory>
 #include <vector>
 #include "../Map/Block.h"
-#include "../Map/Building.h"
+#include "../Map/Building/BuildingPtr.h"
 #include "../Map/Map.h"
 #include "../Map/Space.h"
 #include "../Object/Creature.h"

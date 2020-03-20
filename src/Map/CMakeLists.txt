@@ -20,7 +20,8 @@ project(Map_library CXX)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Use c++ 11
-add_library(Map SHARED Map.cc Block.cc Building.cc BaseBuilding.cc)
+add_library(Map SHARED Map.cc Block.cc Building/BuildingPtr.cc
+            Building/BaseBuilding.cc)
 generate_export_header(Map)
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
   target_compile_options(Map PRIVATE -Wall -Wextra)

@@ -17,7 +17,7 @@
 #include <queue>
 #include "./Pathfinder.h"
 #include "../Map/Block.h"
-#include "../Map/Building.h"
+#include "../Map/Building/BuildingPtr.h"
 #include "../Map/Map.h"
 MapBuilder::~MapBuilder() {}
 void MapBuilder::SetWallBlock(const BlockPtr& wall) {
