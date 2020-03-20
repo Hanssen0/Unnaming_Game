@@ -24,9 +24,11 @@ MAP_EXPORT size_t BaseBuilding::BaseBuildingSize() {
   return BaseBuilding::Implementation::BaseBuildingSize();
 }
 MAP_EXPORT BaseBuilding::BaseBuilding():
-  impl_(std::make_shared<Implementation>()) {}
+    impl_(std::make_shared<Implementation>()) {}
 MAP_EXPORT BaseBuilding::BaseBuilding(const BuildingPtr& building):
-  impl_(dynamic_cast<Implementation*>(building.impl())) {assert(impl_);}
+    impl_(std::dynamic_pointer_cast<Implementation>(building.impl())) {
+  assert(impl_);
+}
 MAP_EXPORT BaseBuilding::operator BuildingPtr() {
-  return BuildingPtr(impl_.get());
+  return BuildingPtr(impl_);
 }

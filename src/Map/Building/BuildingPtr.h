@@ -8,15 +8,17 @@
 #ifndef UNNAMING_GAME_SRC_MAP_BUILDING_H_
 #define UNNAMING_GAME_SRC_MAP_BUILDING_H_
 #include <cstddef>
+#include <memory>
 class BuildingImplementation;
 class BuildingPtr final {
  public:
   size_t index() const;
-  BuildingPtr(BuildingImplementation* const impl = nullptr): impl_(impl) {}
-  BuildingImplementation* impl() const {return impl_;}
+  BuildingPtr(std::shared_ptr<BuildingImplementation> const impl = nullptr):
+      impl_(impl) {}
+  std::shared_ptr<BuildingImplementation> impl() const {return impl_;}
   operator bool() const {return impl_ != nullptr;}
 
  private:
-  BuildingImplementation* impl_;
+  std::shared_ptr<BuildingImplementation> impl_;
 };
 #endif  // UNNAMING_GAME_SRC_MAP_BUILDING_H_
