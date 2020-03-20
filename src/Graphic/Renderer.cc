@@ -17,20 +17,20 @@
 #include "../Map/Building/BaseBuilding.h"
 #include "../Map/Map.h"
 #include "../Object/Creature.h"
-template<typename T> void Expand(std::vector<T>& vec, size_t size) {
-  if (vec.size() < size) vec.resize(size);
+template<typename T> void Expand(std::vector<T>* const vec, size_t size) {
+  if (vec->size() < size) vec->resize(size);
 }
 RENDERER_EXPORT Renderer::~Renderer() {}
 RENDERER_EXPORT
 void Renderer::set_exterior_of_block(const char exterior,
                                      const BlockPtr& type) {
-  Expand(exterior_of_block_, Block::BlockSize());
+  Expand(&exterior_of_block_, Block::BlockSize());
   exterior_of_block_[type->index()] = exterior;
 }
 RENDERER_EXPORT
 void Renderer::set_exterior_of_building(const char exterior,
                                         const Building& type) {
-  Expand(exterior_of_building_, BaseBuilding::BaseBuildingSize());
+  Expand(&exterior_of_building_, BaseBuilding::BaseBuildingSize());
   exterior_of_building_[type.index()] = exterior;
 }
 RENDERER_EXPORT void Renderer::RenderPosition(const Map& map,

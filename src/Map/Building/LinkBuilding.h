@@ -5,15 +5,15 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-#ifndef UNNAMING_GAME_SRC_MAP_LINKBUILDING_H_
-#define UNNAMING_GAME_SRC_MAP_LINKBUILDING_H_
+#ifndef UNNAMING_GAME_SRC_MAP_BUILDING_LINKBUILDING_H_
+#define UNNAMING_GAME_SRC_MAP_BUILDING_LINKBUILDING_H_
 #include <memory>
 #include "./Building.h"
 #include "../../Map/Map.h"
 class LinkBuilding final {
  public:
   operator Building();
-  LinkBuilding(const Building&);
+  explicit LinkBuilding(const Building&);
   void SetMap(Map* const);
   void SetPosition(const Point&);
 
@@ -21,4 +21,4 @@ class LinkBuilding final {
   class Implementation;
   std::shared_ptr<Implementation> impl_;
 };
-#endif  // UNNAMING_GAME_SRC_MAP_LINKBUILDING_H_
+#endif  // UNNAMING_GAME_SRC_MAP_BUILDING_LINKBUILDING_H_

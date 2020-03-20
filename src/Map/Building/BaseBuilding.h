@@ -5,8 +5,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-#ifndef UNNAMING_GAME_SRC_MAP_BASEBUILDING_H_
-#define UNNAMING_GAME_SRC_MAP_BASEBUILDING_H_
+#ifndef UNNAMING_GAME_SRC_MAP_BUILDING_BASEBUILDING_H_
+#define UNNAMING_GAME_SRC_MAP_BUILDING_BASEBUILDING_H_
 #include <memory>
 #include "./Building.h"
 class BaseBuilding final {
@@ -20,4 +20,4 @@ class BaseBuilding final {
   class Implementation;
   std::shared_ptr<Implementation> impl_;
 };
-#endif  // UNNAMING_GAME_SRC_MAP_BASEBUILDING_H_
+#endif  // UNNAMING_GAME_SRC_MAP_BUILDING_BASEBUILDING_H_

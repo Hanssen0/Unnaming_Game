@@ -115,7 +115,9 @@ int main() {
       // TODO(handsome0hell): Finish energy system
       main_role->set_now_energy(10);
       if (new_map_status.Status()) {
-        if (main_role->now_map()->BuildingIn(main_role->now_position()).index() == portal_building.index()) {
+        if (main_role->now_map()->
+            BuildingIn(main_role->now_position()).index() ==
+            portal_building.index()) {
           main_space.Left(main_role->now_map());
           main_role->set_now_map(main_space.NewMap());
           main_role->set_now_position(

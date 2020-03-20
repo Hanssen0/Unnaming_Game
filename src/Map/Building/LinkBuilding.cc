@@ -16,7 +16,7 @@ class LinkBuilding::Implementation: public BuildingImplementation {
   inline size_t index() const override {return base_->index();}
   inline void set_map(Map* const map) {map_ = map;}
   inline void set_pos(const Point& pos) {pos_ = pos;}
-  Implementation(const Building& base): base_(&base) {}
+  explicit Implementation(const Building& base): base_(&base) {}
 
  private:
   const Building* base_;
