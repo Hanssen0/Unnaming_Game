@@ -47,6 +47,7 @@ MAP_NO_EXPORT Map::Map(int32_t w, int32_t h) : width_(w), height_(h) {
   assert(blocks_.max_size()/w >= static_cast<size_t>(h));
   const auto map_size = w*h;
   blocks_.resize(map_size);
+  buildings_.resize(map_size);
   is_got_id_ = false;
 }
 MAP_EXPORT int32_t Map::Id() {

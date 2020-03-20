@@ -14,6 +14,8 @@
 #define UNNAMING_GAME_SRC_GRAPHIC_RENDERER_H_
 #include <memory>
 #include <vector>
+#include "../Map/Block.h"
+#include "../Map/Building.h"
 #include "../Map/Map.h"
 #include "../Map/Space.h"
 #include "../Object/Creature.h"
@@ -21,7 +23,8 @@ class Renderer;
 typedef std::shared_ptr< Renderer > Renderer_ref;
 class Renderer {
  public:
-  void set_exterior_of_block(const char exterior, const BlockPtr& type);
+  void set_exterior_of_block(const char, const BlockPtr&);
+  void set_exterior_of_building(const char, const BuildingPtr&);
   ~Renderer();
   void RenderCreaturesView(const Creature&) const;
   void RenderGameMap(const Map&) const;
@@ -30,6 +33,8 @@ class Renderer {
  private:
   Renderer();
   Renderer& operator=(const Renderer&) = delete;
+  void RenderPosition(const Map&, const Point&) const;
   std::vector< char > exterior_of_block_;
+  std::vector< char > exterior_of_building_;
 };
 #endif  // UNNAMING_GAME_SRC_GRAPHIC_RENDERER_H_

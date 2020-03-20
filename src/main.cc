@@ -22,9 +22,10 @@
 #include "Map/Space.h"
 Renderer_ref kMainRenderer = Renderer::Create();
 // TODO(handsome0hell): Read block from file
-BlockPtr ground = Block::Create();
-BlockPtr path = Block::Create();
-BlockPtr wall = Block::Create();
+auto ground = Block::Create();
+auto path = Block::Create();
+auto wall = Block::Create();
+auto portal = Building::Create();
 void Init(Creature* role) {
   Creature::CostOfBlock_ref normal_cost = Creature::CostOfBlock::Create();
   Creature::CostOfBlock_ref stop_cost = Creature::CostOfBlock::Create();
@@ -42,6 +43,7 @@ void Init(Creature* role) {
   kMainRenderer->set_exterior_of_block('#', wall);
   kMainRenderer->set_exterior_of_block('.', ground);
   kMainRenderer->set_exterior_of_block('+', path);
+  kMainRenderer->set_exterior_of_building('0', portal);
 }
 class AutoResetStatus {
  public:
@@ -69,6 +71,7 @@ int main() {
   builder.SetGroundBlock(ground);
   builder.SetPathBlock(path);
   builder.SetWallBlock(wall);
+  builder.SetPortalBuilding(portal);
   Space main_space(GenerateRandom, &builder, {32, 32});
   Creature_ref main_role = Creature::CreateCreature(&main_space);
   Init(main_role.get());

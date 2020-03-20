@@ -16,15 +16,30 @@
 #include <iostream>
 #include "../Map/Map.h"
 #include "../Object/Creature.h"
+template<typename T> void Expand(std::vector<T>& vec, size_t size) {
+  if (vec.size() < size) vec.resize(size);
+}
 RENDERER_EXPORT Renderer::~Renderer() {}
 RENDERER_EXPORT
 void Renderer::set_exterior_of_block(const char exterior,
                                      const BlockPtr& type) {
-  const auto block_size = Block::BlockSize();
-  if (exterior_of_block_.size() < block_size) {
-    exterior_of_block_.resize(block_size);
-  }
+  Expand(exterior_of_block_, Block::BlockSize());
   exterior_of_block_[type->index()] = exterior;
+}
+RENDERER_EXPORT
+void Renderer::set_exterior_of_building(const char exterior,
+                                        const BuildingPtr& type) {
+  Expand(exterior_of_building_, Building::BuildingSize());
+  exterior_of_building_[type->index()] = exterior;
+}
+RENDERER_EXPORT void Renderer::RenderPosition(const Map& map,
+                                              const Point& pos) const {
+ auto building = map.BuildingIn(pos);
+ if (building) {
+   std::cout << exterior_of_building_[building->index()];
+ } else {
+   std::cout << exterior_of_block_[map.BlockIn(pos)->index()];
+ }
 }
 RENDERER_EXPORT void Renderer::RenderCreaturesView(const Creature& obj) const {
   for (int32_t j = 0; j < ((obj.view_dis() << 1) | 1); ++j) {
@@ -36,7 +51,7 @@ RENDERER_EXPORT void Renderer::RenderCreaturesView(const Creature& obj) const {
       if (tmp == obj.now_position()) {
         std::cout << "@";
       } else if (obj.is_viewable(tmp)) {
-        std::cout << exterior_of_block_[obj.now_map()->BlockIn(tmp)->index()];
+        RenderPosition(*obj.now_map(), tmp);
       } else {
         std::cout << ' ';
       }
@@ -47,7 +62,7 @@ RENDERER_EXPORT void Renderer::RenderCreaturesView(const Creature& obj) const {
 RENDERER_EXPORT void Renderer::RenderGameMap(const Map& map) const {
   for (int32_t j = 0; j < map.Height(); ++j) {
     for (int32_t i = 0; i < map.Width(); ++i) {
-      std::cout << exterior_of_block_[map.BlockIn({i, j})->index()];
+      RenderPosition(map, {i, j});
     }
     std::cout << "\n";
   }
@@ -57,7 +72,7 @@ RENDERER_EXPORT void Renderer::RenderMemory(
   for (int32_t j = mem.left_top.y; j <= mem.right_bottom.y; ++j) {
     for (int32_t i = mem.left_top.x; i <= mem.right_bottom.x; ++i) {
       if (mem.is_seen[i][j]) {
-        std::cout << exterior_of_block_[mem.detail->BlockIn({i, j})->index()];
+        RenderPosition(*mem.detail, {i, j});
       } else {
         std::cout << ' ';
       }

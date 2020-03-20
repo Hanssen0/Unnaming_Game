@@ -53,7 +53,7 @@ inline Map* Space::NewMap() {
                         std::map< int32_t, MemoryOfMap>()};
   // TODO(handsome0hell): Read block type from file
   builder_->set_target_map(tmp.map.get());
-  builder_->BuildRoomsAndPath();
+  builder_->Build();
   auto inserter = id_to_map_.insert(std::make_pair(tmp.map->Id(), tmp));
   return inserter.first->second.map.get();
 }

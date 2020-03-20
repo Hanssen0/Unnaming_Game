@@ -26,13 +26,14 @@ class MapBuilder {
   }
   ~MapBuilder();
   // Make rooms
-  void BuildRoomsAndPath();
+  void Build();
   // void BuildBuildings();
   inline void set_target_map(Map* const target);
   // void SetEmptyBlock(const BlockPtr& empty);
   void SetWallBlock(const BlockPtr& wall);
   void SetPathBlock(const BlockPtr& path);
   void SetGroundBlock(const BlockPtr& ground);
+  void SetPortalBuilding(const BuildingPtr& portal);
 
  private:
   // Init to speed up empty test
@@ -56,6 +57,7 @@ class MapBuilder {
   BlockPtr wall_block_;
   BlockPtr path_block_;
   BlockPtr ground_block_;
+  BuildingPtr portal_building_;
 };
 inline void MapBuilder::set_target_map(Map* const target) {
   target_map_ = target;
