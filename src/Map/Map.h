@@ -51,9 +51,13 @@ class Map final {
     std::vector< std::vector< bool > > is_seen;
     Map_ref detail;
   };
-  static Map_ref Create(int32_t, int32_t);
+  struct Rules {
+    BlockPtr empty_block;
+  };
+  static Map_ref Create(const Rect&);
   // Basic attributes
   int32_t Id();
+  const Rect& Size() const;
   int32_t Width() const;
   int32_t Height() const;
   void SetDestory(const std::function<void()>&);
@@ -80,7 +84,7 @@ class Map final {
   }
 
  private:
-  Map(int32_t, int32_t);
+  Map(const Rect&);
   void Init();
   void get_id();
   size_t GetIndex(const Point& pos) const {
@@ -91,15 +95,14 @@ class Map final {
   BlockPtr* BlockPtrIn(const Point& pos);
   const Building** BuildingPtrIn(const Point& pos);
   static int32_t kMapSize;
-  const int32_t width_;
-  const int32_t height_;
+  const Rect size_;
   bool is_got_id_;
   int32_t id_;
   int32_t links_num_;
+  BlockPtr empty_block_;
   std::function<void()> destory_;
   std::map<int32_t, MemoryOfMap> memories_;
   std::vector<BlockPtr> blocks_;
   std::vector<const Building*> buildings_;
-  BlockPtr empty_block_;
 };
 #endif  // UNNAMING_GAME_SRC_MAP_MAP_H_

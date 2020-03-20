@@ -19,16 +19,16 @@ MAP_EXPORT Point Map::PickRandomPointIn(
     const std::function< int32_t(int32_t, int32_t) >& ran,
     const std::list<BlockPtr>& valid_list) const {
   int32_t total_valid = 0;
-  for (int32_t y = 0; y < height_; ++y) {
-    for (int32_t x = 0; x < width_; ++x) {
+  for (int32_t y = 0; y < Height(); ++y) {
+    for (int32_t x = 0; x < Width(); ++x) {
       for (auto i : valid_list) {
         if (i == BlockIn({x, y})) ++total_valid;
       }
     }
   }
   total_valid = ran(0, total_valid - 1);
-  for (int32_t y = 0; y < height_; ++y) {
-    for (int32_t x = 0; x < width_; ++x) {
+  for (int32_t y = 0; y < Height(); ++y) {
+    for (int32_t x = 0; x < Width(); ++x) {
       for (auto i : valid_list) {
         if (i == BlockIn({x, y})) {
           if (total_valid-- == 0) return Point({x, y});
@@ -38,14 +38,14 @@ MAP_EXPORT Point Map::PickRandomPointIn(
   }
   return Point({0, 0});
 }
-MAP_EXPORT Map_ref Map::Create(int32_t w, int32_t h) {
-  return Map_ref(new Map(w, h));
+MAP_EXPORT Map_ref Map::Create(const Rect& size) {
+  return Map_ref(new Map(size));
 }
-MAP_NO_EXPORT Map::Map(int32_t w, int32_t h): width_(w), height_(h) {
+MAP_NO_EXPORT Map::Map(const Rect& size): size_(size) {
   // TODO(handsome0hell): Use size_t instead of int32_t for map width and
   // height.
-  assert(blocks_.max_size()/width_ >= static_cast<size_t>(height_));
-  const auto map_size = width_*height_;
+  assert(blocks_.max_size()/Width() >= static_cast<size_t>(Height()));
+  const auto map_size = Width()*Height();
   blocks_.resize(map_size);
   buildings_.resize(map_size);
   is_got_id_ = false;
@@ -54,8 +54,9 @@ MAP_EXPORT int32_t Map::Id() {
   if (!is_got_id_) get_id();
   return id_;
 }
-MAP_EXPORT int32_t Map::Width() const {return width_;}
-MAP_EXPORT int32_t Map::Height() const {return height_;}
+MAP_EXPORT const Rect& Map::Size() const {return size_;}
+MAP_EXPORT int32_t Map::Width() const {return size_.w;}
+MAP_EXPORT int32_t Map::Height() const {return size_.h;}
 MAP_EXPORT void Map::SetDestory(const std::function<void()>& destory) {
   destory_ = destory;
 }
@@ -94,8 +95,8 @@ MAP_NO_EXPORT void Map::get_id() {
 }
 MAP_EXPORT void Map::ForEachBlock(
     const std::function< void(BlockPtr*) >& applier) {
-  for (int32_t y = 0; y < height_; ++y) {
-    for (int32_t x = 0; x < width_; ++x) {
+  for (int32_t y = 0; y < Height(); ++y) {
+    for (int32_t x = 0; x < Width(); ++x) {
       applier(BlockPtrIn({x, y}));
     }
   }
@@ -113,8 +114,8 @@ void Map::ForEachBlockIn(const RectWithPos& region,
 }
 MAP_EXPORT void Map::ForEachBuilding(
     const std::function<void(const Building**)>& applier) {
-  for (int32_t y = 0; y < height_; ++y) {
-    for (int32_t x = 0; x < width_; ++x) {
+  for (int32_t y = 0; y < Height(); ++y) {
+    for (int32_t x = 0; x < Width(); ++x) {
       applier(BuildingPtrIn({x, y}));
     }
   }
@@ -133,7 +134,7 @@ MAP_EXPORT Map::MemoryOfMap& Map::GetMemory(int32_t id) {
     const MemoryOfMap tmp = {{Width(), Height()}, {0, 0},
                              std::vector< std::vector<bool> >(Width(),
                                  std::vector< bool >(Height(), false)),
-                             Map::Create(Width(), Height())};
+                             Map::Create(Size())};
     memory = memories_.insert(std::make_pair(id, tmp)).first;
   }
   return memory->second;
