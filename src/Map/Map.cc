@@ -102,3 +102,7 @@ void Map::ForEachBlockIn(const RectWithPos& region,
     }
   }
 }
+MAP_EXPORT void Map::CopyFromIn(const Map& map, const Point& pos) {
+  SetBlockIn(pos, map.BlockIn(pos));
+  SetBuildingIn(pos, map.BuildingIn(pos));
+}

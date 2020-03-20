@@ -61,6 +61,7 @@ class Map final {
                       const std::function< void(BlockPtr*) >& applier);
   Point PickRandomPointIn(const std::function< int32_t(int32_t, int32_t) >& ran,
                           const std::list<BlockPtr>& valid_list) const;
+  void CopyFromIn(const Map&, const Point&);
 
  private:
   Map(int32_t w, int32_t h);
