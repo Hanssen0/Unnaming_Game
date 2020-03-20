@@ -18,6 +18,8 @@
 #include <list>
 #include <vector>
 #include <utility>
+#include "./Block.h"
+#include "./Building/Building.h"
 #include "./Map.h"
 #include "../Logic/MapBuilder.h"
 class Space {
@@ -28,9 +30,14 @@ class Space {
     std::vector< std::vector< bool > > is_seen;
     Map_ref detail;
   };
-  inline Space(const std::function< int32_t(int32_t, int32_t) >& ran,
-               MapBuilder* builder, const Rect& nms) :
-               builder_(builder), random_gen_(ran), next_map_size_(nms) {}
+  inline Space(MapBuilder* builder, const Rect& nms, const BlockPtr& empty_block) :
+               builder_(builder), empty_block_(empty_block), next_map_size_(nms) {}
+  inline void set_empty_block(const BlockPtr& block) {empty_block_ = block;}
+  inline void set_empty_building(const Building& building) {
+    empty_building_ = &building;
+  }
+  inline const BlockPtr& empty_block() const {return empty_block_;}
+  inline const Building& empty_building() const {return *empty_building_;}
   inline void set_next_map_size(const Rect& si) {next_map_size_ = si;}
   inline Map* NewMap();
   inline void Arrive(Map* map);
@@ -43,15 +50,16 @@ class Space {
     int32_t connections_num;
     std::map< int32_t, MemoryOfMap > memories_;
   };
-  std::map< int32_t, MapInformation > id_to_map_;
   MapBuilder* const builder_;
-  const std::function< int32_t(int32_t, int32_t) > random_gen_;
+  BlockPtr empty_block_;
+  const Building* empty_building_;
+  std::map< int32_t, MapInformation > id_to_map_;
   Rect next_map_size_;
 };
 inline Map* Space::NewMap() {
-  MapInformation tmp = {Map::Create(next_map_size_.w, next_map_size_.h), 0,
+
+  MapInformation tmp = {Map::Create(*this, next_map_size_.w, next_map_size_.h), 0,
                         std::map< int32_t, MemoryOfMap>()};
-  // TODO(handsome0hell): Read block type from file
   builder_->set_target_map(tmp.map.get());
   builder_->Build();
   auto inserter = id_to_map_.insert(std::make_pair(tmp.map->Id(), tmp));
@@ -65,9 +73,8 @@ inline void Space::Arrive(Map* map) {
 inline void Space::Left(Map* map) {
   auto finder = id_to_map_.find(map->Id());
   assert(finder != id_to_map_.end());
-  if (--(finder->second.connections_num) <= 0) {
-    id_to_map_.erase(finder);
-  }
+  // TODO(handsome0hell): Also delete memory
+  if (--(finder->second.connections_num) <= 0) id_to_map_.erase(finder);
 }
 inline Space::MemoryOfMap& Space::GetMemory(int32_t obj_id, Map* map) {
   auto info_finder = id_to_map_.find(map->Id());

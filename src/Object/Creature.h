@@ -36,44 +36,41 @@ class Creature {
     int32_t MoveCost() const;
     int32_t SeeThroughCost() const;
     ~CostOfBlock();
+
    private:
     CostOfBlock();
     std::function< int32_t() > destory_;
     std::function< int32_t() > move_;
     std::function< int32_t() > see_through_;
   };
-  static Creature_ref CreateCreature();
-  static Creature_ref CreateCreature(Space* const space);
-  void set_now_map(Map* const map);
-  Map* now_map() const;
-  void set_now_position(const Point& position);
-  template <int32_t x, int32_t y>
-  void Move();
-  const Point& now_position() const;
-  void set_now_space(Space* const space);
-  void set_view_dis(const int32_t& d);
-  int32_t view_dis() const;
-  void UpdateViewable();
-  bool is_viewable(const Point& pos) const;
+  static Creature_ref Create(Space* const space);
   int32_t id();
+  Map* map() const;
+  const Point& position() const;
+  int32_t view_dis() const;
+  void set_cost(const BlockPtr& type, const CostOfBlock_ref& cost);
   void set_max_energy(const int32_t& energy);
   void set_now_energy(const int32_t& energy);
-  void set_cost(const BlockPtr& type, const CostOfBlock_ref& cost);
+  void set_view_dis(const int32_t& d);
   ~Creature();
+  bool is_viewable(const Point& pos) const;
+  void Destory(const Point&);
   Space::MemoryOfMap& GetMemory();
+  template <int32_t x, int32_t y> void Move();
+  void Teleport(Map* const, const Point&);
+  void UpdateViewable();
   constexpr static int32_t kMaxViewDis =
       (SIZE_MAX > INT32_MAX ? INT32_MAX : SIZE_MAX - 1) >> 1;
 
  private:
-  Creature();
   explicit Creature(Space* const space);
   Creature& operator=(const Creature&) = delete;
   void get_id();
   void UpdateMemory();
   static int32_t kCreatureSize;
+  Map* map_;
+  Point position_;
   struct {
-    Map* map;
-    Point position;
     Space* space;
     Space::MemoryOfMap* memory;
   } now_;
@@ -88,8 +85,7 @@ class Creature {
     std::vector< CostOfBlock_ref > cost;
     std::vector< std::vector< bool > > is_viewable;
   } information_;
-
- private:
+  void set_position(const Point&);
   bool is_valid(const Point& pos);
   void set_viewable(const Point& pos);
   int32_t get_cost(const Point& pos);

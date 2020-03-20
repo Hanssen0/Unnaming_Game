@@ -29,6 +29,17 @@ CREATURE_NO_EXPORT inline int32_t GetDifference(const int32_t& a,
   if (a > b) return a - b;
   return b - a;
 }
+// Creature::CostofBlock
+CREATURE_NO_EXPORT int32_t Creature::CostOfBlock::DestoryCost() const {
+  return destory_();
+}
+CREATURE_NO_EXPORT int32_t Creature::CostOfBlock::MoveCost() const {
+  return move_();
+}
+CREATURE_NO_EXPORT int32_t Creature::CostOfBlock::SeeThroughCost() const {
+  return see_through_();
+}
+CREATURE_NO_EXPORT Creature::CostOfBlock::CostOfBlock() {}
 CREATURE_EXPORT Creature::CostOfBlock_ref Creature::CostOfBlock::Create() {
   return CostOfBlock_ref(new CostOfBlock());
 }
@@ -51,40 +62,61 @@ CREATURE_EXPORT void Creature::CostOfBlock::BindSeeThroughCost(
     const std::function< int32_t() >& function) {
   see_through_ = function;
 }
-CREATURE_NO_EXPORT int32_t Creature::CostOfBlock::DestoryCost() const {
-  return destory_();
-}
-CREATURE_NO_EXPORT int32_t Creature::CostOfBlock::MoveCost() const {
-  return move_();
-}
-CREATURE_NO_EXPORT int32_t Creature::CostOfBlock::SeeThroughCost() const {
-  return see_through_();
-}
 CREATURE_EXPORT Creature::CostOfBlock::~CostOfBlock() {}
-CREATURE_NO_EXPORT Creature::CostOfBlock::CostOfBlock() {}
-CREATURE_EXPORT Creature_ref Creature::CreateCreature() {
-  return Creature_ref(new Creature());
+// Creature
+CREATURE_NO_EXPORT void Creature::set_position(const Point& pos) {
+  position_ = pos;
 }
-CREATURE_EXPORT Creature_ref Creature::CreateCreature(Space* const space) {
-  return Creature_ref(new Creature(space));
-}
-CREATURE_EXPORT void Creature::set_now_map(Map* const map) {now_.map = map;}
-CREATURE_EXPORT Map* Creature::now_map() const {return now_.map;}
-CREATURE_EXPORT void Creature::set_now_position(const Point& position) {
-  now_.position = position;
-}
-template <int32_t x, int32_t y>
-CREATURE_NO_EXPORT void Creature::Move() {
-  Point des = now_position();
+template <int32_t x, int32_t y> CREATURE_NO_EXPORT void Creature::Move() {
+  Point des = position();
   des.x += x;
   des.y += y;
-  if (des.x < 0 || des.y < 0 ||
-      des.x >= now_.map->Width() || des.y >= now_.map->Height()) return;
+  if (!map()->has(des)) return;
   const int32_t c_m =
-      information_.cost[now_map()->BlockIn(des)->index()]->MoveCost();
+      information_.cost[map()->BlockIn(des)->index()]->MoveCost();
   if (c_m < 0 || c_m > ability_.now_energy) return;
   ability_.now_energy -= c_m;
-  set_now_position(des);
+  set_position(des);
+}
+CREATURE_NO_EXPORT Creature::Creature(Space* const space) {
+  now_.space = space;
+  information_.is_have_id = false;
+}
+CREATURE_NO_EXPORT void Creature::get_id() {information_.id = kCreatureSize++;}
+CREATURE_NO_EXPORT void Creature::UpdateMemory() {
+  Space::MemoryOfMap& now_mem = GetMemory();
+  for (size_t i = 0; i < information_.is_viewable.size(); ++i) {
+    for (size_t j = 0; j < information_.is_viewable.size(); ++j) {
+      if (information_.is_viewable[i][j]) {
+        const Point tmp = {position().x - view_dis() +
+                           static_cast< int32_t >(i),
+                           position().y - view_dis() +
+                           static_cast< int32_t >(j)};
+        now_mem.left_top.x = std::min(now_mem.left_top.x, tmp.x);
+        now_mem.left_top.y = std::min(now_mem.left_top.y, tmp.y);
+        now_mem.right_bottom.x = std::max(now_mem.right_bottom.x, tmp.x);
+        now_mem.right_bottom.y = std::max(now_mem.right_bottom.y, tmp.y);
+        now_mem.is_seen[tmp.x][tmp.y] = true;
+        now_mem.detail->CopyFromIn(*map(), tmp);
+      }
+    }
+  }
+}
+CREATURE_NO_EXPORT bool Creature::is_valid(const Point& pos) {
+  const Point target = {pos.x - position().x + view_dis(),
+                        pos.y - position().y + view_dis()};
+  const int32_t viewable_size = information_.is_viewable.size();
+  return 0 <= target.x && target.x < viewable_size &&
+         0 <= target.y && target.y < viewable_size;
+}
+CREATURE_NO_EXPORT void Creature::set_viewable(const Point& pos) {
+  if (!is_valid(pos)) return;
+  information_.is_viewable[pos.x - position().x + view_dis()]
+                          [pos.y - position().y + view_dis()] = true;
+}
+CREATURE_NO_EXPORT int32_t Creature::get_cost(const Point& pos) {
+  return map_->has(pos)? information_.cost[map()->BlockIn(pos)->index()]
+                             ->SeeThroughCost() : 0x3f3f3f3f;
 }
 constexpr Point kWASD[4] = {{0, -1}, {-1, 0}, {0, 1}, {1, 0}};
 //   W         UP
@@ -93,12 +125,17 @@ template CREATURE_EXPORT void Creature::Move<kWASD[0].x, kWASD[0].y>();
 template CREATURE_EXPORT void Creature::Move<kWASD[1].x, kWASD[1].y>();
 template CREATURE_EXPORT void Creature::Move<kWASD[2].x, kWASD[2].y>();
 template CREATURE_EXPORT void Creature::Move<kWASD[3].x, kWASD[3].y>();
-CREATURE_EXPORT const Point& Creature::now_position() const {
-  return now_.position;
+CREATURE_EXPORT Creature_ref Creature::Create(Space* const space) {
+  return Creature_ref(new Creature(space));
 }
-CREATURE_EXPORT void Creature::set_now_space(Space* const space) {
-  now_.space = space;
+CREATURE_EXPORT void Creature::Teleport(Map* const map, const Point& pos) {
+  if (map_ != nullptr) now_.space->Left(map_);
+  now_.space->Arrive(map);
+  map_ = map;
+  set_position(pos);
 }
+CREATURE_EXPORT Map* Creature::map() const {return map_;}
+CREATURE_EXPORT const Point& Creature::position() const {return position_;}
 CREATURE_EXPORT void Creature::set_view_dis(const int32_t& d) {
   ability_.view_dis = std::min(kMaxViewDis, d);
   const size_t view_size = ((ability_.view_dis << 1) | 1);
@@ -115,19 +152,21 @@ CREATURE_EXPORT void Creature::UpdateViewable() {
       information_.is_viewable[i][j] = false;
     }
   }
-  shadow_casting({now_position().x, now_position().y}, view_dis());
+  shadow_casting(position(), view_dis());
   UpdateMemory();
 }
 CREATURE_EXPORT bool Creature::is_viewable(const Point& pos) const {
-  if (0 > pos.x || pos.x >= now_.map->Width()
-    || 0 > pos.y || pos.y >= now_.map->Height()) return false;
-
-  const Point target = {pos.x - now_position().x + view_dis(),
-                        pos.y - now_position().y + view_dis()};
+  if (!map_->has(pos)) return false;
+  const Point target = {pos.x - position().x + view_dis(),
+                        pos.y - position().y + view_dis()};
   const int32_t viewable_size = information_.is_viewable.size();
   if (target.x >= viewable_size || target.y >= viewable_size ||
       target.x < 0 || target.y < 0) return false;
   return information_.is_viewable[target.x][target.y];
+}
+CREATURE_EXPORT void Creature::Destory(const Point& pos) {
+  if (!map()->has(pos)) return;
+  map()->DestoryBlockIn(pos);
 }
 CREATURE_EXPORT int32_t Creature::id() {
   if (!information_.is_have_id) get_id();
@@ -150,52 +189,5 @@ CREATURE_EXPORT void Creature::set_cost(const BlockPtr& type,
 }
 CREATURE_EXPORT Creature::~Creature() {}
 CREATURE_EXPORT Space::MemoryOfMap& Creature::GetMemory() {
-  return now_.space->GetMemory(id(), now_map());
-}
-CREATURE_NO_EXPORT Creature::Creature() {information_.is_have_id = false;}
-CREATURE_NO_EXPORT Creature::Creature(Space* const space) {
-  now_.space = space;
-  information_.is_have_id = false;
-}
-CREATURE_NO_EXPORT void Creature::get_id() {information_.id = kCreatureSize++;}
-CREATURE_NO_EXPORT void Creature::UpdateMemory() {
-  Space::MemoryOfMap& now_mem = GetMemory();
-  for (size_t i = 0; i < information_.is_viewable.size(); ++i) {
-    for (size_t j = 0; j < information_.is_viewable.size(); ++j) {
-      if (information_.is_viewable[i][j]) {
-        const Point tmp = {now_position().x - view_dis() +
-                           static_cast< int32_t >(i),
-                           now_position().y - view_dis() +
-                           static_cast< int32_t >(j)};
-        now_mem.left_top.x = std::min(now_mem.left_top.x, tmp.x);
-        now_mem.left_top.y = std::min(now_mem.left_top.y, tmp.y);
-        now_mem.right_bottom.x = std::max(now_mem.right_bottom.x, tmp.x);
-        now_mem.right_bottom.y = std::max(now_mem.right_bottom.y, tmp.y);
-        now_mem.is_seen[tmp.x][tmp.y] = true;
-        now_mem.detail->CopyFromIn(*now_map(), tmp);
-      }
-    }
-  }
-}
-
-CREATURE_NO_EXPORT bool Creature::is_valid(const Point& pos) {
-  const Point target = {pos.x - now_position().x + view_dis(),
-                        pos.y - now_position().y + view_dis()};
-  const int32_t viewable_size = information_.is_viewable.size();
-  return 0 <= target.x && target.x < viewable_size
-      && 0 <= target.y && target.y < viewable_size;
-}
-
-CREATURE_NO_EXPORT void Creature::set_viewable(const Point& pos) {
-  if (is_valid(pos)) {
-    information_.is_viewable[pos.x - now_position().x + view_dis()]
-      [pos.y - now_position().y + view_dis()] = true;
-  }
-}
-
-CREATURE_NO_EXPORT int32_t Creature::get_cost(const Point& pos) {
-  return 0 <= pos.x && pos.x < now_.map->Width()
-      && 0 <= pos.y && pos.y < now_.map->Height()
-        ? information_.cost[now_map()->BlockIn({pos.x, pos.y})->index()]
-              ->SeeThroughCost() : 0x3f3f3f3f;
+  return now_.space->GetMemory(id(), map());
 }

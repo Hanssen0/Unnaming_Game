@@ -45,14 +45,14 @@ RENDERER_EXPORT void Renderer::RenderPosition(const Map& map,
 RENDERER_EXPORT void Renderer::RenderCreaturesView(const Creature& obj) const {
   for (int32_t j = 0; j < ((obj.view_dis() << 1) | 1); ++j) {
     for (int32_t i = 0; i < ((obj.view_dis() << 1) | 1); ++i) {
-      const Point tmp = {obj.now_position().x - obj.view_dis() +
+      const Point tmp = {obj.position().x - obj.view_dis() +
                          static_cast< int32_t >(i),
-                         obj.now_position().y - obj.view_dis() +
+                         obj.position().y - obj.view_dis() +
                          static_cast< int32_t >(j)};
-      if (tmp == obj.now_position()) {
+      if (tmp == obj.position()) {
         std::cout << "@";
       } else if (obj.is_viewable(tmp)) {
-        RenderPosition(*obj.now_map(), tmp);
+        RenderPosition(*obj.map(), tmp);
       } else {
         std::cout << ' ';
       }

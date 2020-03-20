@@ -77,18 +77,16 @@ int main() {
   builder.SetWallBlock(wall);
   builder.SetEmptyBuilding(empty_building);
   builder.SetPortalBuilding(portal_building);
-  Space main_space(GenerateRandom, &builder, {32, 32});
-  Creature_ref main_role = Creature::CreateCreature(&main_space);
+  Space main_space(&builder, {32, 32}, ground);
+  Creature_ref main_role = Creature::Create(&main_space);
   Init(main_role.get());
-  main_role->set_now_map(main_space.NewMap());
   // TODO(handsome0hell): Read block from file
   std::list<BlockPtr> valid;
   valid.push_back(path);
   valid.push_back(ground);
-  main_role->set_now_position(
-                 main_role->now_map()
-                     ->PickRandomPointIn(GenerateRandom, valid));
-  main_space.Arrive(main_role->now_map());
+  auto new_map = main_space.NewMap();
+  main_role->Teleport(new_map,
+                      new_map->PickRandomPointIn(GenerateRandom, valid));
   AutoResetStatus null_status;
   CinInput_ref input =
       CinInput::CreateCinInput([&null_status](){null_status.set_status();});
@@ -99,6 +97,7 @@ int main() {
   input->BindKey('a', [&main_role](){main_role->Move< -1, 0 >();});
   input->BindKey('s', [&main_role](){main_role->Move< 0, 1 >();});
   input->BindKey('d', [&main_role](){main_role->Move< 1, 0 >();});
+  input->BindKey('l', [&main_role](){main_role->Destory({main_role->position().x + 1, main_role->position().y});});
   input->BindKey('q', [&quit_status](){quit_status.set_status();});
   input->BindKey('m', [&render_memory_status](){
                             render_memory_status.set_status();
@@ -115,15 +114,12 @@ int main() {
       // TODO(handsome0hell): Finish energy system
       main_role->set_now_energy(10);
       if (new_map_status.Status()) {
-        if (main_role->now_map()->
-            BuildingIn(main_role->now_position()).index() ==
+        if (main_role->map()->
+            BuildingIn(main_role->position()).index() ==
             portal_building.index()) {
-          main_space.Left(main_role->now_map());
-          main_role->set_now_map(main_space.NewMap());
-          main_role->set_now_position(
-                         main_role->now_map()
-                             ->PickRandomPointIn(GenerateRandom, valid));
-          main_space.Arrive(main_role->now_map());
+          auto new_map = main_space.NewMap();
+          main_role->Teleport(
+              new_map, new_map->PickRandomPointIn(GenerateRandom, valid));
         }
       }
       main_role->UpdateViewable();

@@ -21,6 +21,7 @@
 #include <vector>
 #include "./Block.h"
 #include "./Building/Building.h"
+class Space;
 struct Point {
   int32_t x, y;
 };
@@ -45,7 +46,8 @@ class Map;
 typedef std::shared_ptr< Map > Map_ref;
 class Map final {
  public:
-  static Map_ref Create(int32_t w, int32_t h);
+  static Map_ref Create(int32_t, int32_t);
+  static Map_ref Create(const Space&, int32_t, int32_t);
   // Basic attributes
   int32_t Id();
   int32_t Width() const;
@@ -55,6 +57,7 @@ class Map final {
   const Building& BuildingIn(const Point&) const;
   void SetBlockIn(const Point&, const BlockPtr&);
   void SetBuildingIn(const Point&, const Building&);
+  void DestoryBlockIn(const Point&);
   ~Map();
   void ForEachBlock(const std::function< void(BlockPtr*) >& applier);
   void ForEachBlockIn(const RectWithPos& region,
@@ -63,9 +66,14 @@ class Map final {
   Point PickRandomPointIn(const std::function< int32_t(int32_t, int32_t) >& ran,
                           const std::list<BlockPtr>& valid_list) const;
   void CopyFromIn(const Map&, const Point&);
+  inline bool has(const Point& pos) const {
+    return 0 <= pos.x && pos.x < Width() && 0 <= pos.y && pos.y < Height();
+  }
 
  private:
-  Map(int32_t w, int32_t h);
+  Map(int32_t, int32_t);
+  Map(const Space&, int32_t, int32_t);
+  void Init();
   void get_id();
   size_t GetIndex(const Point& pos) const {
     assert(pos.y < Height());
@@ -75,6 +83,7 @@ class Map final {
   BlockPtr* BlockPtrIn(const Point& pos);
   const Building** BuildingPtrIn(const Point& pos);
   static int32_t kMapSize;
+  const Space* space_;
   const int32_t width_;
   const int32_t height_;
   bool is_got_id_;
