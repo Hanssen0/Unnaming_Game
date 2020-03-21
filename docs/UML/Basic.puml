@@ -1,0 +1,10 @@
+@startuml
+hide members
+hide circle
+CinInput --> Creature : control >
+Creature -> Map : interact >
+Renderer --> Map
+Renderer --> Creature
+Space *-- Creature
+Space *-- Map
+@enduml
