@@ -57,8 +57,8 @@ MAP_EXPORT size_t Map::Id() {
 MAP_EXPORT const Rect& Map::Size() const {return size_;}
 MAP_EXPORT size_t Map::Width() const {return size_.w;}
 MAP_EXPORT size_t Map::Height() const {return size_.h;}
-MAP_EXPORT void Map::SetDestory(const std::function<void()>& destory) {
-  destory_ = destory;
+MAP_EXPORT void Map::SetDestroy(const std::function<void()>& destroy) {
+  destroy_ = destroy;
 }
 MAP_EXPORT void Map::SetEmptyBlock(const BlockPtr& block) {
   empty_block_ = block;
@@ -84,7 +84,7 @@ MAP_EXPORT void Map::SetBuildingIn(const MapPoint& pos,
                                    const Building& building) {
   *BuildingPtrIn(pos) = &building;
 }
-MAP_EXPORT void Map::DestoryBlockIn(const MapPoint& pos) {
+MAP_EXPORT void Map::DestroyBlockIn(const MapPoint& pos) {
   SetBlockIn(pos, empty_block_);
 }
 MAP_EXPORT Map::~Map() {}
@@ -123,7 +123,7 @@ MAP_EXPORT void Map::ForEachBuilding(
 }
 MAP_EXPORT void Map::Link() {++links_num_;}
 MAP_EXPORT void Map::Unlink() {
-  if (--links_num_ == 0 && destory_) destory_();
+  if (--links_num_ == 0 && destroy_) destroy_();
 }
 MAP_EXPORT void Map::CopyFromIn(const Map& map, const MapPoint& pos) {
   SetBlockIn(pos, map.BlockIn(pos));

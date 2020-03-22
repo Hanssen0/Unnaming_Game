@@ -29,17 +29,17 @@ class Creature {
    public:
     static CostOfBlock_ref Create();
     CostOfBlock& operator=(const CostOfBlock& a);
-    void BindDestoryCost(const std::function< int() >& function);
+    void BindDestroyCost(const std::function< int() >& function);
     void BindMoveCost(const std::function< int() >& function);
     void BindSeeThroughCost(const std::function< int() >& function);
-    int DestoryCost() const;
+    int DestroyCost() const;
     int MoveCost() const;
     int SeeThroughCost() const;
     ~CostOfBlock();
 
    private:
     CostOfBlock();
-    std::function< int() > destory_;
+    std::function< int() > destroy_;
     std::function< int() > move_;
     std::function< int() > see_through_;
   };

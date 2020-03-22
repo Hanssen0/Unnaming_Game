@@ -49,14 +49,14 @@ class Map final {
   const Rect& Size() const;
   size_t Width() const;
   size_t Height() const;
-  void SetDestory(const std::function<void()>&);
+  void SetDestroy(const std::function<void()>&);
   void SetEmptyBlock(const BlockPtr&);
   // Layer
   const BlockPtr& BlockIn(const MapPoint&) const;
   const Building& BuildingIn(const MapPoint&) const;
   void SetBlockIn(const MapPoint&, const BlockPtr&);
   void SetBuildingIn(const MapPoint&, const Building&);
-  void DestoryBlockIn(const MapPoint&);
+  void DestroyBlockIn(const MapPoint&);
   ~Map();
   void ForEachBlock(const std::function< void(BlockPtr*) >& applier);
   void ForEachBlockIn(const RectWithPos& region,
@@ -93,7 +93,7 @@ class Map final {
   size_t id_;
   int links_num_;
   BlockPtr empty_block_;
-  std::function<void()> destory_;
+  std::function<void()> destroy_;
   std::map<size_t, MemoryOfMap> memories_;
   std::vector<BlockPtr> blocks_;
   std::vector<const Building*> buildings_;

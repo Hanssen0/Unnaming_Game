@@ -21,8 +21,8 @@
 size_t Creature::kCreatureSize = 0;
 constexpr size_t Creature::kMaxViewDis;
 // Creature::CostofBlock
-CREATURE_NO_EXPORT int Creature::CostOfBlock::DestoryCost() const {
-  return destory_();
+CREATURE_NO_EXPORT int Creature::CostOfBlock::DestroyCost() const {
+  return destroy_();
 }
 CREATURE_NO_EXPORT int Creature::CostOfBlock::MoveCost() const {
   return move_();
@@ -36,14 +36,14 @@ CREATURE_EXPORT Creature::CostOfBlock_ref Creature::CostOfBlock::Create() {
 }
 CREATURE_EXPORT Creature::CostOfBlock& Creature::CostOfBlock::operator=(
     const Creature::CostOfBlock& a) {
-  destory_ = a.destory_;
+  destroy_ = a.destroy_;
   move_ = a.move_;
   see_through_ = a.see_through_;
   return *this;
 }
-CREATURE_EXPORT void Creature::CostOfBlock::BindDestoryCost(
+CREATURE_EXPORT void Creature::CostOfBlock::BindDestroyCost(
     const std::function< int() >& function) {
-  destory_ = function;
+  destroy_ = function;
 }
 CREATURE_EXPORT void Creature::CostOfBlock::BindMoveCost(
     const std::function< int() >& function) {
@@ -71,7 +71,7 @@ template<int x, int y> void Creature::Destroy() {
   MapPoint des = position();
   des += IntPoint(x, y);
   if (!map()->has(des)) return;
-  map()->DestoryBlockIn(des);
+  map()->DestroyBlockIn(des);
 }
 CREATURE_NO_EXPORT Creature::Creature() {information_.is_have_id = false;}
 CREATURE_NO_EXPORT void Creature::get_id() {
