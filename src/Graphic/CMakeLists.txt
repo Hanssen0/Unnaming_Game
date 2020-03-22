@@ -11,20 +11,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 cmake_minimum_required(VERSION 3.0)
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-include(GenerateExportHeader)
-set(CMAKE_CXX_VISIBILITY_PRESET hidden)
-set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
-# For shared library
 project(Graphic_library CXX)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-# Use c++ 11
+include(GenerateExportHeader)
+include(../../CMake/compiler.cmake)
+include(../../CMake/libraries.cmake)
 add_library(Renderer SHARED Renderer.cc)
+target_link_libraries(Renderer Creature Map)
 generate_export_header(Renderer)
-if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
-  target_compile_options(Renderer PRIVATE -Wall -Wextra -g)
-elseif(MSVC)
-  target_compile_options(Renderer PRIVATE /W4)
-endif()
-# More warnnings
