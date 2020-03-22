@@ -5,7 +5,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-#include <Building/BaseBuilding.h>
+#include "BaseBuilding.h"
 #include <cassert>
 #include <iostream>
 #include "../map_cmake.h"

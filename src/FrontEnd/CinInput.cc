@@ -10,7 +10,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-#include <CinInput.h>
+#include "CinInput.h"
 #include <functional>
 #include <iostream>
 #include "./cininput_cmake.h"

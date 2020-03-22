@@ -5,7 +5,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-#include <Building/LinkBuilding.h>
+#include "LinkBuilding.h"
 #include <cassert>
 #include "../map_cmake.h"
 #include "./building_implementation.h"
