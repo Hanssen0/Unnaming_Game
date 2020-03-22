@@ -13,6 +13,7 @@
 #ifndef UNNAMING_GAME_SRC_COMMON_POINT_H_
 #define UNNAMING_GAME_SRC_COMMON_POINT_H_
 #include <cassert>
+#include <type_traits>
 template<typename T>
 class Point {
  public:
@@ -24,21 +25,23 @@ class Point {
   inline bool operator==(const Point<T>& b) const {
     return x == b.x && y == b.y;
   }
-  inline Point<T> operator-=(const Point<T>& b) const {x -= b.x, y -= b.y;}
-  inline Point<T> operator-(const Point<T>& b) const {
-    return Point(x - b.x, y - b.y);
-  }
-  inline Point<T> operator+=(const Point<T>& b) const {x += b.x, y += b.y;}
-  inline Point<T> operator+(const Point<T>& b) const {
-    return Point(x + b.x, y + b.y);
-  }
   inline Point<T> operator-(const T& b) const {return Point(x - b, y - b);}
   inline Point<T> operator+(const T& b) const {return Point(x + b, y + b);}
   inline bool operator<(const T& b) const {return x < b && y < b;}
   inline bool operator>(const T& b) const {return x > b && y > b;}
   inline void operator-=(const T& b) {x -= b, y -= b;}
   template<typename TT>
-  inline void operator-=(const Point<TT>& b) {
+  inline typename std::enable_if<std::is_signed<T>::value ||
+                                 std::is_unsigned<TT>::value>::type
+      operator-=(const Point<TT>& b) {x -= b.x, y -= b.y;}
+  template<typename TT>
+  inline typename std::enable_if<std::is_signed<T>::value ||
+                                 std::is_unsigned<TT>::value>::type
+      operator+=(const Point<TT>& b) {x += b.x, y += b.y;}
+  template<typename TT>
+  inline typename std::enable_if<std::is_unsigned<T>::value &&
+                                 std::is_signed<TT>::value>::type
+      operator-=(const Point<TT>& b) {
     if (b.x < 0) {
       x += static_cast<T>(-b.x);
     } else {
@@ -51,13 +54,9 @@ class Point {
     }
   }
   template<typename TT>
-  inline Point<T> operator-(const Point<TT>& b) const {
-    auto ret = *this;
-    ret -= b;
-    return ret;
-  }
-  template<typename TT>
-  inline void operator+=(const Point<TT>& b) {
+  inline typename std::enable_if<std::is_unsigned<T>::value &&
+                                 std::is_signed<TT>::value>::type
+      operator+=(const Point<TT>& b) {
     if (b.x < 0) {
       x -= static_cast<T>(-b.x);
     } else {
@@ -69,8 +68,12 @@ class Point {
       y += static_cast<T>(b.y);
     }
   }
-  template<typename TT>
-  inline Point<T> operator+(const Point<TT>& b) const {
+  template<typename TT> Point<T> operator-(const Point<TT>& b) const {
+    auto ret = *this;
+    ret -= b;
+    return ret;
+  }
+  template<typename TT> Point<T> operator+(const Point<TT>& b) const {
     auto ret = *this;
     ret += b;
     return ret;
