@@ -22,7 +22,7 @@ class Renderer;
 typedef std::shared_ptr< Renderer > Renderer_ref;
 class Renderer {
  public:
-  void set_exterior_of_block(const char, const BlockPtr&);
+  void set_exterior_of_block(const char, const Block&);
   void set_exterior_of_building(const char, const Building&);
   ~Renderer();
   void RenderCreaturesView(const Creature&) const;

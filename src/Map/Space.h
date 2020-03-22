@@ -27,20 +27,20 @@ class Space {
                                     empty_block_(space.empty_block_),
                                     next_map_size_(space.next_map_size_) {}
   inline Space(MapBuilder* builder, const Rect& nms,
-               const BlockPtr& empty_block) : builder_(builder),
-      empty_block_(empty_block), next_map_size_(nms) {}
-  inline void set_empty_block(const BlockPtr& block) {empty_block_ = block;}
+               const Block& empty_block) : builder_(builder),
+      empty_block_(&empty_block), next_map_size_(nms) {}
+  inline void set_empty_block(const Block& block) {empty_block_ = &block;}
   inline void set_empty_building(const Building& building) {
     empty_building_ = &building;
   }
-  inline const BlockPtr& empty_block() const {return empty_block_;}
+  inline const Block& empty_block() const {return *empty_block_;}
   inline const Building& empty_building() const {return *empty_building_;}
   inline void set_next_map_size(const Rect& si) {next_map_size_ = si;}
   inline Map_ref NewMap();
 
  private:
   MapBuilder* const builder_;
-  BlockPtr empty_block_;
+  const Block* empty_block_;
   const Building* empty_building_;
   std::list<Map_ref> maps_;
   Rect next_map_size_;
@@ -50,7 +50,7 @@ inline Map_ref Space::NewMap() {
   maps_.push_front(tmp);
   auto map_iterator = maps_.begin();
   tmp->SetDestroy([map_iterator, this](){maps_.erase(map_iterator);});
-  tmp->SetEmptyBlock(empty_block_);
+  tmp->SetEmptyBlock(*empty_block_);
   builder_->set_target_map(tmp.get());
   builder_->Build();
   return tmp;

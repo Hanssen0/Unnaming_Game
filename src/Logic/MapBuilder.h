@@ -30,9 +30,9 @@ class MapBuilder {
   // void BuildBuildings();
   inline void set_target_map(Map* const target);
   // void SetEmptyBlock(const BlockPtr& empty);
-  void SetWallBlock(const BlockPtr& wall);
-  void SetPathBlock(const BlockPtr& path);
-  void SetGroundBlock(const BlockPtr& ground);
+  void SetWallBlock(const Block& wall);
+  void SetPathBlock(const Block& path);
+  void SetGroundBlock(const Block& ground);
   void SetEmptyBuilding(const Building& empty);
   void SetPortalBuilding(const Building& portal);
 
@@ -54,9 +54,9 @@ class MapBuilder {
   // To speed up empty test
   std::vector< std::vector< Rect > > checked_build_able_;
   Map* target_map_;
-  BlockPtr wall_block_;
-  BlockPtr path_block_;
-  BlockPtr ground_block_;
+  const Block* wall_block_;
+  const Block* path_block_;
+  const Block* ground_block_;
   const Building* empty_building_;
   const Building* portal_building_;
 };

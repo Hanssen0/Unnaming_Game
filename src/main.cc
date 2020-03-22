@@ -14,6 +14,7 @@
 #include <iostream>
 #include <functional>
 #include <random>
+#include "Map/Block/BaseBlock.h"
 #include "Map/Building/BaseBuilding.h"
 #include "Map/Map.h"
 #include "Logic/MapBuilder.h"
@@ -23,11 +24,14 @@
 #include "Map/Space.h"
 Renderer_ref kMainRenderer = Renderer::Create();
 // TODO(handsome0hell): Read block from file
-auto ground = Block::Create();
-auto path = Block::Create();
-auto wall = Block::Create();
+auto ground = BaseBlock();
+auto path = BaseBlock();
+auto wall = BaseBlock();
 auto empty = BaseBuilding();
 auto portal = BaseBuilding();
+auto ground_block = static_cast<Block>(ground);
+auto path_block = static_cast<Block>(path);
+auto wall_block = static_cast<Block>(wall);
 auto empty_building = static_cast<Building>(empty);
 auto portal_building = static_cast<Building>(portal);
 void Init(Creature* role) {
@@ -35,18 +39,18 @@ void Init(Creature* role) {
   Creature::CostOfBlock_ref stop_cost = Creature::CostOfBlock::Create();
   normal_cost->BindMoveCost([]()->int {return 1;});
   normal_cost->BindSeeThroughCost([]()->int {return 0;});
-  role->set_cost(path, normal_cost);
-  role->set_cost(ground, normal_cost);
+  role->set_cost(path_block, normal_cost);
+  role->set_cost(ground_block, normal_cost);
   stop_cost->BindMoveCost([]()->int {return -1;});
   stop_cost->BindSeeThroughCost([]()->int {return 0x3f3f3f3f;});
-  role->set_cost(wall, stop_cost);
+  role->set_cost(wall_block, stop_cost);
   role->set_max_energy(10);
   role->set_now_energy(10);
   role->set_view_dis(6);
   // TODO(handsome0hell): Read block from file
-  kMainRenderer->set_exterior_of_block('#', wall);
-  kMainRenderer->set_exterior_of_block('.', ground);
-  kMainRenderer->set_exterior_of_block('+', path);
+  kMainRenderer->set_exterior_of_block('#', wall_block);
+  kMainRenderer->set_exterior_of_block('.', ground_block);
+  kMainRenderer->set_exterior_of_block('+', path_block);
   kMainRenderer->set_exterior_of_building('0', portal_building);
 }
 class AutoResetStatus {
@@ -72,18 +76,18 @@ int main() {
                                                                           to));
       };
   MapBuilder builder(GenerateRandom, {3, 3}, {8, 8});
-  builder.SetGroundBlock(ground);
-  builder.SetPathBlock(path);
-  builder.SetWallBlock(wall);
+  builder.SetGroundBlock(ground_block);
+  builder.SetPathBlock(path_block);
+  builder.SetWallBlock(wall_block);
   builder.SetEmptyBuilding(empty_building);
   builder.SetPortalBuilding(portal_building);
-  Space main_space(&builder, {32, 32}, ground);
+  Space main_space(&builder, {32, 32}, ground_block);
   Creature_ref main_role = Creature::Create();
   Init(main_role.get());
   // TODO(handsome0hell): Read block from file
-  std::list<BlockPtr> valid;
-  valid.push_back(path);
-  valid.push_back(ground);
+  std::list<const Block*> valid;
+  valid.push_back(&path_block);
+  valid.push_back(&ground_block);
   auto new_map = main_space.NewMap();
   main_role->Teleport(new_map,
                       new_map->PickRandomPointIn(GenerateRandom, valid));

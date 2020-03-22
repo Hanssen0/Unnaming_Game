@@ -48,7 +48,7 @@ class Creature {
   const Map_ref& map() const;
   const MapPoint& position() const;
   size_t view_dis() const;
-  void set_cost(const BlockPtr& type, const CostOfBlock_ref& cost);
+  void set_cost(const Block& type, const CostOfBlock_ref& cost);
   void set_max_energy(const int& energy);
   void set_now_energy(const int& energy);
   void set_view_dis(const size_t& d);

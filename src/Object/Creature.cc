@@ -16,6 +16,7 @@
 #include <functional>
 #include <queue>
 #include "./creature_cmake.h"
+#include "../Map/Block/BaseBlock.h"
 #include "../Map/Map.h"
 #include "../Map/Space.h"
 size_t Creature::kCreatureSize = 0;
@@ -62,7 +63,7 @@ template <int x, int y> CREATURE_NO_EXPORT void Creature::Move() {
   MapPoint des = position();
   des += IntPoint(x, y);
   if (!map()->has(des)) return;
-  const int c_m = information_.cost[map()->BlockIn(des)->index()]->MoveCost();
+  const int c_m = information_.cost[map()->BlockIn(des).index()]->MoveCost();
   if (c_m < 0 || c_m > ability_.now_energy) return;
   ability_.now_energy -= c_m;
   set_position(des);
@@ -107,7 +108,7 @@ CREATURE_NO_EXPORT void Creature::set_viewable(const MapPoint& pos) {
                           [pos.y - position().y + view_dis()] = true;
 }
 CREATURE_NO_EXPORT int Creature::get_cost(const MapPoint& pos) {
-  return map_->has(pos)? information_.cost[map()->BlockIn(pos)->index()]
+  return map_->has(pos)? information_.cost[map()->BlockIn(pos).index()]
                              ->SeeThroughCost() : 0x3f3f3f3f;
 }
 constexpr int kWASD[4][2] = {{0, -1}, {-1, 0}, {0, 1}, {1, 0}};
@@ -172,13 +173,13 @@ CREATURE_EXPORT void Creature::set_max_energy(const int& energy) {
 CREATURE_EXPORT void Creature::set_now_energy(const int& energy) {
   ability_.now_energy = std::min(energy, ability_.max_energy);
 }
-CREATURE_EXPORT void Creature::set_cost(const BlockPtr& type,
+CREATURE_EXPORT void Creature::set_cost(const Block& type,
                                         const CostOfBlock_ref& cost) {
-  const auto block_size = Block::BlockSize();
+  const auto block_size = BaseBlock::BaseBlockSize();
   if (information_.cost.size() < block_size) {
     information_.cost.resize(block_size);
   }
-  information_.cost[type->index()] = cost;
+  information_.cost[type.index()] = cost;
 }
 CREATURE_EXPORT Creature::~Creature() {}
 CREATURE_EXPORT Map::MemoryOfMap& Creature::GetMemory() {

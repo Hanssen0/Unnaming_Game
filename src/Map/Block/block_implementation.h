@@ -5,7 +5,11 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-#include "Block.h"
-#include "../map_cmake.h"
-#include "block_implementation.h"
-MAP_EXPORT size_t Block::index() const {return impl_->index();}
+#ifndef UNNAMING_GAME_SRC_MAP_BLOCK_BLOCK_IMPLEMENTATION_H_
+#define UNNAMING_GAME_SRC_MAP_BLOCK_BLOCK_IMPLEMENTATION_H_
+#include <cstddef>
+class BlockImplementation {
+ public:
+  virtual size_t index() const = 0;
+};
+#endif  // UNNAMING_GAME_SRC_MAP_BLOCK_BLOCK_IMPLEMENTATION_H_

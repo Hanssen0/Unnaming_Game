@@ -13,13 +13,13 @@ class BuildingImplementation;
 class Building final {
  public:
   size_t index() const;
-  explicit Building(
-      std::shared_ptr<BuildingImplementation> const impl = nullptr):
-      impl_(impl) {}
-  std::shared_ptr<BuildingImplementation> impl() const {return impl_;}
-  operator bool() const {return impl_ != nullptr;}
+  explicit Building(const std::shared_ptr<BuildingImplementation>& impl)
+      : impl_(impl) {}
+  const std::shared_ptr<BuildingImplementation>& impl() const {return impl_;}
+  operator bool() const {return static_cast<bool>(impl_);}
 
  private:
+  Building() = delete;
   std::shared_ptr<BuildingImplementation> impl_;
 };
 #endif  // UNNAMING_GAME_SRC_MAP_BUILDING_BUILDING_H_

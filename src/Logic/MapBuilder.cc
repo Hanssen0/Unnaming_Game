@@ -19,14 +19,14 @@
 #include "../Map/Building/Building.h"
 #include "../Map/Map.h"
 MapBuilder::~MapBuilder() {}
-void MapBuilder::SetWallBlock(const BlockPtr& wall) {
-  wall_block_ = wall;
+void MapBuilder::SetWallBlock(const Block& wall) {
+  wall_block_ = &wall;
 }
-void MapBuilder::SetPathBlock(const BlockPtr& path) {
-  path_block_ = path;
+void MapBuilder::SetPathBlock(const Block& path) {
+  path_block_ = &path;
 }
-void MapBuilder::SetGroundBlock(const BlockPtr& ground) {
-  ground_block_ = ground;
+void MapBuilder::SetGroundBlock(const Block& ground) {
+  ground_block_ = &ground;
 }
 void MapBuilder::SetEmptyBuilding(const Building& empty) {
   empty_building_ = &empty;
@@ -37,8 +37,8 @@ void MapBuilder::SetPortalBuilding(const Building& portal) {
 void MapBuilder::Build() {
   InitForEmptyTest();
   MapPoint previous;
-  const BlockPtr& wall = this->wall_block_;
-  target_map_->ForEachBlock([&wall](BlockPtr* block){*block = wall;});
+  const Block* wall = this->wall_block_;
+  target_map_->ForEachBlock([&wall](const Block** block){*block = wall;});
   bool is_first = true;
   while (true) {
     MapPoint tmp;
@@ -53,7 +53,7 @@ void MapBuilder::Build() {
   const Building* empty = this->empty_building_;
   target_map_->ForEachBuilding(
       [empty](const Building** building) {*building = empty;});
-  std::list<BlockPtr> portal(1, ground_block_);
+  std::list<const Block*> portal(1, ground_block_);
   auto pos = target_map_->PickRandomPointIn(random_gen_, portal);
   target_map_->SetBuildingIn(pos, *portal_building_);
 }
@@ -83,15 +83,15 @@ void MapBuilder::UpdateCheckedBuildAble(const MapPoint& pos_to_update) {
 }
 void MapBuilder::BuildPath(const MapPoint& from, const MapPoint& to) {
   PathFinder path_designer;
-  path_designer.set_value(wall_block_, 10);
-  path_designer.set_value(ground_block_, 1);
-  path_designer.set_value(path_block_, 3);
+  path_designer.set_value(*wall_block_, 10);
+  path_designer.set_value(*ground_block_, 1);
+  path_designer.set_value(*path_block_, 3);
   path_designer.set_target_map(*target_map_);
   std::list<MapPoint> shortest_path = path_designer.FindShortestPath(from, to);
   std::list<MapPoint>::iterator path_builder = shortest_path.begin();
   while (path_builder != shortest_path.end()) {
-    if (target_map_->BlockIn(*path_builder) == wall_block_) {
-        target_map_->SetBlockIn(*path_builder, path_block_);
+    if (target_map_->BlockIn(*path_builder) == *wall_block_) {
+        target_map_->SetBlockIn(*path_builder, *path_block_);
     }
     ++path_builder;
   }
@@ -127,8 +127,8 @@ bool MapBuilder::BuildRoom(MapPoint* room_pos) {
   for (size_t i = 1; i < new_room.size.w - 1; ++i) {
     for (size_t j = 1; j < new_room.size.h - 1; ++j) {
       // Won't cause room adhesion
-        target_map_->SetBlockIn({new_room.left_top.x + i,
-                                 new_room.left_top.y + j}, ground_block_);
+        target_map_->SetBlockIn(new_room.left_top + MapPoint(i, j),
+                                *ground_block_);
     }
   }
   // Keep the checked array correct
@@ -176,9 +176,9 @@ bool MapBuilder::IsRectEmpty(const Map::RectWithPos& rect_for_check) {
     if (!is_max_w && now.w != rect_for_check.size.w) {
       for (size_t i = 0; i < now.h; ++i) {
         if (target_map_->BlockIn({rect_l_t.x + now.w, rect_l_t.y + i}) !=
-            wall_block_ &&
+            *wall_block_ &&
             target_map_->BlockIn({rect_l_t.x + now.w, rect_l_t.y + i}) !=
-            path_block_) {
+            *path_block_) {
           is_max_w = true;  // Oops, can't expand anymore
           --now.w;  // Keep width
           break;
@@ -190,9 +190,9 @@ bool MapBuilder::IsRectEmpty(const Map::RectWithPos& rect_for_check) {
     if (!is_max_h && now.h != rect_for_check.size.h) {
       for (size_t i = 0; i < now.w; ++i) {
         if (target_map_->BlockIn({rect_l_t.x + i, rect_l_t.y + now.h}) !=
-            wall_block_ &&
+            *wall_block_ &&
             target_map_->BlockIn({rect_l_t.x + i, rect_l_t.y + now.h}) !=
-            path_block_) {
+            *path_block_) {
           is_max_h = true;  // Oops, can't expand anymore
           --now.h;  // Keep height
           break;

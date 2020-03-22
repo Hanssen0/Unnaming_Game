@@ -5,19 +5,19 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-#ifndef UNNAMING_GAME_SRC_MAP_BUILDING_BASEBUILDING_H_
-#define UNNAMING_GAME_SRC_MAP_BUILDING_BASEBUILDING_H_
+#ifndef UNNAMING_GAME_SRC_MAP_BLOCK_BASEBLOCK_H_
+#define UNNAMING_GAME_SRC_MAP_BLOCK_BASEBLOCK_H_
 #include <memory>
-#include "Building.h"
-class BaseBuilding final {
+#include "Block.h"
+class BaseBlock final {
  public:
-  static size_t BaseBuildingSize();
-  explicit operator Building();
-  explicit BaseBuilding(const Building&);
-  BaseBuilding();
+  static size_t BaseBlockSize();
+  explicit operator Block();
+  explicit BaseBlock(const Block&);
+  BaseBlock();
 
  private:
   class Implementation;
   std::shared_ptr<Implementation> impl_;
 };
-#endif  // UNNAMING_GAME_SRC_MAP_BUILDING_BASEBUILDING_H_
+#endif  // UNNAMING_GAME_SRC_MAP_BLOCK_BASEBLOCK_H_

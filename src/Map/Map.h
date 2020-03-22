@@ -36,9 +36,6 @@ class Map final {
     std::vector< std::vector<bool> > is_seen;
     Map_ref detail;
   };
-  struct Rules {
-    BlockPtr empty_block;
-  };
   struct RectWithPos {
     MapPoint left_top;
     Rect size;
@@ -50,22 +47,22 @@ class Map final {
   size_t Width() const;
   size_t Height() const;
   void SetDestroy(const std::function<void()>&);
-  void SetEmptyBlock(const BlockPtr&);
+  void SetEmptyBlock(const Block&);
   // Layer
-  const BlockPtr& BlockIn(const MapPoint&) const;
+  const Block& BlockIn(const MapPoint&) const;
   const Building& BuildingIn(const MapPoint&) const;
-  void SetBlockIn(const MapPoint&, const BlockPtr&);
+  void SetBlockIn(const MapPoint&, const Block&);
   void SetBuildingIn(const MapPoint&, const Building&);
   void DestroyBlockIn(const MapPoint&);
   ~Map();
-  void ForEachBlock(const std::function< void(BlockPtr*) >& applier);
+  void ForEachBlock(const std::function< void(const Block**) >& applier);
   void ForEachBlockIn(const RectWithPos& region,
-                      const std::function< void(BlockPtr*) >& applier);
+                      const std::function< void(const Block**) >& applier);
   void ForEachBuilding(const std::function< void(const Building**) >& applier);
   void Link();
   void Unlink();
   MapPoint PickRandomPointIn(const std::function<size_t(size_t, size_t)>& ran,
-                          const std::list<BlockPtr>& valid_list) const;
+                          const std::list<const Block*>& valid_list) const;
   void CopyFromIn(const Map&, const MapPoint&);
   MemoryOfMap& GetMemory(size_t);
   inline bool has(const IntPoint& pos) const {
@@ -85,17 +82,17 @@ class Map final {
     assert(has(pos));
     return pos.y*Width() + pos.x;
   }
-  BlockPtr* BlockPtrIn(const MapPoint& pos);
+  const Block** BlockPtrIn(const MapPoint& pos);
   const Building** BuildingPtrIn(const MapPoint& pos);
   static size_t kMapSize;
   const Rect size_;
   bool is_got_id_;
   size_t id_;
   int links_num_;
-  BlockPtr empty_block_;
+  const Block* empty_block_;
   std::function<void()> destroy_;
   std::map<size_t, MemoryOfMap> memories_;
-  std::vector<BlockPtr> blocks_;
+  std::vector<const Block*> blocks_;
   std::vector<const Building*> buildings_;
 };
 #endif  // UNNAMING_GAME_SRC_MAP_MAP_H_

@@ -7,18 +7,22 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef UNNAMING_GAME_SRC_MAP_BLOCK_BLOCK_H_
 #define UNNAMING_GAME_SRC_MAP_BLOCK_BLOCK_H_
+#include <cstddef>
 #include <memory>
-class Block;
-typedef std::shared_ptr<Block> BlockPtr;
+#include <iostream>
+class BlockImplementation;
 class Block final {
  public:
-  static BlockPtr Create();
-  static size_t BlockSize();
-  inline size_t index() const {return index_;}
+  size_t index() const;
+  explicit Block(const std::shared_ptr<BlockImplementation>& impl)
+      : impl_(impl) {}
+  const std::shared_ptr<BlockImplementation>& impl() const {return impl_;}
+  operator bool() const {return static_cast<bool>(impl_);}
+  bool operator==(const Block& block) const {return index() == block.index();}
+  bool operator!=(const Block& block) const {return index() != block.index();}
 
  private:
-  Block();
-  static size_t kBlockSize;
-  size_t index_;
+  Block() = delete;
+  std::shared_ptr<BlockImplementation> impl_;
 };
 #endif  // UNNAMING_GAME_SRC_MAP_BLOCK_BLOCK_H_

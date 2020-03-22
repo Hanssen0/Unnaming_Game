@@ -46,7 +46,7 @@ std::list<MapPoint> PathFinder::FindShortestPath(const MapPoint& from,
   }
   evaulate_to = to;
   walked_dis_[from.x][from.y] =
-      static_cast< uint64_t >(value_[target_map_->BlockIn(from)->index()]);
+      static_cast< uint64_t >(value_[target_map_->BlockIn(from).index()]);
   father_[from.x][from.y] = from;
   searching_list.push_back(from);
   MapPoint min_dis;
@@ -113,11 +113,11 @@ void PathFinder::UpdateNearby(const MapPoint& now) {
     --tmp.y;
   }
 }
-bool PathFinder::TryAPoint(const BlockPtr& type, uint64_t walked_dis,
+bool PathFinder::TryAPoint(const Block& type, uint64_t walked_dis,
                            const MapPoint& now) {
-  if (!walked_[now.x][now.y] && value_[type->index()] >= 0) {
+  if (!walked_[now.x][now.y] && value_[type.index()] >= 0) {
     auto now_dis = walked_dis +
-                   static_cast<unsigned int>(value_[type->index()]);
+                   static_cast<unsigned int>(value_[type.index()]);
     if (is_first_check_[now.x][now.y] == true) {
       walked_dis_[now.x][now.y] = now_dis;
       PushPointToAstarList(now);
