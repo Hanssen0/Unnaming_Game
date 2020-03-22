@@ -6,7 +6,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "Block.h"
-#include "./map_cmake.h"
+#include "../map_cmake.h"
 size_t Block::kBlockSize = 0;
 MAP_EXPORT BlockPtr Block::Create() {
   return BlockPtr(new Block());

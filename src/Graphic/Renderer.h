@@ -14,7 +14,7 @@
 #define UNNAMING_GAME_SRC_GRAPHIC_RENDERER_H_
 #include <memory>
 #include <vector>
-#include "../Map/Block.h"
+#include "../Map/Block/Block.h"
 #include "../Map/Building/Building.h"
 #include "../Map/Map.h"
 #include "../Object/Creature.h"

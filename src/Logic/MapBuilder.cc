@@ -15,7 +15,7 @@
 #include <list>
 #include <queue>
 #include "./Pathfinder.h"
-#include "../Map/Block.h"
+#include "../Map/Block/Block.h"
 #include "../Map/Building/Building.h"
 #include "../Map/Map.h"
 MapBuilder::~MapBuilder() {}

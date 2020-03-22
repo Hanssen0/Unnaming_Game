@@ -19,7 +19,7 @@
 #include <map>
 #include <memory>
 #include <vector>
-#include "./Block.h"
+#include "./Block/Block.h"
 #include "./Building/Building.h"
 #include "../Common/Point.h"
 typedef Point<size_t> MapPoint;

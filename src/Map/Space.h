@@ -17,7 +17,7 @@
 #include <functional>
 #include <list>
 #include <vector>
-#include "./Block.h"
+#include "./Block/Block.h"
 #include "./Building/Building.h"
 #include "./Map.h"
 #include "../Logic/MapBuilder.h"
