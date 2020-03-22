@@ -17,7 +17,7 @@
  * http://www.roguebasin.com/index.php?title=FOV_using_recursive_shadowcasting
  */
 #include <functional>
-#include "./fraction.h"
+#include "../Common/Fraction.h"
 #include "../Map/Map.h"
 class FunctorShadowCasting final {
  public:
