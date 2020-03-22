@@ -54,9 +54,9 @@ class Creature {
   void set_view_dis(const size_t& d);
   ~Creature();
   bool is_viewable(const MapPoint& pos) const;
-  void Destory(const MapPoint&);
   Map::MemoryOfMap& GetMemory();
-  template <int x, int y> void Move();
+  template <int, int> void Move();
+  template <int, int> void Destroy();
   void Teleport(const Map_ref&, const MapPoint&);
   void UpdateViewable();
   constexpr static size_t kMaxViewDis = (SIZE_MAX - 1) >> 1;

@@ -67,6 +67,12 @@ template <int x, int y> CREATURE_NO_EXPORT void Creature::Move() {
   ability_.now_energy -= c_m;
   set_position(des);
 }
+template<int x, int y> void Creature::Destroy() {
+  MapPoint des = position();
+  des += IntPoint(x, y);
+  if (!map()->has(des)) return;
+  map()->DestoryBlockIn(des);
+}
 CREATURE_NO_EXPORT Creature::Creature() {information_.is_have_id = false;}
 CREATURE_NO_EXPORT void Creature::get_id() {
   information_.is_have_id = true;
@@ -111,6 +117,10 @@ template CREATURE_EXPORT void Creature::Move<kWASD[0][0], kWASD[0][1]>();
 template CREATURE_EXPORT void Creature::Move<kWASD[1][0], kWASD[1][1]>();
 template CREATURE_EXPORT void Creature::Move<kWASD[2][0], kWASD[2][1]>();
 template CREATURE_EXPORT void Creature::Move<kWASD[3][0], kWASD[3][1]>();
+template CREATURE_EXPORT void Creature::Destroy<kWASD[0][0], kWASD[0][1]>();
+template CREATURE_EXPORT void Creature::Destroy<kWASD[1][0], kWASD[1][1]>();
+template CREATURE_EXPORT void Creature::Destroy<kWASD[2][0], kWASD[2][1]>();
+template CREATURE_EXPORT void Creature::Destroy<kWASD[3][0], kWASD[3][1]>();
 CREATURE_EXPORT Creature_ref Creature::Create() {
   return Creature_ref(new Creature());
 }
@@ -150,10 +160,6 @@ CREATURE_EXPORT bool Creature::is_viewable(const MapPoint& pos) const {
   const size_t viewable_size = information_.is_viewable.size();
   if (target > viewable_size) return false;
   return information_.is_viewable[target.x][target.y];
-}
-CREATURE_EXPORT void Creature::Destory(const MapPoint& pos) {
-  if (!map()->has(pos)) return;
-  map()->DestoryBlockIn(pos);
 }
 CREATURE_EXPORT size_t Creature::id() {
   if (!information_.is_have_id) get_id();

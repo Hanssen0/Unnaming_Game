@@ -97,10 +97,10 @@ int main() {
   input->BindKey('a', [&main_role](){main_role->Move< -1, 0 >();});
   input->BindKey('s', [&main_role](){main_role->Move< 0, 1 >();});
   input->BindKey('d', [&main_role](){main_role->Move< 1, 0 >();});
-  input->BindKey('l', [&main_role](){
-      main_role->Destory({main_role->position().x + 1,
-                          main_role->position().y});
-    });
+  input->BindKey('i', [&main_role](){main_role->Destroy< 0, -1 >();});
+  input->BindKey('j', [&main_role](){main_role->Destroy< -1, 0 >();});
+  input->BindKey('k', [&main_role](){main_role->Destroy< 0, 1 >();});
+  input->BindKey('l', [&main_role](){main_role->Destroy< 1, 0 >();});
   input->BindKey('q', [&quit_status](){quit_status.set_status();});
   input->BindKey('m', [&render_memory_status](){
                             render_memory_status.set_status();
