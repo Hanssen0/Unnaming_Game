@@ -55,13 +55,12 @@ CREATURE_EXPORT void Creature::CostOfBlock::BindSeeThroughCost(
 }
 CREATURE_EXPORT Creature::CostOfBlock::~CostOfBlock() {}
 // Creature
-CREATURE_NO_EXPORT void Creature::set_position(const Point& pos) {
+CREATURE_NO_EXPORT void Creature::set_position(const MapPoint& pos) {
   position_ = pos;
 }
 template <int x, int y> CREATURE_NO_EXPORT void Creature::Move() {
-  Point des = position();
-  des.x += x;
-  des.y += y;
+  MapPoint des = position();
+  des += IntPoint(x, y);
   if (!map()->has(des)) return;
   const int c_m = information_.cost[map()->BlockIn(des)->index()]->MoveCost();
   if (c_m < 0 || c_m > ability_.now_energy) return;
@@ -78,8 +77,7 @@ CREATURE_NO_EXPORT void Creature::UpdateMemory() {
   for (size_t i = 0; i < information_.is_viewable.size(); ++i) {
     for (size_t j = 0; j < information_.is_viewable.size(); ++j) {
       if (information_.is_viewable[i][j]) {
-        const Point tmp = {position().x + i - view_dis(),
-                           position().y + j - view_dis()};
+        const MapPoint tmp = position() + MapPoint(i, j) - view_dis();
         now_mem.left_top.x = std::min(now_mem.left_top.x, tmp.x);
         now_mem.left_top.y = std::min(now_mem.left_top.y, tmp.y);
         now_mem.right_bottom.x = std::max(now_mem.right_bottom.x, tmp.x);
@@ -90,17 +88,19 @@ CREATURE_NO_EXPORT void Creature::UpdateMemory() {
     }
   }
 }
-CREATURE_NO_EXPORT bool Creature::is_valid(const Point& pos) const {
-  const Point target = pos + view_dis() - position();
+CREATURE_NO_EXPORT bool Creature::is_valid(const MapPoint& pos) const {
+  MapPoint target = pos + view_dis();
+  if (target < position()) return false;
+  target -= position();
   const size_t viewable_size = information_.is_viewable.size();
-  return target > 0 && target < viewable_size;
+  return target < viewable_size;
 }
-CREATURE_NO_EXPORT void Creature::set_viewable(const Point& pos) {
+CREATURE_NO_EXPORT void Creature::set_viewable(const MapPoint& pos) {
   if (!is_valid(pos)) return;
   information_.is_viewable[pos.x - position().x + view_dis()]
                           [pos.y - position().y + view_dis()] = true;
 }
-CREATURE_NO_EXPORT int Creature::get_cost(const Point& pos) {
+CREATURE_NO_EXPORT int Creature::get_cost(const MapPoint& pos) {
   return map_->has(pos)? information_.cost[map()->BlockIn(pos)->index()]
                              ->SeeThroughCost() : 0x3f3f3f3f;
 }
@@ -114,14 +114,15 @@ template CREATURE_EXPORT void Creature::Move<kWASD[3][0], kWASD[3][1]>();
 CREATURE_EXPORT Creature_ref Creature::Create() {
   return Creature_ref(new Creature());
 }
-CREATURE_EXPORT void Creature::Teleport(const Map_ref& map, const Point& pos) {
+CREATURE_EXPORT void Creature::Teleport(const Map_ref& map,
+                                        const MapPoint& pos) {
   if (map_) map_->Unlink();
   map->Link();
   map_ = map;
   set_position(pos);
 }
 CREATURE_EXPORT const Map_ref& Creature::map() const {return map_;}
-CREATURE_EXPORT const Point& Creature::position() const {return position_;}
+CREATURE_EXPORT const MapPoint& Creature::position() const {return position_;}
 CREATURE_EXPORT void Creature::set_view_dis(const size_t& d) {
   ability_.view_dis = std::min(kMaxViewDis, d);
   const size_t view_size = ((ability_.view_dis << 1) | 1);
@@ -141,14 +142,16 @@ CREATURE_EXPORT void Creature::UpdateViewable() {
   shadow_casting(position(), view_dis());
   UpdateMemory();
 }
-CREATURE_EXPORT bool Creature::is_viewable(const Point& pos) const {
+CREATURE_EXPORT bool Creature::is_viewable(const MapPoint& pos) const {
   if (!map_->has(pos)) return false;
-  Point target = pos + view_dis() - position();
+  MapPoint target = pos + view_dis();
+  if (target < position()) return false;
+  target -= position();
   const size_t viewable_size = information_.is_viewable.size();
-  if (target < 0 || target > viewable_size) return false;
+  if (target > viewable_size) return false;
   return information_.is_viewable[target.x][target.y];
 }
-CREATURE_EXPORT void Creature::Destory(const Point& pos) {
+CREATURE_EXPORT void Creature::Destory(const MapPoint& pos) {
   if (!map()->has(pos)) return;
   map()->DestoryBlockIn(pos);
 }

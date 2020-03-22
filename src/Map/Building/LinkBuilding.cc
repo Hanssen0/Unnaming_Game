@@ -15,13 +15,13 @@ class LinkBuilding::Implementation: public BuildingImplementation {
  public:
   inline size_t index() const override {return base_->index();}
   inline void set_map(Map* const map) {map_ = map;}
-  inline void set_pos(const Point& pos) {pos_ = pos;}
+  inline void set_pos(const MapPoint& pos) {pos_ = pos;}
   explicit Implementation(const Building& base): base_(&base) {}
 
  private:
   const Building* base_;
   Map* map_;
-  Point pos_;
+  MapPoint pos_;
 };
 MAP_EXPORT LinkBuilding::operator Building() {
   return Building(impl_);
@@ -32,6 +32,6 @@ MAP_EXPORT LinkBuilding::LinkBuilding(const Building& base) {
   impl_ = std::make_shared<Implementation>(base);
 }
 MAP_EXPORT void LinkBuilding::SetMap(Map* const map) {impl_->set_map(map);}
-MAP_EXPORT void LinkBuilding::SetPosition(const Point& pos) {
+MAP_EXPORT void LinkBuilding::SetPosition(const MapPoint& pos) {
   impl_->set_pos(pos);
 }

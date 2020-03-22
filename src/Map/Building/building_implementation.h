@@ -10,5 +10,6 @@
 class BuildingImplementation {
  public:
   virtual size_t index() const = 0;
+  virtual ~BuildingImplementation() {}
 };
 #endif  // UNNAMING_GAME_SRC_MAP_BUILDING_BUILDING_IMPLEMENTATION_H_

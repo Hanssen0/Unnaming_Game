@@ -12,7 +12,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "MapBuilder.h"
 #include <cstdint>
-#include <algorithm>
 #include <list>
 #include <queue>
 #include "./Pathfinder.h"
@@ -37,12 +36,12 @@ void MapBuilder::SetPortalBuilding(const Building& portal) {
 }
 void MapBuilder::Build() {
   InitForEmptyTest();
-  Point previous;
+  MapPoint previous;
   const BlockPtr& wall = this->wall_block_;
   target_map_->ForEachBlock([&wall](BlockPtr* block){*block = wall;});
   bool is_first = true;
   while (true) {
-    Point tmp;
+    MapPoint tmp;
     if (!BuildRoom(&tmp)) break;
     if (!is_first) {
       BuildPath(previous, tmp);
@@ -66,7 +65,7 @@ void MapBuilder::InitForEmptyTest() {
     }
   }
 }
-void MapBuilder::UpdateCheckedBuildAble(const Point& pos_to_update) {
+void MapBuilder::UpdateCheckedBuildAble(const MapPoint& pos_to_update) {
   Rect& now = checked_build_able_[pos_to_update.x][pos_to_update.y];
   if (pos_to_update.x > 0) {
     now = checked_build_able_[pos_to_update.x - 1][pos_to_update.y];
@@ -82,15 +81,14 @@ void MapBuilder::UpdateCheckedBuildAble(const Point& pos_to_update) {
     if (now.h > 0) --now.h;
   }
 }
-void MapBuilder::BuildPath(const Point& from, const Point& to) {
+void MapBuilder::BuildPath(const MapPoint& from, const MapPoint& to) {
   PathFinder path_designer;
   path_designer.set_value(wall_block_, 10);
   path_designer.set_value(ground_block_, 1);
   path_designer.set_value(path_block_, 3);
   path_designer.set_target_map(*target_map_);
-  std::list< Point > shortest_path =
-      path_designer.FindShortestPath(from, to);
-  std::list< Point >::iterator path_builder = shortest_path.begin();
+  std::list<MapPoint> shortest_path = path_designer.FindShortestPath(from, to);
+  std::list<MapPoint>::iterator path_builder = shortest_path.begin();
   while (path_builder != shortest_path.end()) {
     if (target_map_->BlockIn(*path_builder) == wall_block_) {
         target_map_->SetBlockIn(*path_builder, path_block_);
@@ -98,8 +96,8 @@ void MapBuilder::BuildPath(const Point& from, const Point& to) {
     ++path_builder;
   }
 }
-bool MapBuilder::SelectRoomPosition(RectWithPos* rect_for_build) {
-  std::queue< Point > build_able_point;
+bool MapBuilder::SelectRoomPosition(Map::RectWithPos* rect_for_build) {
+  std::queue<MapPoint> build_able_point;
   for (rect_for_build->left_top.x = 0;
        rect_for_build->left_top.x < target_map_->Width();
        ++rect_for_build->left_top.x) {
@@ -119,8 +117,8 @@ bool MapBuilder::SelectRoomPosition(RectWithPos* rect_for_build) {
   rect_for_build->left_top = build_able_point.front();
   return true;
 }
-bool MapBuilder::BuildRoom(Point* room_pos) {
-  RectWithPos new_room;
+bool MapBuilder::BuildRoom(MapPoint* room_pos) {
+  Map::RectWithPos new_room;
   Rect random_rect = RandomRoomRect();
   new_room.size = random_rect;
   if (!SelectRoomPosition(&new_room)) {
@@ -134,11 +132,9 @@ bool MapBuilder::BuildRoom(Point* room_pos) {
     }
   }
   // Keep the checked array correct
-  Point now = new_room.left_top;
-  now.x -= max_room_size_.w;
-  now.y -= max_room_size_.h;
-  now.x = std::max(0, now.x);
-  now.y = std::max(0, now.y);
+  MapPoint now = new_room.left_top;
+  now.x = now.x < max_room_size_.w ? 0 : now.x - max_room_size_.w;
+  now.y = now.y < max_room_size_.h ? 0 : now.y - max_room_size_.h;
   for (; now.x < new_room.left_top.x + new_room.size.w; ++now.x) {
     for (; now.y < new_room.left_top.y + new_room.size.h; ++now.y) {
       if (now.x >= new_room.left_top.x && now.y >= new_room.left_top.y) {
@@ -160,8 +156,8 @@ bool MapBuilder::BuildRoom(Point* room_pos) {
   *room_pos = new_room.left_top;
   return true;
 }
-bool MapBuilder::IsRectEmpty(const RectWithPos& rect_for_check) {
-  const Point& rect_l_t = rect_for_check.left_top;  // Shorter code
+bool MapBuilder::IsRectEmpty(const Map::RectWithPos& rect_for_check) {
+  const MapPoint& rect_l_t = rect_for_check.left_top;  // Shorter code
   if ((rect_for_check.size.w + rect_l_t.x > target_map_->Width()) ||
       (rect_for_check.size.h + rect_l_t.y > target_map_->Height())) {
     return false;
@@ -216,15 +212,4 @@ inline Rect MapBuilder::RandomRoomRect() {
   const Rect ret = {random_gen_(min_room_size_.w + 2, max_room_size_.w + 2),
                     random_gen_(min_room_size_.h + 2, max_room_size_.h + 2)};
   return ret;
-}
-inline const Rect& MapBuilder::max(const Rect& a, const Rect& b) {
-  if (a.w < 0 || a.h < 0) return b;
-  if (b.w < 0 || b.h < 0) return a;
-  int64_t a_area = a.w, b_area = b.w;
-  a_area *= a.h, b_area *= b.h;
-  if (a_area > b_area) {
-    return a;
-  } else {
-    return b;
-  }
 }

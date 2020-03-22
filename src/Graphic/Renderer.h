@@ -32,7 +32,7 @@ class Renderer {
  private:
   Renderer();
   Renderer& operator=(const Renderer&) = delete;
-  void RenderPosition(const Map&, const Point&) const;
+  void RenderPosition(const Map&, const MapPoint&) const;
   std::vector< char > exterior_of_block_;
   std::vector< char > exterior_of_building_;
 };

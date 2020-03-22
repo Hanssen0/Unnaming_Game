@@ -23,8 +23,8 @@ class Fraction {
   T number_, denominator_;
   void Reduce();
   template <typename TT>
-  inline void operator=(const Fraction<TT>& fraction);
-  inline void operator=(const T& x);
+  inline const Fraction<T>& operator=(const Fraction<TT>& fraction);
+  inline const Fraction<T>& operator=(const T& x);
   inline Fraction operator+(const Fraction& fraction) const;
   inline Fraction operator-(const Fraction& fraction) const;
   inline bool operator>(const Fraction& fraction) const;
@@ -51,16 +51,17 @@ void Fraction<T>::Reduce() {
   if (x != 0) number_ /= x, denominator_ /= x;
   if (denominator_ < 0) number_ = -number_, denominator_ = -denominator_;
 }
-template <typename T>
-template <typename TT>
-inline void Fraction<T>::operator=(const Fraction<TT>& fraction) {
+template <typename T> template <typename TT>
+inline const Fraction<T>& Fraction<T>::operator=(const Fraction<TT>& fraction) {
   number_ = fraction.number_;
   denominator_ = fraction.denominator_;
+  return *this;
 }
 template <typename T>
-inline void Fraction<T>::operator=(const T& number) {
+inline const Fraction<T>& Fraction<T>::operator=(const T& number) {
   number_ = number;
   denominator_ = 1;
+  return *this;
 }
 template <typename T>
 inline Fraction<T> Fraction<T>::operator+(const Fraction& fraction) const {

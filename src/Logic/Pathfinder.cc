@@ -12,7 +12,10 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "Pathfinder.h"
 #include <algorithm>
-Point evaulate_to;
+MapPoint evaulate_to;
+inline size_t abs_minus(size_t a, size_t b) {
+  return a > b ? a - b : b - a;
+}
 void PathFinder::set_target_map(const Map& target) {
   target_map_ = &target;
   walked_.resize(target.Width());
@@ -26,11 +29,11 @@ void PathFinder::set_target_map(const Map& target) {
     father_[i].resize(target.Height());
   }
 }
-inline uint64_t EvaulateValue(const Point& po) {
-  return abs(po.x - evaulate_to.x) + abs(po.y - evaulate_to.y);
+inline uint64_t EvaulateValue(const MapPoint& po) {
+  return abs_minus(po.x, evaulate_to.x) + abs_minus(po.y, evaulate_to.y);
 }
-std::list< Point > PathFinder::FindShortestPath(const Point& from,
-                                                const Point& to) {
+std::list<MapPoint> PathFinder::FindShortestPath(const MapPoint& from,
+                                                 const MapPoint& to) {
   for (size_t i = 0; i < target_map_->Width(); ++i) {
     for (size_t j = 0; j < target_map_->Height(); ++j) {
       is_first_check_[i][j] = true;
@@ -46,7 +49,7 @@ std::list< Point > PathFinder::FindShortestPath(const Point& from,
       static_cast< uint64_t >(value_[target_map_->BlockIn(from)->index()]);
   father_[from.x][from.y] = from;
   searching_list.push_back(from);
-  Point min_dis;
+  MapPoint min_dis;
   while (!searching_list.empty()) {
     min_dis = searching_list.front();
     searching_list.pop_front();
@@ -55,8 +58,8 @@ std::list< Point > PathFinder::FindShortestPath(const Point& from,
     }
     UpdateNearby(min_dis);
   }
-  std::list< Point > shortest_path;
-  Point backer;
+  std::list<MapPoint> shortest_path;
+  MapPoint backer;
   if (min_dis.x == to.x && min_dis.y == to.y) {
     backer = to;
     while (!(backer == father_[backer.x][backer.y])) {
@@ -66,9 +69,9 @@ std::list< Point > PathFinder::FindShortestPath(const Point& from,
   }
   return shortest_path;
 }
-void PathFinder::UpdateNearby(const Point& now) {
+void PathFinder::UpdateNearby(const MapPoint& now) {
   walked_[now.x][now.y] = true;
-  Point tmp = now;
+  MapPoint tmp = now;
   if (tmp.x > 0) {
     --tmp.x;
     if (TryAPoint(target_map_->BlockIn(tmp),
@@ -111,16 +114,18 @@ void PathFinder::UpdateNearby(const Point& now) {
   }
 }
 bool PathFinder::TryAPoint(const BlockPtr& type, uint64_t walked_dis,
-                           const Point& now) {
+                           const MapPoint& now) {
   if (!walked_[now.x][now.y] && value_[type->index()] >= 0) {
+    auto now_dis = walked_dis +
+                   static_cast<unsigned int>(value_[type->index()]);
     if (is_first_check_[now.x][now.y] == true) {
-      walked_dis_[now.x][now.y] = walked_dis + value_[type->index()];
+      walked_dis_[now.x][now.y] = now_dis;
       PushPointToAstarList(now);
       is_first_check_[now.x][now.y] = false;
       return true;
     }
-    if (walked_dis_[now.x][now.y] > walked_dis + value_[type->index()]) {
-      walked_dis_[now.x][now.y] = walked_dis + value_[type->index()];
+    if (walked_dis_[now.x][now.y] > now_dis) {
+      walked_dis_[now.x][now.y] = now_dis;
       searching_list.erase(std::find(searching_list.begin(),
                                      searching_list.end(),
                                      now));
@@ -130,8 +135,8 @@ bool PathFinder::TryAPoint(const BlockPtr& type, uint64_t walked_dis,
   }
   return false;
 }
-void PathFinder::PushPointToAstarList(const Point& po) {
-  std::list< Point >::iterator now = searching_list.begin();
+void PathFinder::PushPointToAstarList(const MapPoint& po) {
+  std::list<MapPoint>::iterator now = searching_list.begin();
   while (now != searching_list.end() &&
          walked_dis_[(*now).x][(*now).y] + EvaulateValue(*now) <
          walked_dis_[po.x][po.y] + EvaulateValue(po)) {

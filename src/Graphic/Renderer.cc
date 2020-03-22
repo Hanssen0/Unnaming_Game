@@ -34,7 +34,7 @@ void Renderer::set_exterior_of_building(const char exterior,
   exterior_of_building_[type.index()] = exterior;
 }
 RENDERER_EXPORT void Renderer::RenderPosition(const Map& map,
-                                              const Point& pos) const {
+                                              const MapPoint& pos) const {
   auto building = exterior_of_building_[map.BuildingIn(pos).index()];
   if (building != 0) {
     std::cout << building;
@@ -45,12 +45,16 @@ RENDERER_EXPORT void Renderer::RenderPosition(const Map& map,
 RENDERER_EXPORT void Renderer::RenderCreaturesView(const Creature& obj) const {
   for (size_t j = 0; j < ((obj.view_dis() << 1) | 1); ++j) {
     for (size_t i = 0; i < ((obj.view_dis() << 1) | 1); ++i) {
-      const Point tmp = {obj.position().x + i - obj.view_dis(),
-                         obj.position().y + j - obj.view_dis()};
+      MapPoint tmp = obj.position() + MapPoint(i, j);
+      if (tmp < obj.view_dis()) {
+        std::cout << ' ';
+        continue;
+      }
+      tmp -= obj.view_dis();
       if (tmp == obj.position()) {
         std::cout << "@";
       } else if (obj.is_viewable(tmp)) {
-        RenderPosition(*obj.map(), tmp);
+        RenderPosition(*obj.map(), MapPoint(tmp));
       } else {
         std::cout << ' ';
       }

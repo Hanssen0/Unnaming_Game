@@ -46,18 +46,18 @@ class Creature {
   static Creature_ref Create();
   size_t id();
   const Map_ref& map() const;
-  const Point& position() const;
+  const MapPoint& position() const;
   size_t view_dis() const;
   void set_cost(const BlockPtr& type, const CostOfBlock_ref& cost);
   void set_max_energy(const int& energy);
   void set_now_energy(const int& energy);
   void set_view_dis(const size_t& d);
   ~Creature();
-  bool is_viewable(const Point& pos) const;
-  void Destory(const Point&);
+  bool is_viewable(const MapPoint& pos) const;
+  void Destory(const MapPoint&);
   Map::MemoryOfMap& GetMemory();
   template <int x, int y> void Move();
-  void Teleport(const Map_ref&, const Point&);
+  void Teleport(const Map_ref&, const MapPoint&);
   void UpdateViewable();
   constexpr static size_t kMaxViewDis = (SIZE_MAX - 1) >> 1;
 
@@ -68,7 +68,7 @@ class Creature {
   void UpdateMemory();
   static size_t kCreatureSize;
   Map_ref map_;
-  Point position_;
+  MapPoint position_;
   struct {
     size_t view_dis;
     int now_energy;
@@ -80,10 +80,10 @@ class Creature {
     std::vector< CostOfBlock_ref > cost;
     std::vector< std::vector< bool > > is_viewable;
   } information_;
-  void set_position(const Point&);
-  bool is_valid(const Point& pos) const;
-  void set_viewable(const Point& pos);
-  int get_cost(const Point& pos);
+  void set_position(const MapPoint&);
+  bool is_valid(const MapPoint& pos) const;
+  void set_viewable(const MapPoint& pos);
+  int get_cost(const MapPoint& pos);
   FunctorShadowCasting shadow_casting = FunctorShadowCasting()
     .SetFunction_IsValid(
       std::bind(&Creature::is_valid, this, std::placeholders::_1))

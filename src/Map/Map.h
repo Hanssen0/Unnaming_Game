@@ -21,52 +21,26 @@
 #include <vector>
 #include "./Block.h"
 #include "./Building/Building.h"
-// It's actually a structure with operators
-class Point {
- public:
-  inline bool operator<(const Point& b) const {
-    if (x == b.x) {
-      return y < b.y;
-    } else {
-      return x < b.x;
-    }
-  }
-  inline bool operator==(const Point& b) const {
-    return x == b.x && y == b.y;
-  }
-  inline Point operator-(const Point& b) const {
-    return Point(x - b.x, y - b.y);
-  }
-  inline Point operator+(const Point& b) const {
-    return Point(x + b.x, y + b.y);
-  }
-  inline Point operator-(int b) const {return Point(x - b, y - b);}
-  inline Point operator+(int b) const {return Point(x + b, y + b);}
-  inline bool operator<(int b) const {return x < b && y < b;}
-  inline bool operator>(int b) const {return x > b && y > b;}
-  template<typename T> inline Point(T x, T y): x(x), y(y) {}
-  inline Point() {}
-  int x, y;
-};
+#include "./Point.h"
 struct Rect {
   size_t w, h;
-};
-struct RectWithPos {
-  Point left_top;
-  Rect size;
 };
 class Map;
 typedef std::shared_ptr< Map > Map_ref;
 class Map final {
  public:
   struct MemoryOfMap {
-    Point left_top;
-    Point right_bottom;
-    std::vector< std::vector< bool > > is_seen;
+    MapPoint left_top;
+    MapPoint right_bottom;
+    std::vector< std::vector<bool> > is_seen;
     Map_ref detail;
   };
   struct Rules {
     BlockPtr empty_block;
+  };
+  struct RectWithPos {
+    MapPoint left_top;
+    Rect size;
   };
   static Map_ref Create(const Rect&);
   // Basic attributes
@@ -77,11 +51,11 @@ class Map final {
   void SetDestory(const std::function<void()>&);
   void SetEmptyBlock(const BlockPtr&);
   // Layer
-  const BlockPtr& BlockIn(const Point&) const;
-  const Building& BuildingIn(const Point&) const;
-  void SetBlockIn(const Point&, const BlockPtr&);
-  void SetBuildingIn(const Point&, const Building&);
-  void DestoryBlockIn(const Point&);
+  const BlockPtr& BlockIn(const MapPoint&) const;
+  const Building& BuildingIn(const MapPoint&) const;
+  void SetBlockIn(const MapPoint&, const BlockPtr&);
+  void SetBuildingIn(const MapPoint&, const Building&);
+  void DestoryBlockIn(const MapPoint&);
   ~Map();
   void ForEachBlock(const std::function< void(BlockPtr*) >& applier);
   void ForEachBlockIn(const RectWithPos& region,
@@ -89,25 +63,29 @@ class Map final {
   void ForEachBuilding(const std::function< void(const Building**) >& applier);
   void Link();
   void Unlink();
-  Point PickRandomPointIn(const std::function<int(int, int)>& ran,
+  MapPoint PickRandomPointIn(const std::function<size_t(size_t, size_t)>& ran,
                           const std::list<BlockPtr>& valid_list) const;
-  void CopyFromIn(const Map&, const Point&);
-  MemoryOfMap& GetMemory(int);
-  inline bool has(const Point& pos) const {
-    return 0 <= pos.x && static_cast<size_t>(pos.x) < Width() &&
-           0 <= pos.y && static_cast<size_t>(pos.y) < Height();
+  void CopyFromIn(const Map&, const MapPoint&);
+  MemoryOfMap& GetMemory(size_t);
+  inline bool has(const IntPoint& pos) const {
+    if (pos < 0) return false;
+    return static_cast<size_t>(pos.x) < Width() &&
+           static_cast<size_t>(pos.y) < Height();
+  }
+  inline bool has(const MapPoint& pos) const {
+    return pos.x < Width() && pos.y < Height();
   }
 
  private:
   explicit Map(const Rect&);
   void Init();
   void get_id();
-  size_t GetIndex(const Point& pos) const {
+  size_t GetIndex(const MapPoint& pos) const {
     assert(has(pos));
     return pos.y*Width() + pos.x;
   }
-  BlockPtr* BlockPtrIn(const Point& pos);
-  const Building** BuildingPtrIn(const Point& pos);
+  BlockPtr* BlockPtrIn(const MapPoint& pos);
+  const Building** BuildingPtrIn(const MapPoint& pos);
   static size_t kMapSize;
   const Rect size_;
   bool is_got_id_;
@@ -115,7 +93,7 @@ class Map final {
   int links_num_;
   BlockPtr empty_block_;
   std::function<void()> destory_;
-  std::map<int, MemoryOfMap> memories_;
+  std::map<size_t, MemoryOfMap> memories_;
   std::vector<BlockPtr> blocks_;
   std::vector<const Building*> buildings_;
 };

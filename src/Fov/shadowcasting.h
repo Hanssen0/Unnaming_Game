@@ -23,33 +23,28 @@ class FunctorShadowCasting final {
  public:
   typedef Fraction<int> IntFraction;
   inline FunctorShadowCasting& SetFunction_IsValid(
-      const std::function<bool(const Point&)>& func) {
+      const std::function<bool(const MapPoint&)>& func) {
     IsValid = func;
     return *this;
   }
   inline FunctorShadowCasting& SetFunction_SetViewable(
-      const std::function<void(const Point&)>& func) {
+      const std::function<void(const MapPoint&)>& func) {
     SetViewable = func;
     return *this;
   }
   inline FunctorShadowCasting& SetFunction_GetCost(
-      const std::function<int(const Point&)>& func) {
+      const std::function<int(const MapPoint&)>& func) {
     GetCost = func;
     return *this;
   }
-  /**
-   * Do ShadowCasting
-   *
-   * @param pos: position of Point Lights.
-   * @param radius: radius of Point Lights.
-   */
-  void operator()(const Point& pos, const int& radius);
+  // Do ShadowCasting
+  void operator()(const MapPoint&, const size_t&);
 
  private:
-  void CastLight(const Point& pos, const int& radius, const int& column,
-                 IntFraction start, IntFraction end, const int mult[4]);
-  std::function<bool(const Point&)> IsValid;
-  std::function<void(const Point&)> SetViewable;
-  std::function<int(const Point&)> GetCost;
+  void CastLight(const MapPoint&, const size_t&, const int&,
+                 IntFraction, IntFraction, const int[4]);
+  std::function<bool(const MapPoint&)> IsValid;
+  std::function<void(const MapPoint&)> SetViewable;
+  std::function<int(const MapPoint&)> GetCost;
 };
 #endif  // UNNAMING_GAME_SRC_FOV_SHADOWCASTING_H_

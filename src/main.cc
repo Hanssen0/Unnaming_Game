@@ -63,13 +63,13 @@ class AutoResetStatus {
 };
 int main() {
   std::default_random_engine random_engine;
-  std::uniform_int_distribution<int> rand_dis;
-  random_engine.seed(time(0));
-  std::function<int(int, int)> GenerateRandom =
-      [&random_engine, &rand_dis](int from, int to)->int {
+  std::uniform_int_distribution<size_t> rand_dis;
+  random_engine.seed(static_cast<unsigned int>(time(0)));
+  std::function<size_t(size_t, size_t)> GenerateRandom =
+      [&random_engine, &rand_dis](size_t from, size_t to) {
         return rand_dis(random_engine,
-                        std::uniform_int_distribution<int>::param_type(from,
-                                                                       to));
+                        std::uniform_int_distribution<size_t>::param_type(from,
+                                                                          to));
       };
   MapBuilder builder(GenerateRandom, {3, 3}, {8, 8});
   builder.SetGroundBlock(ground);
@@ -120,7 +120,7 @@ int main() {
         if (main_role->map()->
             BuildingIn(main_role->position()).index() ==
             portal_building.index()) {
-          auto new_map = main_space.NewMap();
+          new_map = main_space.NewMap();
           main_role->Teleport(
               new_map, new_map->PickRandomPointIn(GenerateRandom, valid));
         }

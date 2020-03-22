@@ -15,7 +15,7 @@ class LinkBuilding final {
   operator Building();
   explicit LinkBuilding(const Building&);
   void SetMap(Map* const);
-  void SetPosition(const Point&);
+  void SetPosition(const MapPoint&);
 
  private:
   class Implementation;

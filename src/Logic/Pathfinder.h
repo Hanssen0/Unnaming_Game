@@ -19,26 +19,26 @@
 #include "../Map/Map.h"
 class PathFinder {
  public:
-  std::list< Point > FindShortestPath(const Point& from, const Point& to);
+  std::list<MapPoint> FindShortestPath(const MapPoint&, const MapPoint&);
   inline void set_value(const BlockPtr& type, int value);
   void set_target_map(const Map& target);
 
  private:
   struct AstarStat {
-    Point self;
+    MapPoint self;
     PathFinder* original_finder;
   };
-  void UpdateNearby(const Point& now);
+  void UpdateNearby(const MapPoint& now);
   bool TryAPoint(const BlockPtr& type, uint64_t walked_dis,
-                 const Point& now);
-  void PushPointToAstarList(const Point&);
+                 const MapPoint& now);
+  void PushPointToAstarList(const MapPoint&);
   std::vector<int> value_;
   // A star data
-  std::vector< std::vector< bool > > walked_;
-  std::vector< std::vector< uint64_t > > walked_dis_;
-  std::vector< std::vector< bool > > is_first_check_;
-  std::vector< std::vector< Point > > father_;
-  std::list< Point > searching_list;
+  std::vector< std::vector<bool> > walked_;
+  std::vector< std::vector<uint64_t> > walked_dis_;
+  std::vector< std::vector<bool> > is_first_check_;
+  std::vector< std::vector<MapPoint> > father_;
+  std::list<MapPoint> searching_list;
   const Map* target_map_;
 };
 inline void PathFinder::set_value(const BlockPtr& type, int value) {

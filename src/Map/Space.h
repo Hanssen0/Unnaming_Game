@@ -23,6 +23,9 @@
 #include "../Logic/MapBuilder.h"
 class Space {
  public:
+  inline Space(const Space& space): builder_(space.builder_),
+                                    empty_block_(space.empty_block_),
+                                    next_map_size_(space.next_map_size_) {}
   inline Space(MapBuilder* builder, const Rect& nms,
                const BlockPtr& empty_block) : builder_(builder),
       empty_block_(empty_block), next_map_size_(nms) {}
