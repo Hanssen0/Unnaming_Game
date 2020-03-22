@@ -21,7 +21,8 @@
 #include <vector>
 #include "./Block.h"
 #include "./Building/Building.h"
-#include "./Point.h"
+#include "../Common/Point.h"
+typedef Point<size_t> MapPoint;
 struct Rect {
   size_t w, h;
 };

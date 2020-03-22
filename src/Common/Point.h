@@ -10,8 +10,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-#ifndef UNNAMING_GAME_SRC_MAP_POINT_H_
-#define UNNAMING_GAME_SRC_MAP_POINT_H_
+#ifndef UNNAMING_GAME_SRC_COMMON_POINT_H_
+#define UNNAMING_GAME_SRC_COMMON_POINT_H_
 #include <cassert>
 template<typename T>
 class Point {
@@ -77,6 +77,5 @@ class Point {
   }
   T x, y;  // There is no need to set them as private.
 };
-typedef Point<size_t> MapPoint;
 typedef Point<int> IntPoint;
-#endif  // UNNAMING_GAME_SRC_MAP_POINT_H_
+#endif  // UNNAMING_GAME_SRC_COMMON_POINT_H_

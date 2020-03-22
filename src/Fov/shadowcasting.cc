@@ -15,6 +15,7 @@
 #include <cstring>
 #include <cassert>
 #include <cmath>
+#include "../Common/Point.h"
 static const int kMult[8][4] = {
     {-1, 0, 0, -1}, {1, 0, 0, -1}, {-1, 0, 0, 1}, {1, 0, 0, 1},
     {0, -1, -1, 0}, {0, -1, 1, 0}, {0, 1, 1, 0}, {0, 1, -1, 0}
