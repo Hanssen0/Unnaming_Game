@@ -1,0 +1,14 @@
+@startuml
+hide members
+hide circle
+namespace visible {
+   Block <-- BaseBlock : up cast
+}
+namespace hidden {
+  Block::Implementation <|-- BaseBlock::Implementation
+}
+namespace component {
+  Block *-- Block::Implementation
+  BaseBlock *-- BaseBlock::Implementation
+}
+@enduml
