@@ -60,9 +60,6 @@ MAP_EXPORT size_t Map::Height() const {return size_.h;}
 MAP_EXPORT void Map::SetDestroy(const std::function<void()>& destroy) {
   destroy_ = destroy;
 }
-MAP_EXPORT void Map::SetEmptyBlock(const Block& block) {
-  empty_block_ = &block;
-}
 // Layer operators
 MAP_NO_EXPORT const Block** Map::BlockPtrIn(const MapPoint& pos) {
   return &blocks_[GetIndex(pos)];
@@ -85,7 +82,8 @@ MAP_EXPORT void Map::SetBuildingIn(const MapPoint& pos,
   *BuildingPtrIn(pos) = &building;
 }
 MAP_EXPORT void Map::DestroyBlockIn(const MapPoint& pos) {
-  SetBlockIn(pos, *empty_block_);
+  const Block& destroy = BlockIn(pos).Destroy();
+  if (destroy) SetBlockIn(pos, destroy);
 }
 MAP_EXPORT Map::~Map() {}
 MAP_NO_EXPORT void Map::get_id() {

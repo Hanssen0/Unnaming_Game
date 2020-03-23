@@ -9,3 +9,4 @@
 #include "../map_cmake.h"
 #include "block_implementation.h"
 MAP_EXPORT size_t Block::index() const {return impl_->index();}
+MAP_EXPORT const Block& Block::Destroy() const {return impl_->Destroy();}

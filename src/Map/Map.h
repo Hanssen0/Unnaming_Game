@@ -47,7 +47,6 @@ class Map final {
   size_t Width() const;
   size_t Height() const;
   void SetDestroy(const std::function<void()>&);
-  void SetEmptyBlock(const Block&);
   // Layer
   const Block& BlockIn(const MapPoint&) const;
   const Building& BuildingIn(const MapPoint&) const;
@@ -89,7 +88,6 @@ class Map final {
   bool is_got_id_;
   size_t id_;
   int links_num_;
-  const Block* empty_block_;
   std::function<void()> destroy_;
   std::map<size_t, MemoryOfMap> memories_;
   std::vector<const Block*> blocks_;

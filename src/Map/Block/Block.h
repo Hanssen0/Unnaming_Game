@@ -20,9 +20,11 @@ class Block final {
   bool operator!=(const Block& block) const {return index() != block.index();}
   const std::shared_ptr<Implementation>& impl() const {return impl_;}
   size_t index() const;
+  const Block& Destroy() const;
 
  private:
   Block() = delete;
   std::shared_ptr<Implementation> impl_;
 };
+static const Block NullBlock = Block(nullptr);
 #endif  // UNNAMING_GAME_SRC_MAP_BLOCK_BLOCK_H_

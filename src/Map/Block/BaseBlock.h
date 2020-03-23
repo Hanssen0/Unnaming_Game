@@ -13,8 +13,8 @@ class BaseBlock final {
  public:
   static size_t BaseBlockSize();
   explicit operator Block();
-  explicit BaseBlock(const Block&);
   BaseBlock();
+  void SetDestroy(const Block&);
 
  private:
   class Implementation;

@@ -35,6 +35,7 @@ auto wall_block = static_cast<Block>(wall);
 auto empty_building = static_cast<Building>(empty);
 auto portal_building = static_cast<Building>(portal);
 void Init(Creature* role) {
+  wall.SetDestroy(ground_block);
   Creature::CostOfBlock_ref normal_cost = Creature::CostOfBlock::Create();
   Creature::CostOfBlock_ref stop_cost = Creature::CostOfBlock::Create();
   normal_cost->BindMoveCost([]()->int {return 1;});
@@ -81,7 +82,7 @@ int main() {
   builder.SetWallBlock(wall_block);
   builder.SetEmptyBuilding(empty_building);
   builder.SetPortalBuilding(portal_building);
-  Space main_space(&builder, {32, 32}, ground_block);
+  Space main_space(&builder, {32, 32});
   Creature_ref main_role = Creature::Create();
   Init(main_role.get());
   // TODO(handsome0hell): Read block from file
