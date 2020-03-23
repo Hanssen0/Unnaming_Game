@@ -10,11 +10,11 @@
 #include <iostream>
 #include "../map_cmake.h"
 #include "./block_implementation.h"
-class BaseBlock::Implementation: public BlockImplementation {
+class BaseBlock::Implementation: public Block::Implementation {
  public:
-  inline size_t index() const override {return index_;}
-  inline static size_t BaseBlockSize() {return kBaseBlockSize;}
   inline Implementation() {index_ = kBaseBlockSize++;}
+  inline static size_t BaseBlockSize() {return kBaseBlockSize;}
+  inline size_t index() const override {return index_;}
 
  private:
   static size_t kBaseBlockSize;

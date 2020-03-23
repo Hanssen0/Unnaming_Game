@@ -10,7 +10,7 @@
 #include <iostream>
 #include "../map_cmake.h"
 #include "./building_implementation.h"
-class BaseBuilding::Implementation: public BuildingImplementation {
+class BaseBuilding::Implementation: public Building::Implementation {
  public:
   inline size_t index() const override {return index_;}
   inline static size_t BaseBuildingSize() {return kBaseBuildingSize;}

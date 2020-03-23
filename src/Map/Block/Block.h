@@ -10,19 +10,19 @@
 #include <cstddef>
 #include <memory>
 #include <iostream>
-class BlockImplementation;
 class Block final {
  public:
-  size_t index() const;
-  explicit Block(const std::shared_ptr<BlockImplementation>& impl)
+  class Implementation;
+  explicit Block(const std::shared_ptr<Implementation>& impl)
       : impl_(impl) {}
-  const std::shared_ptr<BlockImplementation>& impl() const {return impl_;}
   operator bool() const {return static_cast<bool>(impl_);}
   bool operator==(const Block& block) const {return index() == block.index();}
   bool operator!=(const Block& block) const {return index() != block.index();}
+  const std::shared_ptr<Implementation>& impl() const {return impl_;}
+  size_t index() const;
 
  private:
   Block() = delete;
-  std::shared_ptr<BlockImplementation> impl_;
+  std::shared_ptr<Implementation> impl_;
 };
 #endif  // UNNAMING_GAME_SRC_MAP_BLOCK_BLOCK_H_

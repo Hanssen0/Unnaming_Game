@@ -7,9 +7,10 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef UNNAMING_GAME_SRC_MAP_BUILDING_BUILDING_IMPLEMENTATION_H_
 #define UNNAMING_GAME_SRC_MAP_BUILDING_BUILDING_IMPLEMENTATION_H_
-class BuildingImplementation {
+#include "Building.h"
+class Building::Implementation {
  public:
   virtual size_t index() const = 0;
-  virtual ~BuildingImplementation() {}
+  virtual ~Implementation() {}
 };
 #endif  // UNNAMING_GAME_SRC_MAP_BUILDING_BUILDING_IMPLEMENTATION_H_

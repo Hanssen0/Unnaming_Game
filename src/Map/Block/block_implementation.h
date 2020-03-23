@@ -8,7 +8,7 @@
 #ifndef UNNAMING_GAME_SRC_MAP_BLOCK_BLOCK_IMPLEMENTATION_H_
 #define UNNAMING_GAME_SRC_MAP_BLOCK_BLOCK_IMPLEMENTATION_H_
 #include <cstddef>
-class BlockImplementation {
+class Block::Implementation {
  public:
   virtual size_t index() const = 0;
 };
