@@ -88,7 +88,7 @@ class Fraction {
   inline Fraction(const T& number, const T& denominator = 1) // NOLINT
       : number_(number), denominator_(denominator) {}
   template <typename TT>
-  inline operator TT() const {
+  explicit inline operator TT() const {
     return denominator_ == 0 ? 0 : static_cast<TT>(number_)/denominator_;
   }
 #ifndef NDEBUG
