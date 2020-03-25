@@ -18,12 +18,12 @@
 size_t Map::kMapSize = 0;
 MAP_EXPORT MapPoint Map::PickRandomPointIn(
     const std::function<size_t(size_t, size_t)>& ran,
-    const std::list<const Block*>& valid_list) const {
+    const std::list<Block>& valid_list) const {
   size_t total_valid = 0;
   for (size_t y = 0; y < Height(); ++y) {
     for (size_t x = 0; x < Width(); ++x) {
       for (auto i : valid_list) {
-        if (*i == BlockIn(MapPoint(x, y))) ++total_valid;
+        if (i == BlockIn(MapPoint(x, y))) ++total_valid;
       }
     }
   }
@@ -32,7 +32,7 @@ MAP_EXPORT MapPoint Map::PickRandomPointIn(
   for (size_t y = 0; y < Height(); ++y) {
     for (size_t x = 0; x < Width(); ++x) {
       for (auto i : valid_list) {
-        if (*i == BlockIn(MapPoint(x, y))) {
+        if (i == BlockIn(MapPoint(x, y))) {
           if (total_valid-- == 0) return MapPoint(x, y);
         }
       }
@@ -61,25 +61,24 @@ MAP_EXPORT void Map::SetDestroy(const std::function<void()>& destroy) {
   destroy_ = destroy;
 }
 // Layer operators
-MAP_NO_EXPORT const Block** Map::BlockPtrIn(const MapPoint& pos) {
+MAP_NO_EXPORT Block* Map::BlockPtrIn(const MapPoint& pos) {
   return &blocks_[GetIndex(pos)];
 }
-MAP_NO_EXPORT const Building** Map::BuildingPtrIn(const MapPoint& pos) {
+MAP_NO_EXPORT Building* Map::BuildingPtrIn(const MapPoint& pos) {
   return &buildings_[GetIndex(pos)];
 }
 MAP_EXPORT const Block& Map::BlockIn(const MapPoint& pos) const {
-  return *blocks_[GetIndex(pos)];
+  return blocks_[GetIndex(pos)];
 }
 MAP_EXPORT const Building& Map::BuildingIn(const MapPoint& pos) const {
-  assert(buildings_[GetIndex(pos)] != nullptr);
-  return *buildings_[GetIndex(pos)];
+  return buildings_[GetIndex(pos)];
 }
 MAP_EXPORT void Map::SetBlockIn(const MapPoint& pos, const Block& block) {
-  *BlockPtrIn(pos) = &block;
+  *BlockPtrIn(pos) = block;
 }
 MAP_EXPORT void Map::SetBuildingIn(const MapPoint& pos,
                                    const Building& building) {
-  *BuildingPtrIn(pos) = &building;
+  *BuildingPtrIn(pos) = building;
 }
 MAP_EXPORT void Map::DestroyBlockIn(const MapPoint& pos) {
   const Block& destroy = BlockIn(pos).Destroy();
@@ -92,8 +91,7 @@ MAP_NO_EXPORT void Map::get_id() {
     is_got_id_ = true;
   }
 }
-MAP_EXPORT void Map::ForEachBlock(
-    const std::function<void(const Block**)>& applier) {
+MAP_EXPORT void Map::ForEachBlock(const std::function<void(Block*)>& applier) {
   for (size_t y = 0; y < Height(); ++y) {
     for (size_t x = 0; x < Width(); ++x) {
       applier(BlockPtrIn(MapPoint(x, y)));
@@ -102,7 +100,7 @@ MAP_EXPORT void Map::ForEachBlock(
 }
 MAP_EXPORT
 void Map::ForEachBlockIn(const RectWithPos& region,
-                         const std::function<void(const Block**)>& applier) {
+                         const std::function<void(Block*)>& applier) {
   const size_t end_y = region.left_top.y + region.size.h;
   const size_t end_x = region.left_top.x + region.size.w;
   for (size_t y = region.left_top.y; y < end_y; ++y) {
@@ -112,7 +110,7 @@ void Map::ForEachBlockIn(const RectWithPos& region,
   }
 }
 MAP_EXPORT void Map::ForEachBuilding(
-    const std::function<void(const Building**)>& applier) {
+    const std::function<void(Building*)>& applier) {
   for (size_t y = 0; y < Height(); ++y) {
     for (size_t x = 0; x < Width(); ++x) {
       applier(BuildingPtrIn(MapPoint(x, y)));

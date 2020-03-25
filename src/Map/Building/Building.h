@@ -12,13 +12,13 @@
 class Building final {
  public:
   class Implementation;
+  Building() : impl_(nullptr) {}
   size_t index() const;
   explicit Building(const Implementation* impl)
       : impl_(impl) {}
   operator bool() const {return static_cast<bool>(impl_);}
 
  private:
-  Building() = delete;
   const Implementation* impl_;
 };
 #endif  // UNNAMING_GAME_SRC_MAP_BUILDING_BUILDING_H_

@@ -13,12 +13,12 @@
 #include "../../Map/Map.h"
 class LinkBuilding::Implementation: public Building::Implementation {
  public:
-  inline size_t index() const override {return base_->index();}
+  inline size_t index() const override {return base_.index();}
   inline void set_map(Map* const map) {map_ = map;}
   inline void set_pos(const MapPoint& pos) {pos_ = pos;}
 
  private:
-  const Building* base_;
+  const Building base_;
   Map* map_;
   MapPoint pos_;
 };

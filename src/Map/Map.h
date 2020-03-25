@@ -54,14 +54,14 @@ class Map final {
   void SetBuildingIn(const MapPoint&, const Building&);
   void DestroyBlockIn(const MapPoint&);
   ~Map();
-  void ForEachBlock(const std::function< void(const Block**) >& applier);
+  void ForEachBlock(const std::function< void(Block*) >& applier);
   void ForEachBlockIn(const RectWithPos& region,
-                      const std::function< void(const Block**) >& applier);
-  void ForEachBuilding(const std::function< void(const Building**) >& applier);
+                      const std::function< void(Block*) >& applier);
+  void ForEachBuilding(const std::function< void(Building*) >& applier);
   void Link();
   void Unlink();
   MapPoint PickRandomPointIn(const std::function<size_t(size_t, size_t)>& ran,
-                          const std::list<const Block*>& valid_list) const;
+                          const std::list<Block>& valid_list) const;
   void CopyFromIn(const Map&, const MapPoint&);
   MemoryOfMap& GetMemory(size_t);
   inline bool has(const IntPoint& pos) const {
@@ -81,8 +81,8 @@ class Map final {
     assert(has(pos));
     return pos.y*Width() + pos.x;
   }
-  const Block** BlockPtrIn(const MapPoint& pos);
-  const Building** BuildingPtrIn(const MapPoint& pos);
+  Block* BlockPtrIn(const MapPoint& pos);
+  Building* BuildingPtrIn(const MapPoint& pos);
   static size_t kMapSize;
   const Rect size_;
   bool is_got_id_;
@@ -90,7 +90,7 @@ class Map final {
   int links_num_;
   std::function<void()> destroy_;
   std::map<size_t, MemoryOfMap> memories_;
-  std::vector<const Block*> blocks_;
-  std::vector<const Building*> buildings_;
+  std::vector<Block> blocks_;
+  std::vector<Building> buildings_;
 };
 #endif  // UNNAMING_GAME_SRC_MAP_MAP_H_

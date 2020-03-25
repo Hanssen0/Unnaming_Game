@@ -12,19 +12,18 @@
 #include "./block_implementation.h"
 class BaseBlock::Implementation: public Block::Implementation {
  public:
-  inline Implementation() : index_(kBaseBlockSize++), destroy_(nullptr) {}
+  inline Implementation() : index_(kBaseBlockSize++), destroy_(NullBlock) {}
   inline static size_t BaseBlockSize() {return kBaseBlockSize;}
   inline size_t index() const override {return index_;}
   inline const Block& Destroy() const override {
-    if (destroy_ != nullptr) return *destroy_;
-    return NullBlock;
+    return destroy_;
   }
-  inline void SetDestroy(const Block& destroy) {destroy_ = &destroy;}
+  inline void SetDestroy(const Block& destroy) {destroy_ = destroy;}
 
  private:
   static size_t kBaseBlockSize;
   size_t index_;
-  const Block* destroy_;
+  Block destroy_;
 };
 size_t BaseBlock::Implementation::kBaseBlockSize = 0;
 MAP_EXPORT size_t BaseBlock::BaseBlockSize() {

@@ -54,11 +54,11 @@ class MapBuilder {
   // To speed up empty test
   std::vector< std::vector< Rect > > checked_build_able_;
   Map* target_map_;
-  const Block* wall_block_;
-  const Block* path_block_;
-  const Block* ground_block_;
-  const Building* empty_building_;
-  const Building* portal_building_;
+  Block wall_block_;
+  Block path_block_;
+  Block ground_block_;
+  Building empty_building_;
+  Building portal_building_;
 };
 inline void MapBuilder::set_target_map(Map* const target) {
   target_map_ = target;

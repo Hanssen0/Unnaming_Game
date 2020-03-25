@@ -29,11 +29,11 @@ BaseBlock path;
 BaseBlock wall;
 BaseBuilding empty;
 BaseBuilding portal;
-Block ground_block = static_cast<Block>(ground);
-Block path_block = static_cast<Block>(path);
-Block wall_block = static_cast<Block>(wall);
-Building empty_building = static_cast<Building>(empty);
-Building portal_building = static_cast<Building>(portal);
+auto ground_block = static_cast<Block>(ground);
+auto path_block = static_cast<Block>(path);
+auto wall_block = static_cast<Block>(wall);
+auto empty_building = static_cast<Building>(empty);
+auto portal_building = static_cast<Building>(portal);
 void Init(Creature* role) {
   wall.SetDestroy(ground_block);
   Creature::CostOfBlock_ref normal_cost = Creature::CostOfBlock::Create();
@@ -86,9 +86,9 @@ int main() {
   Creature_ref main_role = Creature::Create();
   Init(main_role.get());
   // TODO(handsome0hell): Read block from file
-  std::list<const Block*> valid;
-  valid.push_back(&path_block);
-  valid.push_back(&ground_block);
+  std::list<Block> valid;
+  valid.push_back(path_block);
+  valid.push_back(ground_block);
   auto new_map = main_space.NewMap();
   main_role->Teleport(new_map,
                       new_map->PickRandomPointIn(GenerateRandom, valid));

@@ -13,6 +13,7 @@
 class Block final {
  public:
   class Implementation;
+  Block() : impl_(nullptr) {}
   explicit Block(const Implementation* impl) : impl_(impl) {}
   operator bool() const {return impl_ != nullptr;}
   bool operator==(const Block& block) const {return index() == block.index();}
@@ -21,7 +22,6 @@ class Block final {
   const Block& Destroy() const;
 
  private:
-  Block() = delete;
   const Implementation* impl_;
 };
 static const Block NullBlock = Block(nullptr);
