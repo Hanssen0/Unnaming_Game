@@ -1,17 +1,21 @@
 @startuml
 hide members
-hide circle
 namespace visible {
-   Building <-- BaseBuilding : up cast
-   Building <-- LinkBuilding : up cast
+  interface Building
+  Building <|.. BaseBuilding
+  Building <|.. LinkBuilding
 }
 namespace hidden {
+  interface Building::Implementation
   Building::Implementation <|-- BaseBuilding::Implementation
   Building::Implementation <|-- LinkBuilding::Implementation
 }
 namespace component {
-  Building *-- Building::Implementation
+  Building o-- Building::Implementation
   BaseBuilding *-- BaseBuilding::Implementation
   LinkBuilding *-- LinkBuilding::Implementation
+  Building ..> Building::Implementation
+  BaseBuilding ..> BaseBuilding::Implementation
+  LinkBuilding ..> LinkBuilding::Implementation
 }
 @enduml
