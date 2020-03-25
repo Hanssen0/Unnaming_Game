@@ -12,9 +12,9 @@
 class BaseBuilding final {
  public:
   BaseBuilding();
-  explicit operator Building();
-  static size_t BaseBuildingSize();
   ~BaseBuilding();
+  static size_t BaseBuildingSize();
+  explicit operator Building();
 
  private:
   class Implementation;

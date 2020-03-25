@@ -10,7 +10,7 @@
 #include "Building.h"
 class Building::Implementation {
  public:
-  virtual size_t index() const = 0;
   virtual ~Implementation() {}
+  virtual size_t index() const = 0;
 };
 #endif  // UNNAMING_GAME_SRC_MAP_BUILDING_BUILDING_IMPLEMENTATION_H_

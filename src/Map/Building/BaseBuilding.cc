@@ -12,9 +12,9 @@
 #include "./building_implementation.h"
 class BaseBuilding::Implementation: public Building::Implementation {
  public:
-  inline size_t index() const override {return index_;}
-  inline static size_t BaseBuildingSize() {return kBaseBuildingSize;}
   inline Implementation() {index_ = kBaseBuildingSize++;}
+  inline static size_t BaseBuildingSize() {return kBaseBuildingSize;}
+  inline size_t index() const override {return index_;}
 
  private:
   static size_t kBaseBuildingSize;
@@ -24,9 +24,9 @@ size_t BaseBuilding::Implementation::kBaseBuildingSize = 0;
 MAP_EXPORT BaseBuilding::BaseBuilding():
     impl_(std::make_unique<Implementation>()) {}
 MAP_EXPORT BaseBuilding::~BaseBuilding() = default;
-MAP_EXPORT BaseBuilding::operator Building() {
-  return Building(impl_.get());
-}
 MAP_EXPORT size_t BaseBuilding::BaseBuildingSize() {
   return BaseBuilding::Implementation::BaseBuildingSize();
+}
+MAP_EXPORT BaseBuilding::operator Building() {
+  return Building(impl_.get());
 }

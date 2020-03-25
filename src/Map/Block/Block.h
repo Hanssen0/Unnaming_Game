@@ -13,8 +13,7 @@
 class Block final {
  public:
   class Implementation;
-  Block() : impl_(nullptr) {}
-  explicit Block(const Implementation* impl) : impl_(impl) {}
+  explicit Block(const Implementation* impl = nullptr) : impl_(impl) {}
   operator bool() const {return impl_ != nullptr;}
   bool operator==(const Block& block) const {return index() == block.index();}
   bool operator!=(const Block& block) const {return index() != block.index();}

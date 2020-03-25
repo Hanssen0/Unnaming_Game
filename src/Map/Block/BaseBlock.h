@@ -11,10 +11,10 @@
 #include "Block.h"
 class BaseBlock final {
  public:
-  static size_t BaseBlockSize();
-  explicit operator Block() const;
   BaseBlock();
   ~BaseBlock();
+  explicit operator Block() const;
+  static size_t BaseBlockSize();
   void SetDestroy(const Block&);
 
  private:

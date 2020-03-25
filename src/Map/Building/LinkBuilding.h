@@ -13,10 +13,10 @@
 class LinkBuilding final {
  public:
   LinkBuilding();
+  ~LinkBuilding();
   operator Building();
   void SetMap(Map* const);
   void SetPosition(const MapPoint&);
-  ~LinkBuilding();
 
  private:
   class Implementation;

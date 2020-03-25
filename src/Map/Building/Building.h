@@ -12,11 +12,9 @@
 class Building final {
  public:
   class Implementation;
-  Building() : impl_(nullptr) {}
+  explicit Building(const Implementation* impl = nullptr) : impl_(impl) {}
+  operator bool() const {return impl_ != nullptr;}
   size_t index() const;
-  explicit Building(const Implementation* impl)
-      : impl_(impl) {}
-  operator bool() const {return static_cast<bool>(impl_);}
 
  private:
   const Implementation* impl_;
