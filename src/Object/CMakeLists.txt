@@ -12,7 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 cmake_minimum_required(VERSION 3.0)
 project(Object_library CXX)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 include(GenerateExportHeader)
 include(../../CMake/compiler.cmake)

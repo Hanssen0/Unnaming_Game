@@ -15,7 +15,7 @@ cmake_minimum_required(VERSION 3.0)
 project(Logic_library CXX)
 cmake_policy(SET CMP0063 NEW) # Enable hidden visibility for static library
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 aux_source_directory(. DIR_LIB_LOGIC)
 add_library(Logic ${DIR_LIB_LOGIC})

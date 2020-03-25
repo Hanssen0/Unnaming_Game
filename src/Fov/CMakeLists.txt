@@ -13,7 +13,7 @@
 cmake_minimum_required(VERSION 3.0)
 message("${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 project(Graphic_library CXX)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 include(GenerateExportHeader)
 include(../../CMake/compiler.cmake)
