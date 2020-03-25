@@ -30,8 +30,9 @@ size_t BaseBlock::Implementation::kBaseBlockSize = 0;
 MAP_EXPORT size_t BaseBlock::BaseBlockSize() {
   return BaseBlock::Implementation::BaseBlockSize();
 }
-MAP_EXPORT BaseBlock::BaseBlock(): impl_(std::make_shared<Implementation>()) {}
-MAP_EXPORT BaseBlock::operator Block() {return Block(impl_);}
+MAP_EXPORT BaseBlock::BaseBlock() : impl_(std::make_unique<Implementation>()) {}
+MAP_EXPORT BaseBlock::~BaseBlock() = default;
+MAP_EXPORT BaseBlock::operator Block() const {return Block(impl_.get());}
 MAP_EXPORT void BaseBlock::SetDestroy(const Block& destroy) {
   impl_->SetDestroy(destroy);
 }

@@ -13,18 +13,16 @@
 class Block final {
  public:
   class Implementation;
-  explicit Block(const std::shared_ptr<Implementation>& impl)
-      : impl_(impl) {}
-  operator bool() const {return static_cast<bool>(impl_);}
+  explicit Block(const Implementation* impl) : impl_(impl) {}
+  operator bool() const {return impl_ != nullptr;}
   bool operator==(const Block& block) const {return index() == block.index();}
   bool operator!=(const Block& block) const {return index() != block.index();}
-  const std::shared_ptr<Implementation>& impl() const {return impl_;}
   size_t index() const;
   const Block& Destroy() const;
 
  private:
   Block() = delete;
-  std::shared_ptr<Implementation> impl_;
+  const Implementation* impl_;
 };
 static const Block NullBlock = Block(nullptr);
 #endif  // UNNAMING_GAME_SRC_MAP_BLOCK_BLOCK_H_

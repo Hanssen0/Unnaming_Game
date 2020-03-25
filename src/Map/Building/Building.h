@@ -13,13 +13,12 @@ class Building final {
  public:
   class Implementation;
   size_t index() const;
-  explicit Building(const std::shared_ptr<Implementation>& impl)
+  explicit Building(const Implementation* impl)
       : impl_(impl) {}
-  const std::shared_ptr<Implementation>& impl() const {return impl_;}
   operator bool() const {return static_cast<bool>(impl_);}
 
  private:
   Building() = delete;
-  std::shared_ptr<Implementation> impl_;
+  const Implementation* impl_;
 };
 #endif  // UNNAMING_GAME_SRC_MAP_BUILDING_BUILDING_H_

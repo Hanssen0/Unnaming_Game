@@ -21,11 +21,12 @@ class BaseBuilding::Implementation: public Building::Implementation {
   size_t index_;
 };
 size_t BaseBuilding::Implementation::kBaseBuildingSize = 0;
+MAP_EXPORT BaseBuilding::BaseBuilding():
+    impl_(std::make_unique<Implementation>()) {}
+MAP_EXPORT BaseBuilding::~BaseBuilding() = default;
+MAP_EXPORT BaseBuilding::operator Building() {
+  return Building(impl_.get());
+}
 MAP_EXPORT size_t BaseBuilding::BaseBuildingSize() {
   return BaseBuilding::Implementation::BaseBuildingSize();
-}
-MAP_EXPORT BaseBuilding::BaseBuilding():
-    impl_(std::make_shared<Implementation>()) {}
-MAP_EXPORT BaseBuilding::operator Building() {
-  return Building(impl_);
 }

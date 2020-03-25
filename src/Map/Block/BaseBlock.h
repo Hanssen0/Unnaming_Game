@@ -12,12 +12,13 @@
 class BaseBlock final {
  public:
   static size_t BaseBlockSize();
-  explicit operator Block();
+  explicit operator Block() const;
   BaseBlock();
+  ~BaseBlock();
   void SetDestroy(const Block&);
 
  private:
   class Implementation;
-  std::shared_ptr<Implementation> impl_;
+  std::unique_ptr<Implementation> impl_;
 };
 #endif  // UNNAMING_GAME_SRC_MAP_BLOCK_BASEBLOCK_H_

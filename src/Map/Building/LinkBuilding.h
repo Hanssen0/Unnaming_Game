@@ -12,13 +12,14 @@
 #include "../../Map/Map.h"
 class LinkBuilding final {
  public:
+  LinkBuilding();
   operator Building();
-  explicit LinkBuilding(const Building&);
   void SetMap(Map* const);
   void SetPosition(const MapPoint&);
+  ~LinkBuilding();
 
  private:
   class Implementation;
-  std::shared_ptr<Implementation> impl_;
+  std::unique_ptr<Implementation> impl_;
 };
 #endif  // UNNAMING_GAME_SRC_MAP_BUILDING_LINKBUILDING_H_

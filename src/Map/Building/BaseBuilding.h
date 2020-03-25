@@ -11,13 +11,13 @@
 #include "Building.h"
 class BaseBuilding final {
  public:
-  static size_t BaseBuildingSize();
-  explicit operator Building();
-  explicit BaseBuilding(const Building&);
   BaseBuilding();
+  explicit operator Building();
+  static size_t BaseBuildingSize();
+  ~BaseBuilding();
 
  private:
   class Implementation;
-  std::shared_ptr<Implementation> impl_;
+  std::unique_ptr<Implementation> impl_;
 };
 #endif  // UNNAMING_GAME_SRC_MAP_BUILDING_BASEBUILDING_H_

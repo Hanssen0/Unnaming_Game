@@ -24,16 +24,16 @@
 #include "Map/Space.h"
 Renderer_ref kMainRenderer = Renderer::Create();
 // TODO(handsome0hell): Read block from file
-auto ground = BaseBlock();
-auto path = BaseBlock();
-auto wall = BaseBlock();
-auto empty = BaseBuilding();
-auto portal = BaseBuilding();
-auto ground_block = static_cast<Block>(ground);
-auto path_block = static_cast<Block>(path);
-auto wall_block = static_cast<Block>(wall);
-auto empty_building = static_cast<Building>(empty);
-auto portal_building = static_cast<Building>(portal);
+BaseBlock ground;
+BaseBlock path;
+BaseBlock wall;
+BaseBuilding empty;
+BaseBuilding portal;
+Block ground_block = static_cast<Block>(ground);
+Block path_block = static_cast<Block>(path);
+Block wall_block = static_cast<Block>(wall);
+Building empty_building = static_cast<Building>(empty);
+Building portal_building = static_cast<Building>(portal);
 void Init(Creature* role) {
   wall.SetDestroy(ground_block);
   Creature::CostOfBlock_ref normal_cost = Creature::CostOfBlock::Create();
