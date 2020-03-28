@@ -25,7 +25,7 @@ typedef std::shared_ptr< Creature > Creature_ref;
 class Creature {
  public:
   class CostOfBlock;
-  typedef std::shared_ptr< CostOfBlock > CostOfBlock_ref;
+  typedef std::shared_ptr<CostOfBlock> CostOfBlock_ref;
   class CostOfBlock {
    public:
     static CostOfBlock_ref Create();
@@ -52,21 +52,20 @@ class Creature {
   };
   static Creature_ref Create();
   size_t id();
+  size_t view_dis() const;
   const Map_ref& map() const;
   const MapPoint& position() const;
-  size_t view_dis() const;
   void set_cost(const Block& type, const CostOfBlock_ref& cost);
   void set_max_energy(const int& energy);
   void set_now_energy(const int& energy);
-  void set_view_dis(const size_t& d);
+  void SetViewDis(const size_t& d);
   ~Creature();
   bool is_viewable(const MapPoint& pos) const;
+  template<int, int> void Destroy();
+  template<int, int> void Move();
   Memory& GetMemory();
-  template <int, int> void Move();
-  template <int, int> void Destroy();
   void Teleport(const Map_ref&, const MapPoint&);
   void UpdateViewable();
-  constexpr static size_t kMaxViewDis = (SIZE_MAX - 1) >> 1;
 
  private:
   Creature();

@@ -47,7 +47,7 @@ void Init(Creature* role) {
   role->set_cost(wall_block, stop_cost);
   role->set_max_energy(10);
   role->set_now_energy(10);
-  role->set_view_dis(6);
+  role->SetViewDis(6);
   // TODO(handsome0hell): Read block from file
   kMainRenderer->set_exterior_of_block('#', wall_block);
   kMainRenderer->set_exterior_of_block('.', ground_block);

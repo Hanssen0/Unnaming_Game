@@ -21,7 +21,6 @@
 #include "../Map/Map.h"
 #include "../Map/Space.h"
 size_t Creature::kCreatureSize = 0;
-constexpr size_t Creature::kMaxViewDis;
 // Creature::CostofBlock
 CREATURE_NO_EXPORT int Creature::CostOfBlock::DestroyCost() const {
   return destroy_();
@@ -60,7 +59,7 @@ CREATURE_EXPORT Creature::CostOfBlock::~CostOfBlock() {}
 CREATURE_NO_EXPORT void Creature::set_position(const MapPoint& pos) {
   position_ = pos;
 }
-template <int x, int y> CREATURE_NO_EXPORT void Creature::Move() {
+template<int x, int y> CREATURE_NO_EXPORT void Creature::Move() {
   MapPoint des = position();
   des += IntPoint(x, y);
   if (!map()->has(des)) return;
@@ -135,8 +134,10 @@ CREATURE_EXPORT void Creature::Teleport(const Map_ref& map,
 }
 CREATURE_EXPORT const Map_ref& Creature::map() const {return map_;}
 CREATURE_EXPORT const MapPoint& Creature::position() const {return position_;}
-CREATURE_EXPORT void Creature::set_view_dis(const size_t& d) {
-  ability_.view_dis = std::min(kMaxViewDis, d);
+CREATURE_EXPORT void Creature::SetViewDis(const size_t& d) {
+  constexpr static size_t kMaxViewDis = (SIZE_MAX - 1) >> 1;
+  assert(d <= kMaxViewDis);
+  ability_.view_dis = d;
   const size_t view_size = ((ability_.view_dis << 1) | 1);
   information_.is_viewable.resize(view_size);
   for (size_t i = 0; i < view_size; ++i) {
