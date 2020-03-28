@@ -14,6 +14,7 @@
 #define UNNAMING_GAME_SRC_OBJECT_CREATURE_H_
 #include <cstdint>
 #include <functional>
+#include <map>
 #include <memory>
 #include <vector>
 #include "../Map/Space.h"
@@ -43,6 +44,12 @@ class Creature {
     std::function< int() > move_;
     std::function< int() > see_through_;
   };
+  struct Memory {
+    MapPoint left_top;
+    MapPoint right_bottom;
+    std::vector< std::vector<bool> > is_seen;
+    Map_ref detail;
+  };
   static Creature_ref Create();
   size_t id();
   const Map_ref& map() const;
@@ -54,7 +61,7 @@ class Creature {
   void set_view_dis(const size_t& d);
   ~Creature();
   bool is_viewable(const MapPoint& pos) const;
-  Map::MemoryOfMap& GetMemory();
+  Memory& GetMemory();
   template <int, int> void Move();
   template <int, int> void Destroy();
   void Teleport(const Map_ref&, const MapPoint&);
@@ -80,6 +87,7 @@ class Creature {
     std::vector< CostOfBlock_ref > cost;
     std::vector< std::vector< bool > > is_viewable;
   } information_;
+  std::map<size_t, Memory> memories_;
   void set_position(const MapPoint&);
   bool is_valid(const MapPoint& pos) const;
   void set_viewable(const MapPoint& pos);

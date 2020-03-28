@@ -27,7 +27,7 @@ class Renderer {
   ~Renderer();
   void RenderCreaturesView(const Creature&) const;
   void RenderGameMap(const Map&) const;
-  void RenderMemory(const Map::MemoryOfMap&) const;
+  void RenderMemory(const Creature::Memory&) const;
   static Renderer_ref Create();
  private:
   Renderer();

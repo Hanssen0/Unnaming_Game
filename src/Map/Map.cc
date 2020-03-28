@@ -13,7 +13,6 @@
 #include "Map.h"
 #include <cassert>
 #include <functional>
-#include <utility>
 #include "./map_cmake.h"
 size_t Map::kMapSize = 0;
 MAP_EXPORT MapPoint Map::PickRandomPointIn(
@@ -124,15 +123,4 @@ MAP_EXPORT void Map::Unlink() {
 MAP_EXPORT void Map::CopyFromIn(const Map& map, const MapPoint& pos) {
   SetBlockIn(pos, map.BlockIn(pos));
   SetBuildingIn(pos, map.BuildingIn(pos));
-}
-MAP_EXPORT Map::MemoryOfMap& Map::GetMemory(size_t id) {
-  auto memory = memories_.find(id);
-  if (memory == memories_.end()) {
-    const MemoryOfMap tmp = {MapPoint(Width(), Height()), {0, 0},
-                             std::vector< std::vector<bool> >(Width(),
-                                 std::vector< bool >(Height(), false)),
-                             Map::Create(Size())};
-    memory = memories_.insert(std::make_pair(id, tmp)).first;
-  }
-  return memory->second;
 }

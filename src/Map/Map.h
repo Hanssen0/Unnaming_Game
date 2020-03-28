@@ -16,7 +16,6 @@
 #include <cstdint>
 #include <functional>
 #include <list>
-#include <map>
 #include <memory>
 #include <vector>
 #include "./Block/Block.h"
@@ -30,12 +29,6 @@ class Map;
 typedef std::shared_ptr< Map > Map_ref;
 class Map final {
  public:
-  struct MemoryOfMap {
-    MapPoint left_top;
-    MapPoint right_bottom;
-    std::vector< std::vector<bool> > is_seen;
-    Map_ref detail;
-  };
   struct RectWithPos {
     MapPoint left_top;
     Rect size;
@@ -63,7 +56,6 @@ class Map final {
   MapPoint PickRandomPointIn(const std::function<size_t(size_t, size_t)>& ran,
                           const std::list<Block>& valid_list) const;
   void CopyFromIn(const Map&, const MapPoint&);
-  MemoryOfMap& GetMemory(size_t);
   inline bool has(const IntPoint& pos) const {
     if (pos < 0) return false;
     return static_cast<size_t>(pos.x) < Width() &&
@@ -89,7 +81,6 @@ class Map final {
   size_t id_;
   int links_num_;
   std::function<void()> destroy_;
-  std::map<size_t, MemoryOfMap> memories_;
   std::vector<Block> blocks_;
   std::vector<Building> buildings_;
 };

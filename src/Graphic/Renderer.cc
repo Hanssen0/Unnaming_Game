@@ -72,7 +72,7 @@ RENDERER_EXPORT void Renderer::RenderGameMap(const Map& map) const {
   }
 }
 RENDERER_EXPORT void Renderer::RenderMemory(
-                         const Map::MemoryOfMap& mem) const {
+                         const Creature::Memory& mem) const {
   for (auto j = mem.left_top.y; j <= mem.right_bottom.y; ++j) {
     for (auto i = mem.left_top.x; i <= mem.right_bottom.x; ++i) {
       if (mem.is_seen[i][j]) {

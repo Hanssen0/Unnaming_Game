@@ -15,6 +15,7 @@
 #include <cmath>
 #include <functional>
 #include <queue>
+#include <utility>
 #include "./creature_cmake.h"
 #include "../Map/Block/BaseBlock.h"
 #include "../Map/Map.h"
@@ -80,7 +81,7 @@ CREATURE_NO_EXPORT void Creature::get_id() {
   information_.id = kCreatureSize++;
 }
 CREATURE_NO_EXPORT void Creature::UpdateMemory() {
-  Map::MemoryOfMap& now_mem = GetMemory();
+  Memory& now_mem = GetMemory();
   for (size_t i = 0; i < information_.is_viewable.size(); ++i) {
     for (size_t j = 0; j < information_.is_viewable.size(); ++j) {
       if (information_.is_viewable[i][j]) {
@@ -182,6 +183,14 @@ CREATURE_EXPORT void Creature::set_cost(const Block& type,
   information_.cost[type.index()] = cost;
 }
 CREATURE_EXPORT Creature::~Creature() {}
-CREATURE_EXPORT Map::MemoryOfMap& Creature::GetMemory() {
-  return map()->GetMemory(id());
+CREATURE_EXPORT Creature::Memory& Creature::GetMemory() {
+  auto memory = memories_.find(map()->Id());
+  if (memory == memories_.end()) {
+    const Memory tmp = {MapPoint(map()->Width(), map()->Height()), {0, 0},
+                             std::vector< std::vector<bool>>(map()->Width(),
+                                 std::vector<bool>(map()->Height(), false)),
+                             Map::Create(map()->Size())};
+    memory = memories_.insert(std::make_pair(map()->Id(), tmp)).first;
+  }
+  return memory->second;
 }
