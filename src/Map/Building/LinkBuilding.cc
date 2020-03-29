@@ -23,11 +23,8 @@ class LinkBuilding::Implementation: public Building::Implementation {
   MapPoint pos_;
 };
 MAP_EXPORT LinkBuilding::LinkBuilding()
-    : impl_(std::make_unique<Implementation>()) {}
-MAP_EXPORT LinkBuilding::~LinkBuilding() = default;
-MAP_EXPORT LinkBuilding::operator Building() {
-  return Building(impl_.get());
-}
+    : impl_(std::make_shared<Implementation>()) {}
+MAP_EXPORT LinkBuilding::operator Building() {return Building(impl_);}
 MAP_EXPORT void LinkBuilding::SetMap(const Map& map) {impl_->set_map(map);}
 MAP_EXPORT void LinkBuilding::SetPosition(const MapPoint& pos) {
   impl_->set_pos(pos);

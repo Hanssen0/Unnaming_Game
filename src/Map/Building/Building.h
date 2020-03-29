@@ -12,11 +12,12 @@
 class Building final {
  public:
   class Implementation;
-  explicit Building(const Implementation* impl = nullptr) : impl_(impl) {}
-  operator bool() const {return impl_ != nullptr;}
+  explicit Building(std::shared_ptr<Implementation> impl = nullptr)
+      : impl_(impl) {}
+  operator bool() const {return static_cast<bool>(impl_);}
   size_t index() const;
 
  private:
-  const Implementation* impl_;
+  std::shared_ptr<Implementation> impl_;
 };
 #endif  // UNNAMING_GAME_SRC_MAP_BUILDING_BUILDING_H_

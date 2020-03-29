@@ -12,12 +12,13 @@
 class BaseBuilding final {
  public:
   BaseBuilding();
-  ~BaseBuilding();
+  BaseBuilding(const BaseBuilding&) = delete;
+  BaseBuilding& operator=(const BaseBuilding&) = delete;
   static size_t BaseBuildingSize();
   explicit operator Building();
 
  private:
   class Implementation;
-  std::unique_ptr<Implementation> impl_;
+  std::shared_ptr<Implementation> impl_;
 };
 #endif  // UNNAMING_GAME_SRC_MAP_BUILDING_BASEBUILDING_H_
