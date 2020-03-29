@@ -16,7 +16,7 @@ class LinkBuilding final {
   explicit LinkBuilding(const Building&);
   LinkBuilding(const LinkBuilding&) = delete;
   LinkBuilding& operator=(const LinkBuilding&) = delete;
-  operator Building();
+  operator Building(); // NOLINT
   void SetMap(const Map_ref&);
   void SetPosition(const MapPoint&);
 

@@ -12,15 +12,16 @@
 class Block final {
  public:
   class Implementation;
-  explicit Block(const Implementation* impl = nullptr) : impl_(impl) {}
-  operator bool() const {return impl_ != nullptr;}
+  explicit Block(const std::shared_ptr<Implementation> impl = nullptr)
+      : impl_(impl) {}
+  operator bool() const {return static_cast<bool>(impl_);}
   bool operator==(const Block& block) const {return index() == block.index();}
   bool operator!=(const Block& block) const {return index() != block.index();}
   size_t index() const;
   const Block& Destroy() const;
 
  private:
-  const Implementation* impl_;
+  std::shared_ptr<Implementation> impl_;
 };
 static const Block NullBlock = Block(nullptr);
 #endif  // UNNAMING_GAME_SRC_MAP_BLOCK_BLOCK_H_

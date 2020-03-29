@@ -16,7 +16,7 @@ class BaseBuilding final {
   BaseBuilding(const BaseBuilding&) = delete;
   BaseBuilding& operator=(const BaseBuilding&) = delete;
   static size_t BaseBuildingSize();
-  explicit operator Building();
+  operator Building(); // NOLINT
   void AddFoundation(const Block&);
 
  private:

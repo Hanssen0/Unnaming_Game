@@ -26,9 +26,9 @@ class BaseBlock::Implementation: public Block::Implementation {
   Block destroy_;
 };
 size_t BaseBlock::Implementation::kBaseBlockSize = 0;
-MAP_EXPORT BaseBlock::BaseBlock() : impl_(std::make_unique<Implementation>()) {}
+MAP_EXPORT BaseBlock::BaseBlock() : impl_(std::make_shared<Implementation>()) {}
 MAP_EXPORT BaseBlock::~BaseBlock() = default;
-MAP_EXPORT BaseBlock::operator Block() const {return Block(impl_.get());}
+MAP_EXPORT BaseBlock::operator Block() const {return Block(impl_);}
 MAP_EXPORT size_t BaseBlock::BaseBlockSize() {
   return BaseBlock::Implementation::BaseBlockSize();
 }
