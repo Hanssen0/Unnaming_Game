@@ -1,21 +1,26 @@
 @startuml
 hide members
-namespace visible {
+skinparam linetype ortho
+together {
   interface Building
-  Building <|.. BaseBuilding
-  Building <|.. LinkBuilding
+  interface Building_Implementation as "Building::Implementation"
 }
-namespace hidden {
-  interface Building::Implementation
-  Building::Implementation <|-- BaseBuilding::Implementation
-  Building::Implementation <|-- LinkBuilding::Implementation
+together {
+  class BaseBuilding
+  class BaseBuilding_Implementation as "BaseBuilding::Implementation"
 }
-namespace component {
-  Building o-- Building::Implementation
-  BaseBuilding *-- BaseBuilding::Implementation
-  LinkBuilding *-- LinkBuilding::Implementation
-  Building ..> Building::Implementation
-  BaseBuilding ..> BaseBuilding::Implementation
-  LinkBuilding ..> LinkBuilding::Implementation
+together {
+  class LinkBuilding
+  class LinkBuilding_Implementation as "LinkBuilding::Implementation"
 }
+Building o-- Building_Implementation
+Building ..> Building_Implementation
+BaseBuilding *---- BaseBuilding_Implementation
+BaseBuilding ....> BaseBuilding_Implementation
+LinkBuilding *---- LinkBuilding_Implementation
+LinkBuilding ....> LinkBuilding_Implementation
+BaseBuilding - LinkBuilding
+(BaseBuilding, LinkBuilding) ..|> Building
+BaseBuilding_Implementation - LinkBuilding_Implementation
+Building_Implementation <|-- (BaseBuilding_Implementation, LinkBuilding_Implementation)
 @enduml

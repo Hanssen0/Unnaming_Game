@@ -1,17 +1,18 @@
 @startuml
 hide members
-namespace visible {
+skinparam linetype ortho
+together {
   interface Block
-  Block <|.. BaseBlock
+  interface Block_Implementation as "Block::Implementation"
 }
-namespace hidden {
-  interface Block::Implementation
-  Block::Implementation <|-- BaseBlock::Implementation
+together {
+  class BaseBlock
+  class BaseBlock_Implementation as "BaseBlock::Implementation"
 }
-namespace component {
-  Block o-- Block::Implementation
-  BaseBlock *-- BaseBlock::Implementation
-  Block ..> Block::Implementation
-  BaseBlock ..> BaseBlock::Implementation
-}
+Block o-- Block_Implementation
+Block ..> Block_Implementation
+BaseBlock *---- BaseBlock_Implementation
+BaseBlock ....> BaseBlock_Implementation
+BaseBlock ..|> Block
+Block_Implementation <|-- BaseBlock_Implementation
 @enduml
