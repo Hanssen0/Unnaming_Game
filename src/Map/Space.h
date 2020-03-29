@@ -37,7 +37,7 @@ class Space {
   Rect next_map_size_;
 };
 inline Map_ref Space::NewMap() {
-  Map_ref tmp = Map::Create(next_map_size_);
+  Map_ref tmp = Map::Create(this, next_map_size_);
   maps_.push_front(tmp);
   auto map_iterator = maps_.begin();
   tmp->SetDestroy([map_iterator, this](){maps_.erase(map_iterator);});

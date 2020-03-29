@@ -25,6 +25,7 @@ typedef Point<size_t> MapPoint;
 struct Rect {
   size_t w, h;
 };
+class Space;
 class Map;
 typedef std::shared_ptr< Map > Map_ref;
 class Map final {
@@ -34,11 +35,13 @@ class Map final {
     Rect size;
   };
   static Map_ref Create(const Rect&);
+  static Map_ref Create(Space*, const Rect&);
   // Basic attributes
   size_t Id();
   const Rect& Size() const;
   size_t Width() const;
   size_t Height() const;
+  Space* space() const;
   void SetDestroy(const std::function<void()>&);
   // Layer
   const Block& BlockIn(const MapPoint&) const;
@@ -66,7 +69,7 @@ class Map final {
   }
 
  private:
-  explicit Map(const Rect&);
+  explicit Map(Space*, const Rect&);
   void Init();
   void get_id();
   size_t GetIndex(const MapPoint& pos) const {
@@ -77,6 +80,7 @@ class Map final {
   Building* BuildingPtrIn(const MapPoint& pos);
   static size_t kMapSize;
   const Rect size_;
+  Space* space_;
   bool is_got_id_;
   size_t id_;
   int links_num_;

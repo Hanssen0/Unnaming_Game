@@ -40,9 +40,13 @@ MAP_EXPORT MapPoint Map::PickRandomPointIn(
   return MapPoint(0, 0);
 }
 MAP_EXPORT Map_ref Map::Create(const Rect& size) {
-  return Map_ref(new Map(size));
+  return Map_ref(new Map(nullptr, size));
 }
-MAP_NO_EXPORT Map::Map(const Rect& size): size_(size) {
+MAP_EXPORT Map_ref Map::Create(Space* space, const Rect& size) {
+  return Map_ref(new Map(space, size));
+}
+MAP_NO_EXPORT Map::Map(Space* space, const Rect& size)
+    : size_(size), space_(space) {
   assert(blocks_.max_size()/Width() >= Height());
   const auto map_size = Width()*Height();
   blocks_.resize(map_size);
@@ -56,6 +60,7 @@ MAP_EXPORT size_t Map::Id() {
 MAP_EXPORT const Rect& Map::Size() const {return size_;}
 MAP_EXPORT size_t Map::Width() const {return size_.w;}
 MAP_EXPORT size_t Map::Height() const {return size_.h;}
+MAP_EXPORT Space* Map::space() const {return space_;}
 MAP_EXPORT void Map::SetDestroy(const std::function<void()>& destroy) {
   destroy_ = destroy;
 }
