@@ -14,12 +14,12 @@
 class LinkBuilding::Implementation: public Building::Implementation {
  public:
   inline size_t index() const override {return base_.index();}
-  inline void set_map(Map* const map) {map_ = map;}
+  inline void set_map(const Map& map) {map_ = &map;}
   inline void set_pos(const MapPoint& pos) {pos_ = pos;}
 
  private:
   const Building base_;
-  Map* map_;
+  const Map* map_;
   MapPoint pos_;
 };
 MAP_EXPORT LinkBuilding::LinkBuilding()
@@ -28,7 +28,7 @@ MAP_EXPORT LinkBuilding::~LinkBuilding() = default;
 MAP_EXPORT LinkBuilding::operator Building() {
   return Building(impl_.get());
 }
-MAP_EXPORT void LinkBuilding::SetMap(Map* const map) {impl_->set_map(map);}
+MAP_EXPORT void LinkBuilding::SetMap(const Map& map) {impl_->set_map(map);}
 MAP_EXPORT void LinkBuilding::SetPosition(const MapPoint& pos) {
   impl_->set_pos(pos);
 }
