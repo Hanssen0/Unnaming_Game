@@ -7,7 +7,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "BaseBuilding.h"
 #include <cassert>
-#include <iostream>
 #include "../map_cmake.h"
 #include "./building_implementation.h"
 class BaseBuilding::Implementation: public Building::Implementation {
