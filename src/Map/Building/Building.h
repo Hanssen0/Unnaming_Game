@@ -8,7 +8,10 @@
 #ifndef UNNAMING_GAME_SRC_MAP_BUILDING_BUILDING_H_
 #define UNNAMING_GAME_SRC_MAP_BUILDING_BUILDING_H_
 #include <cstddef>
+#include <list>
 #include <memory>
+#include "../Block/Block.h"
+class Creature;
 class Building final {
  public:
   class Implementation;
@@ -16,6 +19,8 @@ class Building final {
       : impl_(impl) {}
   operator bool() const {return static_cast<bool>(impl_);}
   size_t index() const;
+  const std::list<Block>& Foundation() const;
+  void Interact(Creature*) const;
 
  private:
   std::shared_ptr<Implementation> impl_;

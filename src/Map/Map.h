@@ -56,8 +56,7 @@ class Map final {
   void ForEachBuilding(const std::function< void(Building*) >& applier);
   void Link();
   void Unlink();
-  MapPoint PickRandomPointIn(const std::function<size_t(size_t, size_t)>& ran,
-                          const std::list<Block>& valid_list) const;
+  MapPoint PickRandomPointIn(const std::list<Block>& valid_list) const;
   void CopyFromIn(const Map&, const MapPoint&);
   inline bool has(const IntPoint& pos) const {
     if (pos < 0) return false;

@@ -195,3 +195,6 @@ CREATURE_EXPORT Creature::Memory& Creature::GetMemory() {
   }
   return memory->second;
 }
+CREATURE_EXPORT void Creature::Interact() {
+  map()->BuildingIn(position()).Interact(this);
+}

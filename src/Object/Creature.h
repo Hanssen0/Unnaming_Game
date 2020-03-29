@@ -64,6 +64,7 @@ class Creature {
   template<int, int> void Destroy();
   template<int, int> void Move();
   Memory& GetMemory();
+  void Interact();
   void Teleport(const Map_ref&, const MapPoint&);
   void UpdateViewable();
 

@@ -7,6 +7,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef UNNAMING_GAME_SRC_MAP_BUILDING_BASEBUILDING_H_
 #define UNNAMING_GAME_SRC_MAP_BUILDING_BASEBUILDING_H_
+#include <list>
 #include <memory>
 #include "Building.h"
 class BaseBuilding final {
@@ -16,6 +17,7 @@ class BaseBuilding final {
   BaseBuilding& operator=(const BaseBuilding&) = delete;
   static size_t BaseBuildingSize();
   explicit operator Building();
+  void AddFoundation(const Block&);
 
  private:
   class Implementation;

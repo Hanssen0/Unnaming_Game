@@ -25,16 +25,18 @@ class Space {
  public:
   inline Space(const Space& space): builder_(space.builder_),
                                     next_map_size_(space.next_map_size_) {}
-  inline Space(MapBuilder* builder, const Rect& nms)
-      : builder_(builder),
-        next_map_size_(nms) {}
+  inline Space(MapBuilder* builder, const Rect& nms,
+               const std::function<size_t(size_t, size_t)>& ran)
+      : builder_(builder), next_map_size_(nms), random_(ran) {}
   inline void set_next_map_size(const Rect& si) {next_map_size_ = si;}
+  inline const std::function<size_t(size_t, size_t)>& random() {return random_;}
   inline Map_ref NewMap();
 
  private:
   MapBuilder* const builder_;
   std::list<Map_ref> maps_;
   Rect next_map_size_;
+  const std::function<size_t(size_t, size_t)> random_;
 };
 inline Map_ref Space::NewMap() {
   Map_ref tmp = Map::Create(this, next_map_size_);

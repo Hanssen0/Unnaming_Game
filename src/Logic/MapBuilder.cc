@@ -17,6 +17,7 @@
 #include "./Pathfinder.h"
 #include "../Map/Block/Block.h"
 #include "../Map/Building/Building.h"
+#include "../Map/Building/LinkBuilding.h"
 #include "../Map/Map.h"
 MapBuilder::~MapBuilder() {}
 void MapBuilder::SetWallBlock(const Block& wall) {
@@ -54,8 +55,8 @@ void MapBuilder::Build() {
   target_map_->ForEachBuilding(
       [empty](Building* building) {*building = empty;});
   std::list<Block> portal(1, ground_block_);
-  auto pos = target_map_->PickRandomPointIn(random_gen_, portal);
-  target_map_->SetBuildingIn(pos, portal_building_);
+  auto pos = target_map_->PickRandomPointIn(portal);
+  target_map_->SetBuildingIn(pos, LinkBuilding(portal_building_));
 }
 void MapBuilder::InitForEmptyTest() {
   for (size_t i = 0; i < target_map_->Width(); ++i) {

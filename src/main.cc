@@ -36,6 +36,8 @@ auto empty_building = static_cast<Building>(empty);
 auto portal_building = static_cast<Building>(portal);
 void Init(Creature* role) {
   wall.SetDestroy(ground_block);
+  portal.AddFoundation(path_block);
+  portal.AddFoundation(ground_block);
   Creature::CostOfBlock_ref normal_cost = Creature::CostOfBlock::Create();
   Creature::CostOfBlock_ref stop_cost = Creature::CostOfBlock::Create();
   normal_cost->BindMoveCost([]()->int {return 1;});
@@ -82,7 +84,7 @@ int main() {
   builder.SetWallBlock(wall_block);
   builder.SetEmptyBuilding(empty_building);
   builder.SetPortalBuilding(portal_building);
-  Space main_space(&builder, {32, 32});
+  Space main_space(&builder, {32, 32}, GenerateRandom);
   Creature_ref main_role = Creature::Create();
   Init(main_role.get());
   // TODO(handsome0hell): Read block from file
@@ -90,13 +92,11 @@ int main() {
   valid.push_back(path_block);
   valid.push_back(ground_block);
   auto new_map = main_space.NewMap();
-  main_role->Teleport(new_map,
-                      new_map->PickRandomPointIn(GenerateRandom, valid));
+  main_role->Teleport(new_map, new_map->PickRandomPointIn(valid));
   AutoResetStatus null_status;
   CinInput_ref input =
       CinInput::CreateCinInput([&null_status](){null_status.set_status();});
   AutoResetStatus quit_status;
-  AutoResetStatus new_map_status;
   AutoResetStatus render_memory_status;
   input->BindKey('w', [&main_role](){main_role->Move< 0, -1 >();});
   input->BindKey('a', [&main_role](){main_role->Move< -1, 0 >();});
@@ -110,26 +110,11 @@ int main() {
   input->BindKey('m', [&render_memory_status](){
                             render_memory_status.set_status();
                          });
-  input->BindKey('n', [&new_map_status](){new_map_status.set_status();});
-  bool is_init_stat = true;
-  while (!quit_status.Status()) {
-    if (is_init_stat) {
-      is_init_stat = false;
-    } else {
-      input->HandleInput();
-    }
+  input->BindKey('n', [main_role](){main_role->Interact();});
+  do {
     if (!null_status.Status()) {
       // TODO(handsome0hell): Finish energy system
       main_role->set_now_energy(10);
-      if (new_map_status.Status()) {
-        if (main_role->map()->
-            BuildingIn(main_role->position()).index() ==
-            portal_building.index()) {
-          new_map = main_space.NewMap();
-          main_role->Teleport(
-              new_map, new_map->PickRandomPointIn(GenerateRandom, valid));
-        }
-      }
       main_role->UpdateViewable();
       system("clear");
       if (render_memory_status.Status()) {
@@ -139,5 +124,6 @@ int main() {
       }
       std::cout << std::flush;
     }
-  }
+    input->HandleInput();
+  } while (!quit_status.Status());
 }

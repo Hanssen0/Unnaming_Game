@@ -13,10 +13,11 @@
 class LinkBuilding final {
  public:
   LinkBuilding();
+  explicit LinkBuilding(const Building&);
   LinkBuilding(const LinkBuilding&) = delete;
   LinkBuilding& operator=(const LinkBuilding&) = delete;
   operator Building();
-  void SetMap(const Map&);
+  void SetMap(const Map_ref&);
   void SetPosition(const MapPoint&);
 
  private:

@@ -14,9 +14,9 @@
 #include <cassert>
 #include <functional>
 #include "./map_cmake.h"
+#include "Space.h"
 size_t Map::kMapSize = 0;
 MAP_EXPORT MapPoint Map::PickRandomPointIn(
-    const std::function<size_t(size_t, size_t)>& ran,
     const std::list<Block>& valid_list) const {
   size_t total_valid = 0;
   for (size_t y = 0; y < Height(); ++y) {
@@ -27,7 +27,7 @@ MAP_EXPORT MapPoint Map::PickRandomPointIn(
     }
   }
   if (total_valid == 0) return MapPoint(0, 0);
-  total_valid = ran(static_cast<size_t>(0), total_valid - 1);
+  total_valid = space()->random()(static_cast<size_t>(0), total_valid - 1);
   for (size_t y = 0; y < Height(); ++y) {
     for (size_t x = 0; x < Width(); ++x) {
       for (auto i : valid_list) {
