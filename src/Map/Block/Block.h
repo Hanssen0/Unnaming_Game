@@ -9,7 +9,6 @@
 #define UNNAMING_GAME_SRC_MAP_BLOCK_BLOCK_H_
 #include <cstddef>
 #include <memory>
-#include <iostream>
 class Block final {
  public:
   class Implementation;
