@@ -30,7 +30,7 @@ class Space {
       : builder_(builder), next_map_size_(nms), random_(ran) {}
   inline void set_next_map_size(const Rect& si) {next_map_size_ = si;}
   inline const std::function<size_t(size_t, size_t)>& random() {return random_;}
-  inline Map_ref NewMap();
+  Map_ref NewMap();
 
  private:
   MapBuilder* const builder_;
@@ -38,13 +38,4 @@ class Space {
   Rect next_map_size_;
   const std::function<size_t(size_t, size_t)> random_;
 };
-inline Map_ref Space::NewMap() {
-  Map_ref tmp = Map::Create(this, next_map_size_);
-  maps_.push_front(tmp);
-  auto map_iterator = maps_.begin();
-  tmp->SetDestroy([map_iterator, this](){maps_.erase(map_iterator);});
-  builder_->set_target_map(tmp.get());
-  builder_->Build();
-  return tmp;
-}
 #endif  // UNNAMING_GAME_SRC_MAP_SPACE_H_
