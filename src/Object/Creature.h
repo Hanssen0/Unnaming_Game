@@ -55,7 +55,7 @@ class Creature {
   size_t view_dis() const;
   const Map_ref& map() const;
   const MapPoint& position() const;
-  void set_cost(const Block& type, const CostOfBlock_ref& cost);
+  void set_cost(const Building& type, const CostOfBlock_ref& cost);
   void set_max_energy(const int& energy);
   void set_now_energy(const int& energy);
   void SetViewDis(const size_t& d);

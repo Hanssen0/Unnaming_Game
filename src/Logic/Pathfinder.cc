@@ -113,7 +113,7 @@ void PathFinder::UpdateNearby(const MapPoint& now) {
     --tmp.y;
   }
 }
-bool PathFinder::TryAPoint(const Block& type, uint64_t walked_dis,
+bool PathFinder::TryAPoint(const Building& type, uint64_t walked_dis,
                            const MapPoint& now) {
   if (!walked_[now.x][now.y] && value_[type.index()] >= 0) {
     auto now_dis = walked_dis +

@@ -15,18 +15,17 @@
 #include <list>
 #include <queue>
 #include "./Pathfinder.h"
-#include "../Map/Block/Block.h"
 #include "../Map/Building/Building.h"
 #include "../Map/Building/LinkBuilding.h"
 #include "../Map/Map.h"
 MapBuilder::~MapBuilder() {}
-void MapBuilder::SetWallBlock(const Block& wall) {
+void MapBuilder::SetWallBlock(const Building& wall) {
   wall_block_ = wall;
 }
-void MapBuilder::SetPathBlock(const Block& path) {
+void MapBuilder::SetPathBlock(const Building& path) {
   path_block_ = path;
 }
-void MapBuilder::SetGroundBlock(const Block& ground) {
+void MapBuilder::SetGroundBlock(const Building& ground) {
   ground_block_ = ground;
 }
 void MapBuilder::SetEmptyBuilding(const Building& empty) {
@@ -38,8 +37,8 @@ void MapBuilder::SetPortalBuilding(const Building& portal) {
 void MapBuilder::Build() {
   InitForEmptyTest();
   MapPoint previous;
-  const Block wall = this->wall_block_;
-  target_map_->ForEachBlock([&wall](Block* block){*block = wall;});
+  const Building wall = this->wall_block_;
+  target_map_->ForEachBlock([&wall](Building* block){*block = wall;});
   bool is_first = true;
   while (true) {
     MapPoint tmp;
@@ -54,7 +53,7 @@ void MapBuilder::Build() {
   const Building& empty = this->empty_building_;
   target_map_->ForEachBuilding(
       [empty](Building* building) {*building = empty;});
-  std::list<Block> portal(1, ground_block_);
+  std::list<Building> portal(1, ground_block_);
   auto pos = target_map_->PickRandomPointIn(portal);
   target_map_->SetBuildingIn(pos, LinkBuilding(portal_building_));
 }

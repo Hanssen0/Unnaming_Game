@@ -16,12 +16,12 @@
 #include <list>
 #include <map>
 #include <vector>
-#include "../Map/Block/BaseBlock.h"
+#include "../Map/Building/BaseBuilding.h"
 #include "../Map/Map.h"
 class PathFinder {
  public:
   std::list<MapPoint> FindShortestPath(const MapPoint&, const MapPoint&);
-  inline void set_value(const Block& type, int value);
+  inline void set_value(const Building& type, int value);
   void set_target_map(const Map& target);
 
  private:
@@ -30,7 +30,8 @@ class PathFinder {
     PathFinder* original_finder;
   };
   void UpdateNearby(const MapPoint& now);
-  bool TryAPoint(const Block& type, uint64_t walked_dis, const MapPoint& now);
+  bool TryAPoint(const Building& type, uint64_t walked_dis,
+                 const MapPoint& now);
   void PushPointToAstarList(const MapPoint&);
   std::vector<int> value_;
   // A star data
@@ -41,8 +42,8 @@ class PathFinder {
   std::list<MapPoint> searching_list;
   const Map* target_map_;
 };
-inline void PathFinder::set_value(const Block& type, int value) {
-  const auto block_size = BaseBlock::BaseBlockSize();
+inline void PathFinder::set_value(const Building& type, int value) {
+  const auto block_size = BaseBuilding::BaseBuildingSize();
   if (value_.size() < block_size) value_.resize(block_size);
   value_[type.index()] = value;
 }

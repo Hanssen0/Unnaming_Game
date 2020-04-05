@@ -18,7 +18,6 @@
 #include <list>
 #include <memory>
 #include <vector>
-#include "./Block/Block.h"
 #include "./Building/Building.h"
 #include "../Common/Point.h"
 typedef Point<size_t> MapPoint;
@@ -44,19 +43,19 @@ class Map final {
   Space* space() const;
   void SetDestroy(const std::function<void()>&);
   // Layer
-  const Block& BlockIn(const MapPoint&) const;
+  const Building& BlockIn(const MapPoint&) const;
   const Building& BuildingIn(const MapPoint&) const;
-  void SetBlockIn(const MapPoint&, const Block&);
+  void SetBlockIn(const MapPoint&, const Building&);
   void SetBuildingIn(const MapPoint&, const Building&);
   void DestroyBlockIn(const MapPoint&);
   ~Map();
-  void ForEachBlock(const std::function< void(Block*) >& applier);
+  void ForEachBlock(const std::function< void(Building*) >& applier);
   void ForEachBlockIn(const RectWithPos& region,
-                      const std::function< void(Block*) >& applier);
+                      const std::function< void(Building*) >& applier);
   void ForEachBuilding(const std::function< void(Building*) >& applier);
   void Link();
   void Unlink();
-  MapPoint PickRandomPointIn(const std::list<Block>& valid_list) const;
+  MapPoint PickRandomPointIn(const std::list<Building>& valid_list) const;
   void CopyFromIn(const Map&, const MapPoint&);
   inline bool has(const IntPoint& pos) const {
     if (pos < 0) return false;
@@ -75,7 +74,7 @@ class Map final {
     assert(has(pos));
     return pos.y*Width() + pos.x;
   }
-  Block* BlockPtrIn(const MapPoint& pos);
+  Building* BlockPtrIn(const MapPoint& pos);
   Building* BuildingPtrIn(const MapPoint& pos);
   static size_t kMapSize;
   const Rect size_;
@@ -84,7 +83,7 @@ class Map final {
   size_t id_;
   int links_num_;
   std::function<void()> destroy_;
-  std::vector<Block> blocks_;
+  std::vector<Building> blocks_;
   std::vector<Building> buildings_;
 };
 #endif  // UNNAMING_GAME_SRC_MAP_MAP_H_

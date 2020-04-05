@@ -10,7 +10,6 @@
 #include <cstddef>
 #include <list>
 #include <memory>
-#include "../Block/Block.h"
 class Creature;
 class Building final {
  public:
@@ -18,8 +17,11 @@ class Building final {
   explicit Building(std::shared_ptr<Implementation> impl = nullptr)
       : impl_(impl) {}
   operator bool() const {return static_cast<bool>(impl_);}
+  bool operator==(const Building& b) const {return index() == b.index();}
+  bool operator!=(const Building& b) const {return index() != b.index();}
   size_t index() const;
-  const std::list<Block>& Foundation() const;
+  const std::list<Building>& Foundation() const;
+  const Building& Destroy() const;
   void Interact(Creature*) const;
 
  private:

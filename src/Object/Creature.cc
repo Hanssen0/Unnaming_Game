@@ -17,7 +17,7 @@
 #include <queue>
 #include <utility>
 #include "./creature_cmake.h"
-#include "../Map/Block/BaseBlock.h"
+#include "../Map/Building/BaseBuilding.h"
 #include "../Map/Map.h"
 #include "../Map/Space.h"
 size_t Creature::kCreatureSize = 0;
@@ -175,9 +175,9 @@ CREATURE_EXPORT void Creature::set_max_energy(const int& energy) {
 CREATURE_EXPORT void Creature::set_now_energy(const int& energy) {
   ability_.now_energy = std::min(energy, ability_.max_energy);
 }
-CREATURE_EXPORT void Creature::set_cost(const Block& type,
+CREATURE_EXPORT void Creature::set_cost(const Building& type,
                                         const CostOfBlock_ref& cost) {
-  const auto block_size = BaseBlock::BaseBlockSize();
+  const auto block_size = BaseBuilding::BaseBuildingSize();
   if (information_.cost.size() < block_size) {
     information_.cost.resize(block_size);
   }

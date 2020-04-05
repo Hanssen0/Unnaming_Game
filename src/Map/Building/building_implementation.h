@@ -13,7 +13,8 @@ class Building::Implementation {
  public:
   virtual ~Implementation() {}
   virtual size_t index() const = 0;
-  virtual const std::list<Block>& Foundation() const = 0;
+  virtual const std::list<Building>& Foundation() const = 0;
+  virtual const Building& Destroy() const = 0;
   virtual void Interact(Creature* creature) = 0;
 };
 #endif  // UNNAMING_GAME_SRC_MAP_BUILDING_BUILDING_IMPLEMENTATION_H_

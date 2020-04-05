@@ -14,7 +14,6 @@
 #include <iostream>
 #include <functional>
 #include <random>
-#include "Map/Block/BaseBlock.h"
 #include "Map/Building/BaseBuilding.h"
 #include "Map/Map.h"
 #include "Logic/MapBuilder.h"
@@ -24,9 +23,9 @@
 #include "Map/Space.h"
 Renderer_ref kMainRenderer = Renderer::Create();
 // TODO(handsome0hell): Read block from file
-BaseBlock ground;
-BaseBlock path;
-BaseBlock wall;
+BaseBuilding ground;
+BaseBuilding path;
+BaseBuilding wall;
 BaseBuilding empty;
 BaseBuilding portal;
 void Init(Creature* role) {
@@ -46,9 +45,9 @@ void Init(Creature* role) {
   role->set_now_energy(10);
   role->SetViewDis(6);
   // TODO(handsome0hell): Read block from file
-  kMainRenderer->set_exterior_of_block('#', wall);
-  kMainRenderer->set_exterior_of_block('.', ground);
-  kMainRenderer->set_exterior_of_block('+', path);
+  kMainRenderer->set_exterior_of_building('#', wall);
+  kMainRenderer->set_exterior_of_building('.', ground);
+  kMainRenderer->set_exterior_of_building('+', path);
   kMainRenderer->set_exterior_of_building('0', portal);
 }
 class AutoResetStatus {
@@ -83,7 +82,7 @@ int main() {
   Creature_ref main_role = Creature::Create();
   Init(main_role.get());
   // TODO(handsome0hell): Read block from file
-  std::list<Block> valid;
+  std::list<Building> valid;
   valid.push_back(path);
   valid.push_back(ground);
   auto new_map = main_space.NewMap();
