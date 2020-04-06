@@ -14,9 +14,11 @@
 #define UNNAMING_GAME_SRC_OBJECT_CREATURE_H_
 #include <cstdint>
 #include <functional>
+#include <list>
 #include <map>
 #include <memory>
 #include <vector>
+#include "../Item/Item.h"
 #include "../Map/Space.h"
 #include "../Map/Map.h"
 #include "../Fov/shadowcasting.h"
@@ -62,6 +64,7 @@ class Creature {
   ~Creature();
   bool is_viewable(const MapPoint& pos) const;
   template<int, int> void Destroy();
+  template<int, int> void Gather();
   template<int, int> void Move();
   Memory& GetMemory();
   void Interact();
@@ -87,6 +90,7 @@ class Creature {
     std::vector< CostOfBlock_ref > cost;
     std::vector< std::vector< bool > > is_viewable;
   } information_;
+  std::list<Item> items_;
   std::map<size_t, Memory> memories_;
   void set_position(const MapPoint&);
   bool is_valid(const MapPoint& pos) const;

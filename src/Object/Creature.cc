@@ -74,6 +74,9 @@ template<int x, int y> void Creature::Destroy() {
   if (!map()->has(des)) return;
   map()->DestroyGroundIn(des);
 }
+template<int x, int y> void Creature::Gather() {
+  items_.push_back(Item(map()));
+}
 CREATURE_NO_EXPORT Creature::Creature() {information_.is_have_id = false;}
 CREATURE_NO_EXPORT void Creature::get_id() {
   information_.is_have_id = true;
@@ -122,6 +125,10 @@ template CREATURE_EXPORT void Creature::Destroy<kWASD[0][0], kWASD[0][1]>();
 template CREATURE_EXPORT void Creature::Destroy<kWASD[1][0], kWASD[1][1]>();
 template CREATURE_EXPORT void Creature::Destroy<kWASD[2][0], kWASD[2][1]>();
 template CREATURE_EXPORT void Creature::Destroy<kWASD[3][0], kWASD[3][1]>();
+template CREATURE_EXPORT void Creature::Gather<kWASD[0][0], kWASD[0][1]>();
+template CREATURE_EXPORT void Creature::Gather<kWASD[1][0], kWASD[1][1]>();
+template CREATURE_EXPORT void Creature::Gather<kWASD[2][0], kWASD[2][1]>();
+template CREATURE_EXPORT void Creature::Gather<kWASD[3][0], kWASD[3][1]>();
 CREATURE_EXPORT Creature_ref Creature::Create() {
   return Creature_ref(new Creature());
 }
