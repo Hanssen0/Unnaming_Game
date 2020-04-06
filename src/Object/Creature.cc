@@ -63,7 +63,7 @@ template<int x, int y> CREATURE_NO_EXPORT void Creature::Move() {
   MapPoint des = position();
   des += IntPoint(x, y);
   if (!map()->has(des)) return;
-  const int c_m = information_.cost[map()->BlockIn(des).index()]->MoveCost();
+  const int c_m = information_.cost[map()->GroundIn(des).index()]->MoveCost();
   if (c_m < 0 || c_m > ability_.now_energy) return;
   ability_.now_energy -= c_m;
   set_position(des);
@@ -72,7 +72,7 @@ template<int x, int y> void Creature::Destroy() {
   MapPoint des = position();
   des += IntPoint(x, y);
   if (!map()->has(des)) return;
-  map()->DestroyBlockIn(des);
+  map()->DestroyGroundIn(des);
 }
 CREATURE_NO_EXPORT Creature::Creature() {information_.is_have_id = false;}
 CREATURE_NO_EXPORT void Creature::get_id() {
@@ -108,7 +108,7 @@ CREATURE_NO_EXPORT void Creature::set_viewable(const MapPoint& pos) {
                           [pos.y - position().y + view_dis()] = true;
 }
 CREATURE_NO_EXPORT int Creature::get_cost(const MapPoint& pos) {
-  return map_->has(pos)? information_.cost[map()->BlockIn(pos).index()]
+  return map_->has(pos)? information_.cost[map()->GroundIn(pos).index()]
                              ->SeeThroughCost() : 0x3f3f3f3f;
 }
 constexpr int kWASD[4][2] = {{0, -1}, {-1, 0}, {0, 1}, {1, 0}};

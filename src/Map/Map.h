@@ -43,14 +43,14 @@ class Map final {
   Space* space() const;
   void SetDestroy(const std::function<void()>&);
   // Layer
-  const Building& BlockIn(const MapPoint&) const;
+  const Building& GroundIn(const MapPoint&) const;
   const Building& BuildingIn(const MapPoint&) const;
-  void SetBlockIn(const MapPoint&, const Building&);
+  void SetGroundIn(const MapPoint&, const Building&);
   void SetBuildingIn(const MapPoint&, const Building&);
-  void DestroyBlockIn(const MapPoint&);
+  void DestroyGroundIn(const MapPoint&);
   ~Map();
-  void ForEachBlock(const std::function< void(Building*) >& applier);
-  void ForEachBlockIn(const RectWithPos& region,
+  void ForEachGround(const std::function< void(Building*) >& applier);
+  void ForEachGroundIn(const RectWithPos& region,
                       const std::function< void(Building*) >& applier);
   void ForEachBuilding(const std::function< void(Building*) >& applier);
   void Link();
@@ -74,7 +74,7 @@ class Map final {
     assert(has(pos));
     return pos.y*Width() + pos.x;
   }
-  Building* BlockPtrIn(const MapPoint& pos);
+  Building* GroundPtrIn(const MapPoint& pos);
   Building* BuildingPtrIn(const MapPoint& pos);
   static size_t kMapSize;
   const Rect size_;

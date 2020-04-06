@@ -33,7 +33,7 @@ RENDERER_EXPORT void Renderer::RenderPosition(const Map& map,
   if (building != 0) {
     std::cout << building;
   } else {
-    std::cout << exterior_of_building_[map.BlockIn(pos).index()];
+    std::cout << exterior_of_building_[map.GroundIn(pos).index()];
   }
 }
 RENDERER_EXPORT void Renderer::RenderCreaturesView(const Creature& obj) const {
