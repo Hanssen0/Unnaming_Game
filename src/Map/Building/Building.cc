@@ -8,7 +8,8 @@
 #include "Building.h"
 #include "../map_cmake.h"
 #include "./building_implementation.h"
-MAP_EXPORT size_t Building::index() const {return impl_->index();}
+MAP_EXPORT const size_t& Building::Index() const {return impl_->Index();}
+MAP_EXPORT const size_t& Building::Size() const {return impl_->Size();}
 MAP_EXPORT const std::list<Building>& Building::Foundation() const {
   return impl_->Foundation();
 }

@@ -17,9 +17,10 @@ class Building final {
   explicit Building(std::shared_ptr<Implementation> impl = nullptr)
       : impl_(impl) {}
   operator bool() const {return static_cast<bool>(impl_);}
-  bool operator==(const Building& b) const {return index() == b.index();}
-  bool operator!=(const Building& b) const {return index() != b.index();}
-  size_t index() const;
+  bool operator==(const Building& b) const {return Index() == b.Index();}
+  bool operator!=(const Building& b) const {return Index() != b.Index();}
+  const size_t& Index() const;
+  const size_t& Size() const;
   const std::list<Building>& Foundation() const;
   const Building& Destroy() const;
   void Interact(Creature*) const;

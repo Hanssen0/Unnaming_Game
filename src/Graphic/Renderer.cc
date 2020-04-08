@@ -24,16 +24,16 @@ RENDERER_EXPORT Renderer::~Renderer() {}
 RENDERER_EXPORT
 void Renderer::set_exterior_of_building(const char exterior,
                                         const Building& type) {
-  Expand(&exterior_of_building_, BaseBuilding::BaseBuildingSize());
-  exterior_of_building_[type.index()] = exterior;
+  Expand(&exterior_of_building_, type.Size());
+  exterior_of_building_[type.Index()] = exterior;
 }
 RENDERER_EXPORT void Renderer::RenderPosition(const Map& map,
                                               const MapPoint& pos) const {
-  auto building = exterior_of_building_[map.BuildingIn(pos).index()];
+  auto building = exterior_of_building_[map.BuildingIn(pos).Index()];
   if (building != 0) {
     std::cout << building;
   } else {
-    std::cout << exterior_of_building_[map.GroundIn(pos).index()];
+    std::cout << exterior_of_building_[map.GroundIn(pos).Index()];
   }
 }
 RENDERER_EXPORT void Renderer::RenderCreaturesView(const Creature& obj) const {

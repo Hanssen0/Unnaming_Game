@@ -63,7 +63,7 @@ template<int x, int y> CREATURE_NO_EXPORT void Creature::Move() {
   MapPoint des = position();
   des += IntPoint(x, y);
   if (!map()->has(des)) return;
-  const int c_m = information_.cost[map()->GroundIn(des).index()]->MoveCost();
+  const int c_m = information_.cost[map()->GroundIn(des).Index()]->MoveCost();
   if (c_m < 0 || c_m > ability_.now_energy) return;
   ability_.now_energy -= c_m;
   set_position(des);
@@ -110,7 +110,7 @@ CREATURE_NO_EXPORT void Creature::set_viewable(const MapPoint& pos) {
                           [pos.y - position().y + view_dis()] = true;
 }
 CREATURE_NO_EXPORT int Creature::get_cost(const MapPoint& pos) {
-  return map_->has(pos)? information_.cost[map()->GroundIn(pos).index()]
+  return map_->has(pos)? information_.cost[map()->GroundIn(pos).Index()]
                              ->SeeThroughCost() : 0x3f3f3f3f;
 }
 constexpr int kWASD[4][2] = {{0, -1}, {-1, 0}, {0, 1}, {1, 0}};
@@ -187,11 +187,11 @@ CREATURE_EXPORT void Creature::set_now_energy(const int& energy) {
 }
 CREATURE_EXPORT void Creature::set_cost(const Building& type,
                                         const CostOfBlock_ref& cost) {
-  const auto block_size = BaseBuilding::BaseBuildingSize();
+  const auto block_size = type.Size();
   if (information_.cost.size() < block_size) {
     information_.cost.resize(block_size);
   }
-  information_.cost[type.index()] = cost;
+  information_.cost[type.Index()] = cost;
 }
 CREATURE_EXPORT Creature::~Creature() {}
 CREATURE_EXPORT Creature::Memory& Creature::GetMemory() {

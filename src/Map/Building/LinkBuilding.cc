@@ -18,7 +18,8 @@ class LinkBuilding::Implementation: public Building::Implementation {
   inline Implementation() = default;
   explicit inline Implementation(const Building& base)
       : base_(base), has_pos_(false) {}
-  inline size_t index() const override {return base_.index();}
+  inline const size_t& Index() const override {return base_.Index();}
+  inline const size_t& Size() const override {return base_.Size();}
   inline void set_base(const Building& base) {base_ = base;}
   inline void set_map(const Map_ref& map) {map_ = map;}
   inline void set_pos(const MapPoint& pos) {pos_ = pos;}

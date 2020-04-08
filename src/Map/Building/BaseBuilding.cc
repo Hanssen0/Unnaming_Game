@@ -13,8 +13,8 @@
 class BaseBuilding::Implementation: public Building::Implementation {
  public:
   inline Implementation() {index_ = kBaseBuildingSize++;}
-  inline static size_t BaseBuildingSize() {return kBaseBuildingSize;}
-  inline size_t index() const override {return index_;}
+  inline const size_t& Size() const override {return kBaseBuildingSize;}
+  inline const size_t& Index() const override {return index_;}
   inline void AddFoundation(const Building& foundation) {
     foundation_.push_back(foundation);
   }
@@ -36,9 +36,6 @@ class BaseBuilding::Implementation: public Building::Implementation {
 size_t BaseBuilding::Implementation::kBaseBuildingSize = 0;
 MAP_EXPORT BaseBuilding::BaseBuilding()
     : impl_(std::make_shared<Implementation>()) {}
-MAP_EXPORT size_t BaseBuilding::BaseBuildingSize() {
-  return BaseBuilding::Implementation::BaseBuildingSize();
-}
 MAP_EXPORT BaseBuilding::operator Building() {return Building(impl_);}
 MAP_EXPORT void BaseBuilding::AddFoundation(const Building& foundation) {
   impl_->AddFoundation(foundation);

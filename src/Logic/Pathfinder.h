@@ -43,8 +43,8 @@ class PathFinder {
   const Map* target_map_;
 };
 inline void PathFinder::set_value(const Building& type, int value) {
-  const auto block_size = BaseBuilding::BaseBuildingSize();
+  const auto block_size = type.Size();
   if (value_.size() < block_size) value_.resize(block_size);
-  value_[type.index()] = value;
+  value_[type.Index()] = value;
 }
 #endif  // UNNAMING_GAME_SRC_LOGIC_PATHFINDER_H_
