@@ -27,26 +27,6 @@ class Creature;
 typedef std::shared_ptr< Creature > Creature_ref;
 class Creature {
  public:
-  class CostOfBlock;
-  typedef std::shared_ptr<CostOfBlock> CostOfBlock_ref;
-  class CostOfBlock {
-   public:
-    static CostOfBlock_ref Create();
-    CostOfBlock& operator=(const CostOfBlock& a);
-    void BindDestroyCost(const std::function< int() >& function);
-    void BindMoveCost(const std::function< int() >& function);
-    void BindSeeThroughCost(const std::function< int() >& function);
-    int DestroyCost() const;
-    int MoveCost() const;
-    int SeeThroughCost() const;
-    ~CostOfBlock();
-
-   private:
-    CostOfBlock();
-    std::function< int() > destroy_;
-    std::function< int() > move_;
-    std::function< int() > see_through_;
-  };
   struct Memory {
     MapPoint left_top;
     MapPoint right_bottom;
@@ -54,11 +34,10 @@ class Creature {
     Map_ref detail;
   };
   static Creature_ref Create();
-  size_t id();
+  const size_t& Index() const;
   size_t view_dis() const;
   const Map_ref& map() const;
   const MapPoint& position() const;
-  void set_cost(const Building& type, const CostOfBlock_ref& cost);
   void set_max_energy(const int& energy);
   void set_now_energy(const int& energy);
   void SetViewDis(const size_t& d);
@@ -75,7 +54,6 @@ class Creature {
  private:
   Creature();
   Creature& operator=(const Creature&) = delete;
-  void get_id();
   void UpdateMemory();
   static size_t kCreatureSize;
   Map_ref map_;
@@ -87,8 +65,6 @@ class Creature {
   } ability_;
   struct {
     size_t id;
-    bool is_have_id;
-    std::vector< CostOfBlock_ref > cost;
     std::vector< std::vector< bool > > is_viewable;
   } information_;
   std::list<Item> items_;

@@ -15,6 +15,8 @@ class Building::Implementation {
   virtual const size_t& Index() const = 0;
   virtual const size_t& Size() const = 0;
   virtual const std::list<Building>& Foundation() const = 0;
+  virtual int CostMove(const Creature&) const = 0;
+  virtual int CostSeeThrough(const Creature&) const = 0;
   virtual const Building& Destroy() const = 0;
   virtual void Interact(Creature* creature) = 0;
 };

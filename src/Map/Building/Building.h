@@ -22,6 +22,8 @@ class Building final {
   const size_t& Index() const;
   const size_t& Size() const;
   const std::list<Building>& Foundation() const;
+  int CostMove(const Creature&) const;
+  int CostSeeThrough(const Creature&) const;
   const Building& Destroy() const;
   void Interact(Creature*) const;
 

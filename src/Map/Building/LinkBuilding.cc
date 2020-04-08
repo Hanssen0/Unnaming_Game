@@ -23,6 +23,12 @@ class LinkBuilding::Implementation: public Building::Implementation {
   inline void set_base(const Building& base) {base_ = base;}
   inline void set_map(const Map_ref& map) {map_ = map;}
   inline void set_pos(const MapPoint& pos) {pos_ = pos;}
+  inline int CostMove(const Creature& creature) const override {
+    return base_.CostMove(creature);
+  }
+  inline int CostSeeThrough(const Creature& creature) const override {
+    return base_.CostSeeThrough(creature);
+  }
   inline const Building& Destroy() const override {return base_.Destroy();}
   inline const std::list<Building>& Foundation() const override {
     return base_.Foundation();

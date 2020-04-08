@@ -35,17 +35,12 @@ void Init(Creature* role) {
   wall.SetDestroy(ground);
   portal.AddFoundation(path);
   portal.AddFoundation(ground);
-  Creature::CostOfBlock_ref normal_cost = Creature::CostOfBlock::Create();
-  Creature::CostOfBlock_ref stop_cost = Creature::CostOfBlock::Create();
-  normal_cost->BindMoveCost([]()->int {return 1;});
-  normal_cost->BindSeeThroughCost([]()->int {return 0;});
-  role->set_cost(path, normal_cost);
-  role->set_cost(ground, normal_cost);
-  stop_cost->BindMoveCost([]()->int {return -1;});
-  stop_cost->BindSeeThroughCost([]()->int {return 0x3f3f3f3f;});
-  role->set_cost(wall, stop_cost);
-  role->set_max_energy(10);
-  role->set_now_energy(10);
+  ground.BindCostSeeThrough(*role, 0);
+  path.BindCostSeeThrough(*role, 0);
+  wall.BindCostSeeThrough(*role, 0x3f3f3f3f);
+  ground.BindCostMove(*role, 0);
+  path.BindCostMove(*role, 1);
+  wall.BindCostMove(*role, -1);
   role->SetViewDis(6);
   // TODO(handsome0hell): Read block from file
   kMainRenderer->set_exterior_of_building('#', wall);

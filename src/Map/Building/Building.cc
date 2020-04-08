@@ -13,6 +13,12 @@ MAP_EXPORT const size_t& Building::Size() const {return impl_->Size();}
 MAP_EXPORT const std::list<Building>& Building::Foundation() const {
   return impl_->Foundation();
 }
+MAP_EXPORT int Building::CostMove(const Creature& creature) const {
+  return impl_->CostMove(creature);
+}
+MAP_EXPORT int Building::CostSeeThrough(const Creature& creature) const {
+  return impl_->CostSeeThrough(creature);
+}
 MAP_EXPORT const Building& Building::Destroy() const {return impl_->Destroy();}
 MAP_EXPORT void Building::Interact(Creature* creature) const {
   impl_->Interact(creature);

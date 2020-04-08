@@ -17,6 +17,8 @@ class BaseBuilding final {
   BaseBuilding& operator=(const BaseBuilding&) = delete;
   operator Building(); // NOLINT
   void AddFoundation(const Building&);
+  void BindCostMove(const Creature&, int);
+  void BindCostSeeThrough(const Creature&, int);
   void SetDestroy(const Building&);
 
  private:
