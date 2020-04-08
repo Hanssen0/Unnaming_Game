@@ -68,14 +68,13 @@ template<int x, int y> CREATURE_NO_EXPORT void Creature::Move() {
   ability_.now_energy -= c_m;
   set_position(des);
 }
-template<int x, int y> void Creature::Destroy() {
-  MapPoint des = position();
-  des += IntPoint(x, y);
-  if (!map()->has(des)) return;
-  map()->DestroyGroundIn(des);
-}
 template<int x, int y> void Creature::Gather() {
   items_.push_back(Item(map()));
+}
+template<int x, int y> void Creature::Perform(const Action& action) {
+  MapPoint des = position();
+  des += IntPoint(x, y);
+  action.Perform(this->map(), des, this);
 }
 CREATURE_NO_EXPORT Creature::Creature() {information_.is_have_id = false;}
 CREATURE_NO_EXPORT void Creature::get_id() {
@@ -121,14 +120,18 @@ template CREATURE_EXPORT void Creature::Move<kWASD[0][0], kWASD[0][1]>();
 template CREATURE_EXPORT void Creature::Move<kWASD[1][0], kWASD[1][1]>();
 template CREATURE_EXPORT void Creature::Move<kWASD[2][0], kWASD[2][1]>();
 template CREATURE_EXPORT void Creature::Move<kWASD[3][0], kWASD[3][1]>();
-template CREATURE_EXPORT void Creature::Destroy<kWASD[0][0], kWASD[0][1]>();
-template CREATURE_EXPORT void Creature::Destroy<kWASD[1][0], kWASD[1][1]>();
-template CREATURE_EXPORT void Creature::Destroy<kWASD[2][0], kWASD[2][1]>();
-template CREATURE_EXPORT void Creature::Destroy<kWASD[3][0], kWASD[3][1]>();
 template CREATURE_EXPORT void Creature::Gather<kWASD[0][0], kWASD[0][1]>();
 template CREATURE_EXPORT void Creature::Gather<kWASD[1][0], kWASD[1][1]>();
 template CREATURE_EXPORT void Creature::Gather<kWASD[2][0], kWASD[2][1]>();
 template CREATURE_EXPORT void Creature::Gather<kWASD[3][0], kWASD[3][1]>();
+template CREATURE_EXPORT void Creature::Perform<kWASD[0][0], kWASD[0][1]>(
+    const Action&);
+template CREATURE_EXPORT void Creature::Perform<kWASD[1][0], kWASD[1][1]>(
+    const Action&);
+template CREATURE_EXPORT void Creature::Perform<kWASD[2][0], kWASD[2][1]>(
+    const Action&);
+template CREATURE_EXPORT void Creature::Perform<kWASD[3][0], kWASD[3][1]>(
+    const Action&);
 CREATURE_EXPORT Creature_ref Creature::Create() {
   return Creature_ref(new Creature());
 }

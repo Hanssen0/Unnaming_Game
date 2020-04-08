@@ -18,6 +18,7 @@
 #include <map>
 #include <memory>
 #include <vector>
+#include "./Action.h"
 #include "../Item/Item.h"
 #include "../Map/Space.h"
 #include "../Map/Map.h"
@@ -63,9 +64,9 @@ class Creature {
   void SetViewDis(const size_t& d);
   ~Creature();
   bool is_viewable(const MapPoint& pos) const;
-  template<int, int> void Destroy();
   template<int, int> void Gather();
   template<int, int> void Move();
+  template<int, int> void Perform(const Action&);
   Memory& GetMemory();
   void Interact();
   void Teleport(const Map_ref&, const MapPoint&);
