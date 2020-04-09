@@ -13,13 +13,15 @@
 class LinkBuilding final {
  public:
   LinkBuilding();
-  ~LinkBuilding();
-  operator Building();
-  void SetMap(Map* const);
+  explicit LinkBuilding(const Building&);
+  LinkBuilding(const LinkBuilding&) = delete;
+  LinkBuilding& operator=(const LinkBuilding&) = delete;
+  operator Building(); // NOLINT
+  void SetMap(const Map_ref&);
   void SetPosition(const MapPoint&);
 
  private:
   class Implementation;
-  std::unique_ptr<Implementation> impl_;
+  std::shared_ptr<Implementation> impl_;
 };
 #endif  // UNNAMING_GAME_SRC_MAP_BUILDING_LINKBUILDING_H_

@@ -46,7 +46,7 @@ std::list<MapPoint> PathFinder::FindShortestPath(const MapPoint& from,
   }
   evaulate_to = to;
   walked_dis_[from.x][from.y] =
-      static_cast< uint64_t >(value_[target_map_->BlockIn(from).index()]);
+      static_cast< uint64_t >(value_[target_map_->GroundIn(from).Index()]);
   father_[from.x][from.y] = from;
   searching_list.push_back(from);
   MapPoint min_dis;
@@ -74,7 +74,7 @@ void PathFinder::UpdateNearby(const MapPoint& now) {
   MapPoint tmp = now;
   if (tmp.x > 0) {
     --tmp.x;
-    if (TryAPoint(target_map_->BlockIn(tmp),
+    if (TryAPoint(target_map_->GroundIn(tmp),
                   walked_dis_[now.x][now.y] +
                   (father_[now.x][now.y].x - 1 == now.x ? 0 : 1),
                   tmp)) {
@@ -84,7 +84,7 @@ void PathFinder::UpdateNearby(const MapPoint& now) {
   }
   if (tmp.y > 0) {
     --tmp.y;
-    if (TryAPoint(target_map_->BlockIn(tmp),
+    if (TryAPoint(target_map_->GroundIn(tmp),
                   walked_dis_[now.x][now.y] +
                   (father_[now.x][now.y].y - 1 == now.y ? 0 : 1),
                   tmp)) {
@@ -94,7 +94,7 @@ void PathFinder::UpdateNearby(const MapPoint& now) {
   }
   if (tmp.x < target_map_->Width() - 1) {
     ++tmp.x;
-    if (TryAPoint(target_map_->BlockIn(tmp),
+    if (TryAPoint(target_map_->GroundIn(tmp),
                   walked_dis_[now.x][now.y] +
                   (father_[now.x][now.y].x + 1 == now.x ? 0 : 1),
                   tmp)) {
@@ -104,7 +104,7 @@ void PathFinder::UpdateNearby(const MapPoint& now) {
   }
   if (tmp.y < target_map_->Height() - 1) {
     ++tmp.y;
-    if (TryAPoint(target_map_->BlockIn(tmp),
+    if (TryAPoint(target_map_->GroundIn(tmp),
                   walked_dis_[now.x][now.y] +
                   (father_[now.x][now.y].y + 1 == now.y ? 0 : 1),
                   tmp)) {
@@ -113,11 +113,11 @@ void PathFinder::UpdateNearby(const MapPoint& now) {
     --tmp.y;
   }
 }
-bool PathFinder::TryAPoint(const Block& type, uint64_t walked_dis,
+bool PathFinder::TryAPoint(const Building& type, uint64_t walked_dis,
                            const MapPoint& now) {
-  if (!walked_[now.x][now.y] && value_[type.index()] >= 0) {
+  if (!walked_[now.x][now.y] && value_[type.Index()] >= 0) {
     auto now_dis = walked_dis +
-                   static_cast<unsigned int>(value_[type.index()]);
+                   static_cast<unsigned int>(value_[type.Index()]);
     if (is_first_check_[now.x][now.y] == true) {
       walked_dis_[now.x][now.y] = now_dis;
       PushPointToAstarList(now);

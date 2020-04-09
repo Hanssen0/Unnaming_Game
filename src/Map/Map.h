@@ -18,13 +18,13 @@
 #include <list>
 #include <memory>
 #include <vector>
-#include "./Block/Block.h"
 #include "./Building/Building.h"
 #include "../Common/Point.h"
 typedef Point<size_t> MapPoint;
 struct Rect {
   size_t w, h;
 };
+class Space;
 class Map;
 typedef std::shared_ptr< Map > Map_ref;
 class Map final {
@@ -34,27 +34,28 @@ class Map final {
     Rect size;
   };
   static Map_ref Create(const Rect&);
+  static Map_ref Create(Space*, const Rect&);
   // Basic attributes
   size_t Id();
   const Rect& Size() const;
   size_t Width() const;
   size_t Height() const;
+  Space* space() const;
   void SetDestroy(const std::function<void()>&);
   // Layer
-  const Block& BlockIn(const MapPoint&) const;
+  const Building& GroundIn(const MapPoint&) const;
   const Building& BuildingIn(const MapPoint&) const;
-  void SetBlockIn(const MapPoint&, const Block&);
+  void SetGroundIn(const MapPoint&, const Building&);
   void SetBuildingIn(const MapPoint&, const Building&);
-  void DestroyBlockIn(const MapPoint&);
+  void DestroyGroundIn(const MapPoint&);
   ~Map();
-  void ForEachBlock(const std::function< void(Block*) >& applier);
-  void ForEachBlockIn(const RectWithPos& region,
-                      const std::function< void(Block*) >& applier);
+  void ForEachGround(const std::function< void(Building*) >& applier);
+  void ForEachGroundIn(const RectWithPos& region,
+                      const std::function< void(Building*) >& applier);
   void ForEachBuilding(const std::function< void(Building*) >& applier);
   void Link();
   void Unlink();
-  MapPoint PickRandomPointIn(const std::function<size_t(size_t, size_t)>& ran,
-                          const std::list<Block>& valid_list) const;
+  MapPoint PickRandomPointIn(const std::list<Building>& valid_list) const;
   void CopyFromIn(const Map&, const MapPoint&);
   inline bool has(const IntPoint& pos) const {
     if (pos < 0) return false;
@@ -66,22 +67,23 @@ class Map final {
   }
 
  private:
-  explicit Map(const Rect&);
+  explicit Map(Space*, const Rect&);
   void Init();
   void get_id();
   size_t GetIndex(const MapPoint& pos) const {
     assert(has(pos));
     return pos.y*Width() + pos.x;
   }
-  Block* BlockPtrIn(const MapPoint& pos);
+  Building* GroundPtrIn(const MapPoint& pos);
   Building* BuildingPtrIn(const MapPoint& pos);
   static size_t kMapSize;
   const Rect size_;
+  Space* space_;
   bool is_got_id_;
   size_t id_;
   int links_num_;
   std::function<void()> destroy_;
-  std::vector<Block> blocks_;
+  std::vector<Building> blocks_;
   std::vector<Building> buildings_;
 };
 #endif  // UNNAMING_GAME_SRC_MAP_MAP_H_

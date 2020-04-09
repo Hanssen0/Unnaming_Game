@@ -14,45 +14,39 @@
 #include <iostream>
 #include <functional>
 #include <random>
-#include "Map/Block/BaseBlock.h"
 #include "Map/Building/BaseBuilding.h"
 #include "Map/Map.h"
 #include "Logic/MapBuilder.h"
+#include "Object/Action.h"
 #include "Object/Creature.h"
 #include "FrontEnd/CinInput.h"
 #include "Graphic/Renderer.h"
 #include "Map/Space.h"
 Renderer_ref kMainRenderer = Renderer::Create();
 // TODO(handsome0hell): Read block from file
-BaseBlock ground;
-BaseBlock path;
-BaseBlock wall;
+BaseBuilding ground;
+BaseBuilding path;
+BaseBuilding wall;
 BaseBuilding empty;
 BaseBuilding portal;
-auto ground_block = static_cast<Block>(ground);
-auto path_block = static_cast<Block>(path);
-auto wall_block = static_cast<Block>(wall);
-auto empty_building = static_cast<Building>(empty);
-auto portal_building = static_cast<Building>(portal);
+// TODO(handsome0hell): Move Abilities to better place
+DestroyAction destroy;
 void Init(Creature* role) {
-  wall.SetDestroy(ground_block);
-  Creature::CostOfBlock_ref normal_cost = Creature::CostOfBlock::Create();
-  Creature::CostOfBlock_ref stop_cost = Creature::CostOfBlock::Create();
-  normal_cost->BindMoveCost([]()->int {return 1;});
-  normal_cost->BindSeeThroughCost([]()->int {return 0;});
-  role->set_cost(path_block, normal_cost);
-  role->set_cost(ground_block, normal_cost);
-  stop_cost->BindMoveCost([]()->int {return -1;});
-  stop_cost->BindSeeThroughCost([]()->int {return 0x3f3f3f3f;});
-  role->set_cost(wall_block, stop_cost);
-  role->set_max_energy(10);
-  role->set_now_energy(10);
+  wall.SetDestroy(ground);
+  portal.AddFoundation(path);
+  portal.AddFoundation(ground);
+  ground.BindCostSeeThrough(*role, 0);
+  path.BindCostSeeThrough(*role, 0);
+  wall.BindCostSeeThrough(*role, 0x3f3f3f3f);
+  ground.BindCostMove(*role, 0);
+  path.BindCostMove(*role, 1);
+  wall.BindCostMove(*role, -1);
   role->SetViewDis(6);
   // TODO(handsome0hell): Read block from file
-  kMainRenderer->set_exterior_of_block('#', wall_block);
-  kMainRenderer->set_exterior_of_block('.', ground_block);
-  kMainRenderer->set_exterior_of_block('+', path_block);
-  kMainRenderer->set_exterior_of_building('0', portal_building);
+  kMainRenderer->set_exterior_of_building('#', wall);
+  kMainRenderer->set_exterior_of_building('.', ground);
+  kMainRenderer->set_exterior_of_building('+', path);
+  kMainRenderer->set_exterior_of_building('0', portal);
 }
 class AutoResetStatus {
  public:
@@ -77,59 +71,46 @@ int main() {
                                                                           to));
       };
   MapBuilder builder(GenerateRandom, {3, 3}, {8, 8});
-  builder.SetGroundBlock(ground_block);
-  builder.SetPathBlock(path_block);
-  builder.SetWallBlock(wall_block);
-  builder.SetEmptyBuilding(empty_building);
-  builder.SetPortalBuilding(portal_building);
-  Space main_space(&builder, {32, 32});
+  builder.SetGroundBlock(ground);
+  builder.SetPathBlock(path);
+  builder.SetWallBlock(wall);
+  builder.SetEmptyBuilding(empty);
+  builder.SetPortalBuilding(portal);
+  Space main_space(&builder, {32, 32}, GenerateRandom);
   Creature_ref main_role = Creature::Create();
   Init(main_role.get());
   // TODO(handsome0hell): Read block from file
-  std::list<Block> valid;
-  valid.push_back(path_block);
-  valid.push_back(ground_block);
+  std::list<Building> valid;
+  valid.push_back(path);
+  valid.push_back(ground);
   auto new_map = main_space.NewMap();
-  main_role->Teleport(new_map,
-                      new_map->PickRandomPointIn(GenerateRandom, valid));
+  main_role->Teleport(new_map, new_map->PickRandomPointIn(valid));
   AutoResetStatus null_status;
   CinInput_ref input =
       CinInput::CreateCinInput([&null_status](){null_status.set_status();});
   AutoResetStatus quit_status;
-  AutoResetStatus new_map_status;
   AutoResetStatus render_memory_status;
   input->BindKey('w', [&main_role](){main_role->Move< 0, -1 >();});
   input->BindKey('a', [&main_role](){main_role->Move< -1, 0 >();});
   input->BindKey('s', [&main_role](){main_role->Move< 0, 1 >();});
   input->BindKey('d', [&main_role](){main_role->Move< 1, 0 >();});
-  input->BindKey('i', [&main_role](){main_role->Destroy< 0, -1 >();});
-  input->BindKey('j', [&main_role](){main_role->Destroy< -1, 0 >();});
-  input->BindKey('k', [&main_role](){main_role->Destroy< 0, 1 >();});
-  input->BindKey('l', [&main_role](){main_role->Destroy< 1, 0 >();});
+  input->BindKey('i', [&main_role](){main_role->Perform< 0, -1 >(destroy);});
+  input->BindKey('j', [&main_role](){main_role->Perform< -1, 0 >(destroy);});
+  input->BindKey('k', [&main_role](){main_role->Perform< 0, 1 >(destroy);});
+  input->BindKey('l', [&main_role](){main_role->Perform< 1, 0 >(destroy);});
+  input->BindKey('t', [&main_role](){main_role->Gather< 0, -1 >();});
+  input->BindKey('f', [&main_role](){main_role->Gather< -1, 0 >();});
+  input->BindKey('g', [&main_role](){main_role->Gather< 0, 1 >();});
+  input->BindKey('h', [&main_role](){main_role->Gather< 1, 0 >();});
   input->BindKey('q', [&quit_status](){quit_status.set_status();});
   input->BindKey('m', [&render_memory_status](){
                             render_memory_status.set_status();
                          });
-  input->BindKey('n', [&new_map_status](){new_map_status.set_status();});
-  bool is_init_stat = true;
-  while (!quit_status.Status()) {
-    if (is_init_stat) {
-      is_init_stat = false;
-    } else {
-      input->HandleInput();
-    }
+  input->BindKey('n', [main_role](){main_role->Interact();});
+  do {
     if (!null_status.Status()) {
       // TODO(handsome0hell): Finish energy system
       main_role->set_now_energy(10);
-      if (new_map_status.Status()) {
-        if (main_role->map()->
-            BuildingIn(main_role->position()).index() ==
-            portal_building.index()) {
-          new_map = main_space.NewMap();
-          main_role->Teleport(
-              new_map, new_map->PickRandomPointIn(GenerateRandom, valid));
-        }
-      }
       main_role->UpdateViewable();
       system("clear");
       if (render_memory_status.Status()) {
@@ -139,5 +120,6 @@ int main() {
       }
       std::cout << std::flush;
     }
-  }
+    input->HandleInput();
+  } while (!quit_status.Status());
 }

@@ -10,27 +10,27 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-#ifndef UNNAMING_GAME_SRC_GRAPHIC_RENDERER_H_
-#define UNNAMING_GAME_SRC_GRAPHIC_RENDERER_H_
-#include <memory>
-#include <vector>
+#ifndef UNNAMING_GAME_SRC_OBJECT_ABILITY_H_
+#define UNNAMING_GAME_SRC_OBJECT_ABILITY_H_
+#include <cmath>
+#include <list>
+#include "../Common/Point.h"
 #include "../Map/Building/Building.h"
 #include "../Map/Map.h"
-#include "../Object/Creature.h"
-class Renderer;
-typedef std::shared_ptr< Renderer > Renderer_ref;
-class Renderer {
+class Creature;
+class Action {
  public:
-  void set_exterior_of_building(const char, const Building&);
-  ~Renderer();
-  void RenderCreaturesView(const Creature&) const;
-  void RenderGameMap(const Map&) const;
-  void RenderMemory(const Creature::Memory&) const;
-  static Renderer_ref Create();
- private:
-  Renderer();
-  Renderer& operator=(const Renderer&) = delete;
-  void RenderPosition(const Map&, const MapPoint&) const;
-  std::vector< char > exterior_of_building_;
+  virtual void Perform(
+      const Map_ref&, const MapPoint&,
+      const Creature* const) const = 0;
 };
-#endif  // UNNAMING_GAME_SRC_GRAPHIC_RENDERER_H_
+class DestroyAction : public Action {
+ public:
+  virtual void Perform(
+      const Map_ref& place, const MapPoint& location,
+      const Creature* const) const {
+    assert(place->has(location));
+    place->DestroyGroundIn(location);
+  }
+};
+#endif  // UNNAMING_GAME_SRC_OBJECT_ABILITY_H_

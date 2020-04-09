@@ -17,8 +17,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 include(GenerateExportHeader)
 include(../../CMake/compiler.cmake)
 include(../../CMake/libraries.cmake)
-add_library(Map SHARED Map.cc
-            Block/Block.cc Block/BaseBlock.cc
+add_library(Map SHARED Map.cc Space.cc
             Building/Building.cc Building/BaseBuilding.cc
             Building/LinkBuilding.cc)
+target_link_libraries(Map Logic)
 generate_export_header(Map)

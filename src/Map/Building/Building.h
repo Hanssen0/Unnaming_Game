@@ -8,15 +8,26 @@
 #ifndef UNNAMING_GAME_SRC_MAP_BUILDING_BUILDING_H_
 #define UNNAMING_GAME_SRC_MAP_BUILDING_BUILDING_H_
 #include <cstddef>
+#include <list>
 #include <memory>
+class Creature;
 class Building final {
  public:
   class Implementation;
-  explicit Building(const Implementation* impl = nullptr) : impl_(impl) {}
-  operator bool() const {return impl_ != nullptr;}
-  size_t index() const;
+  explicit Building(std::shared_ptr<Implementation> impl = nullptr)
+      : impl_(impl) {}
+  operator bool() const {return static_cast<bool>(impl_);}
+  bool operator==(const Building& b) const {return Index() == b.Index();}
+  bool operator!=(const Building& b) const {return Index() != b.Index();}
+  const size_t& Index() const;
+  const size_t& Size() const;
+  const std::list<Building>& Foundation() const;
+  int CostMove(const Creature&) const;
+  int CostSeeThrough(const Creature&) const;
+  const Building& Destroy() const;
+  void Interact(Creature*) const;
 
  private:
-  const Implementation* impl_;
+  std::shared_ptr<Implementation> impl_;
 };
 #endif  // UNNAMING_GAME_SRC_MAP_BUILDING_BUILDING_H_

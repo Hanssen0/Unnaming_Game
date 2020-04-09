@@ -17,68 +17,28 @@
 #include <queue>
 #include <utility>
 #include "./creature_cmake.h"
-#include "../Map/Block/BaseBlock.h"
+#include "../Map/Building/BaseBuilding.h"
 #include "../Map/Map.h"
 #include "../Map/Space.h"
 size_t Creature::kCreatureSize = 0;
-// Creature::CostofBlock
-CREATURE_NO_EXPORT int Creature::CostOfBlock::DestroyCost() const {
-  return destroy_();
-}
-CREATURE_NO_EXPORT int Creature::CostOfBlock::MoveCost() const {
-  return move_();
-}
-CREATURE_NO_EXPORT int Creature::CostOfBlock::SeeThroughCost() const {
-  return see_through_();
-}
-CREATURE_NO_EXPORT Creature::CostOfBlock::CostOfBlock() {}
-CREATURE_EXPORT Creature::CostOfBlock_ref Creature::CostOfBlock::Create() {
-  return CostOfBlock_ref(new CostOfBlock());
-}
-CREATURE_EXPORT Creature::CostOfBlock& Creature::CostOfBlock::operator=(
-    const Creature::CostOfBlock& a) {
-  destroy_ = a.destroy_;
-  move_ = a.move_;
-  see_through_ = a.see_through_;
-  return *this;
-}
-CREATURE_EXPORT void Creature::CostOfBlock::BindDestroyCost(
-    const std::function< int() >& function) {
-  destroy_ = function;
-}
-CREATURE_EXPORT void Creature::CostOfBlock::BindMoveCost(
-    const std::function< int() >& function) {
-  move_ = function;
-}
-CREATURE_EXPORT void Creature::CostOfBlock::BindSeeThroughCost(
-    const std::function< int() >& function) {
-  see_through_ = function;
-}
-CREATURE_EXPORT Creature::CostOfBlock::~CostOfBlock() {}
-// Creature
 CREATURE_NO_EXPORT void Creature::set_position(const MapPoint& pos) {
   position_ = pos;
 }
 template<int x, int y> CREATURE_NO_EXPORT void Creature::Move() {
   MapPoint des = position();
   des += IntPoint(x, y);
-  if (!map()->has(des)) return;
-  const int c_m = information_.cost[map()->BlockIn(des).index()]->MoveCost();
-  if (c_m < 0 || c_m > ability_.now_energy) return;
-  ability_.now_energy -= c_m;
-  set_position(des);
+  if (map()->has(des) &&
+      map()->GroundIn(des).CostMove(*this) >= 0) set_position(des);
 }
-template<int x, int y> void Creature::Destroy() {
+template<int x, int y> void Creature::Gather() {
+  items_.push_back(Item(map()));
+}
+template<int x, int y> void Creature::Perform(const Action& action) {
   MapPoint des = position();
   des += IntPoint(x, y);
-  if (!map()->has(des)) return;
-  map()->DestroyBlockIn(des);
+  action.Perform(this->map(), des, this);
 }
-CREATURE_NO_EXPORT Creature::Creature() {information_.is_have_id = false;}
-CREATURE_NO_EXPORT void Creature::get_id() {
-  information_.is_have_id = true;
-  information_.id = kCreatureSize++;
-}
+CREATURE_NO_EXPORT Creature::Creature() {information_.id = kCreatureSize++;}
 CREATURE_NO_EXPORT void Creature::UpdateMemory() {
   Memory& now_mem = GetMemory();
   for (size_t i = 0; i < information_.is_viewable.size(); ++i) {
@@ -108,8 +68,8 @@ CREATURE_NO_EXPORT void Creature::set_viewable(const MapPoint& pos) {
                           [pos.y - position().y + view_dis()] = true;
 }
 CREATURE_NO_EXPORT int Creature::get_cost(const MapPoint& pos) {
-  return map_->has(pos)? information_.cost[map()->BlockIn(pos).index()]
-                             ->SeeThroughCost() : 0x3f3f3f3f;
+  return map_->has(pos) ?
+      map()->GroundIn(pos).CostSeeThrough(*this) : 0x3f3f3f3f;
 }
 constexpr int kWASD[4][2] = {{0, -1}, {-1, 0}, {0, 1}, {1, 0}};
 //   W         UP
@@ -118,10 +78,18 @@ template CREATURE_EXPORT void Creature::Move<kWASD[0][0], kWASD[0][1]>();
 template CREATURE_EXPORT void Creature::Move<kWASD[1][0], kWASD[1][1]>();
 template CREATURE_EXPORT void Creature::Move<kWASD[2][0], kWASD[2][1]>();
 template CREATURE_EXPORT void Creature::Move<kWASD[3][0], kWASD[3][1]>();
-template CREATURE_EXPORT void Creature::Destroy<kWASD[0][0], kWASD[0][1]>();
-template CREATURE_EXPORT void Creature::Destroy<kWASD[1][0], kWASD[1][1]>();
-template CREATURE_EXPORT void Creature::Destroy<kWASD[2][0], kWASD[2][1]>();
-template CREATURE_EXPORT void Creature::Destroy<kWASD[3][0], kWASD[3][1]>();
+template CREATURE_EXPORT void Creature::Gather<kWASD[0][0], kWASD[0][1]>();
+template CREATURE_EXPORT void Creature::Gather<kWASD[1][0], kWASD[1][1]>();
+template CREATURE_EXPORT void Creature::Gather<kWASD[2][0], kWASD[2][1]>();
+template CREATURE_EXPORT void Creature::Gather<kWASD[3][0], kWASD[3][1]>();
+template CREATURE_EXPORT void Creature::Perform<kWASD[0][0], kWASD[0][1]>(
+    const Action&);
+template CREATURE_EXPORT void Creature::Perform<kWASD[1][0], kWASD[1][1]>(
+    const Action&);
+template CREATURE_EXPORT void Creature::Perform<kWASD[2][0], kWASD[2][1]>(
+    const Action&);
+template CREATURE_EXPORT void Creature::Perform<kWASD[3][0], kWASD[3][1]>(
+    const Action&);
 CREATURE_EXPORT Creature_ref Creature::Create() {
   return Creature_ref(new Creature());
 }
@@ -164,8 +132,7 @@ CREATURE_EXPORT bool Creature::is_viewable(const MapPoint& pos) const {
   if (target > viewable_size) return false;
   return information_.is_viewable[target.x][target.y];
 }
-CREATURE_EXPORT size_t Creature::id() {
-  if (!information_.is_have_id) get_id();
+CREATURE_EXPORT const size_t& Creature::Index() const {
   return information_.id;
 }
 CREATURE_EXPORT void Creature::set_max_energy(const int& energy) {
@@ -174,14 +141,6 @@ CREATURE_EXPORT void Creature::set_max_energy(const int& energy) {
 }
 CREATURE_EXPORT void Creature::set_now_energy(const int& energy) {
   ability_.now_energy = std::min(energy, ability_.max_energy);
-}
-CREATURE_EXPORT void Creature::set_cost(const Block& type,
-                                        const CostOfBlock_ref& cost) {
-  const auto block_size = BaseBlock::BaseBlockSize();
-  if (information_.cost.size() < block_size) {
-    information_.cost.resize(block_size);
-  }
-  information_.cost[type.index()] = cost;
 }
 CREATURE_EXPORT Creature::~Creature() {}
 CREATURE_EXPORT Creature::Memory& Creature::GetMemory() {
@@ -194,4 +153,7 @@ CREATURE_EXPORT Creature::Memory& Creature::GetMemory() {
     memory = memories_.insert(std::make_pair(map()->Id(), tmp)).first;
   }
   return memory->second;
+}
+CREATURE_EXPORT void Creature::Interact() {
+  map()->BuildingIn(position()).Interact(this);
 }

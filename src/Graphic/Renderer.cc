@@ -14,7 +14,6 @@
 #include <cstdint>
 #include <iostream>
 #include "./renderer_cmake.h"
-#include "../Map/Block/BaseBlock.h"
 #include "../Map/Building/BaseBuilding.h"
 #include "../Map/Map.h"
 #include "../Object/Creature.h"
@@ -23,24 +22,18 @@ template<typename T> void Expand(std::vector<T>* const vec, size_t size) {
 }
 RENDERER_EXPORT Renderer::~Renderer() {}
 RENDERER_EXPORT
-void Renderer::set_exterior_of_block(const char exterior,
-                                     const Block& type) {
-  Expand(&exterior_of_block_, BaseBlock::BaseBlockSize());
-  exterior_of_block_[type.index()] = exterior;
-}
-RENDERER_EXPORT
 void Renderer::set_exterior_of_building(const char exterior,
                                         const Building& type) {
-  Expand(&exterior_of_building_, BaseBuilding::BaseBuildingSize());
-  exterior_of_building_[type.index()] = exterior;
+  Expand(&exterior_of_building_, type.Size());
+  exterior_of_building_[type.Index()] = exterior;
 }
 RENDERER_EXPORT void Renderer::RenderPosition(const Map& map,
                                               const MapPoint& pos) const {
-  auto building = exterior_of_building_[map.BuildingIn(pos).index()];
+  auto building = exterior_of_building_[map.BuildingIn(pos).Index()];
   if (building != 0) {
     std::cout << building;
   } else {
-    std::cout << exterior_of_block_[map.BlockIn(pos).index()];
+    std::cout << exterior_of_building_[map.GroundIn(pos).Index()];
   }
 }
 RENDERER_EXPORT void Renderer::RenderCreaturesView(const Creature& obj) const {
