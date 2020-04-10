@@ -17,6 +17,7 @@
 #include <queue>
 #include <utility>
 #include "./creature_cmake.h"
+#include "./Action/creature_action.h"
 #include "../Map/Building/BaseBuilding.h"
 #include "../Map/Map.h"
 #include "../Map/Space.h"

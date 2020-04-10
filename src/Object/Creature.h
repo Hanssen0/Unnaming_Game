@@ -18,7 +18,6 @@
 #include <map>
 #include <memory>
 #include <vector>
-#include "./Action.h"
 #include "../Item/Item.h"
 #include "../Map/Space.h"
 #include "../Map/Map.h"
@@ -27,6 +26,7 @@ class Creature;
 typedef std::shared_ptr< Creature > Creature_ref;
 class Creature {
  public:
+  class Action;
   struct Memory {
     MapPoint left_top;
     MapPoint right_bottom;

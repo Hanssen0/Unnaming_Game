@@ -10,27 +10,18 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-#ifndef UNNAMING_GAME_SRC_OBJECT_ACTION_H_
-#define UNNAMING_GAME_SRC_OBJECT_ACTION_H_
+#ifndef UNNAMING_GAME_SRC_OBJECT_ACTION_CREATURE_ACTION_H_
+#define UNNAMING_GAME_SRC_OBJECT_ACTION_CREATURE_ACTION_H_
 #include <cmath>
 #include <list>
-#include "../Common/Point.h"
-#include "../Map/Building/Building.h"
-#include "../Map/Map.h"
-class Creature;
-class Action {
+#include "../Creature.h"
+#include "../../Common/Point.h"
+#include "../../Map/Building/Building.h"
+#include "../../Map/Map.h"
+class Creature::Action {
  public:
   virtual void Perform(
       const Map_ref&, const MapPoint&,
       const Creature* const) const = 0;
 };
-class DestroyAction : public Action {
- public:
-  virtual void Perform(
-      const Map_ref& place, const MapPoint& location,
-      const Creature* const) const {
-    assert(place->has(location));
-    place->DestroyGroundIn(location);
-  }
-};
-#endif  // UNNAMING_GAME_SRC_OBJECT_ACTION_H_
+#endif  // UNNAMING_GAME_SRC_OBJECT_ACTION_CREATURE_ACTION_H_

@@ -17,7 +17,7 @@
 #include "Map/Building/BaseBuilding.h"
 #include "Map/Map.h"
 #include "Logic/MapBuilder.h"
-#include "Object/Action.h"
+#include "Object/Action/CreatureDestroyAction.h"
 #include "Object/Creature.h"
 #include "FrontEnd/CinInput.h"
 #include "Graphic/Renderer.h"
@@ -30,7 +30,7 @@ BaseBuilding wall;
 BaseBuilding empty;
 BaseBuilding portal;
 // TODO(handsome0hell): Move Abilities to better place
-DestroyAction destroy;
+CreatureDestroyAction destroy;
 void Init(Creature* role) {
   wall.SetDestroy(ground);
   portal.AddFoundation(path);
