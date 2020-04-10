@@ -17,7 +17,9 @@
 #include "Map/Building/BaseBuilding.h"
 #include "Map/Map.h"
 #include "Logic/MapBuilder.h"
-#include "Object/Action.h"
+#include "Object/Action/CreatureDestroyAction.h"
+#include "Object/Action/CreatureGatherAction.h"
+#include "Object/Action/CreatureMoveAction.h"
 #include "Object/Creature.h"
 #include "FrontEnd/CinInput.h"
 #include "Graphic/Renderer.h"
@@ -30,7 +32,9 @@ BaseBuilding wall;
 BaseBuilding empty;
 BaseBuilding portal;
 // TODO(handsome0hell): Move Abilities to better place
-DestroyAction destroy;
+CreatureDestroyAction destroy;
+CreatureMoveAction move;
+CreatureGatherAction gather;
 void Init(Creature* role) {
   wall.SetDestroy(ground);
   portal.AddFoundation(path);
@@ -90,18 +94,18 @@ int main() {
       CinInput::CreateCinInput([&null_status](){null_status.set_status();});
   AutoResetStatus quit_status;
   AutoResetStatus render_memory_status;
-  input->BindKey('w', [&main_role](){main_role->Move< 0, -1 >();});
-  input->BindKey('a', [&main_role](){main_role->Move< -1, 0 >();});
-  input->BindKey('s', [&main_role](){main_role->Move< 0, 1 >();});
-  input->BindKey('d', [&main_role](){main_role->Move< 1, 0 >();});
+  input->BindKey('w', [&main_role](){main_role->Perform< 0, -1 >(move);});
+  input->BindKey('a', [&main_role](){main_role->Perform< -1, 0 >(move);});
+  input->BindKey('s', [&main_role](){main_role->Perform< 0, 1 >(move);});
+  input->BindKey('d', [&main_role](){main_role->Perform< 1, 0 >(move);});
   input->BindKey('i', [&main_role](){main_role->Perform< 0, -1 >(destroy);});
   input->BindKey('j', [&main_role](){main_role->Perform< -1, 0 >(destroy);});
   input->BindKey('k', [&main_role](){main_role->Perform< 0, 1 >(destroy);});
   input->BindKey('l', [&main_role](){main_role->Perform< 1, 0 >(destroy);});
-  input->BindKey('t', [&main_role](){main_role->Gather< 0, -1 >();});
-  input->BindKey('f', [&main_role](){main_role->Gather< -1, 0 >();});
-  input->BindKey('g', [&main_role](){main_role->Gather< 0, 1 >();});
-  input->BindKey('h', [&main_role](){main_role->Gather< 1, 0 >();});
+  input->BindKey('t', [&main_role](){main_role->Perform< 0, -1 >(gather);});
+  input->BindKey('f', [&main_role](){main_role->Perform< -1, 0 >(gather);});
+  input->BindKey('g', [&main_role](){main_role->Perform< 0, 1 >(gather);});
+  input->BindKey('h', [&main_role](){main_role->Perform< 1, 0 >(gather);});
   input->BindKey('q', [&quit_status](){quit_status.set_status();});
   input->BindKey('m', [&render_memory_status](){
                             render_memory_status.set_status();

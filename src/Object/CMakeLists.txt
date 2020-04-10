@@ -17,6 +17,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 include(GenerateExportHeader)
 include(../../CMake/compiler.cmake)
 include(../../CMake/libraries.cmake)
-add_library(Creature SHARED Creature.cc)
+add_library(Creature SHARED Creature.cc
+            Action/CreatureAction.cc Action/CreatureDestroyAction.cc
+            Action/CreatureMoveAction.cc Action/CreatureGatherAction.cc)
 target_link_libraries(Creature Map Fov)
 generate_export_header(Creature)

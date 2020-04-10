@@ -17,22 +17,11 @@
 #include <queue>
 #include <utility>
 #include "./creature_cmake.h"
+#include "./Action/creature_action_implementation.h"
 #include "../Map/Building/BaseBuilding.h"
 #include "../Map/Map.h"
 #include "../Map/Space.h"
 size_t Creature::kCreatureSize = 0;
-CREATURE_NO_EXPORT void Creature::set_position(const MapPoint& pos) {
-  position_ = pos;
-}
-template<int x, int y> CREATURE_NO_EXPORT void Creature::Move() {
-  MapPoint des = position();
-  des += IntPoint(x, y);
-  if (map()->has(des) &&
-      map()->GroundIn(des).CostMove(*this) >= 0) set_position(des);
-}
-template<int x, int y> void Creature::Gather() {
-  items_.push_back(Item(map()));
-}
 template<int x, int y> void Creature::Perform(const Action& action) {
   MapPoint des = position();
   des += IntPoint(x, y);
@@ -74,14 +63,6 @@ CREATURE_NO_EXPORT int Creature::get_cost(const MapPoint& pos) {
 constexpr int kWASD[4][2] = {{0, -1}, {-1, 0}, {0, 1}, {1, 0}};
 //   W         UP
 // A S D Left Down Right
-template CREATURE_EXPORT void Creature::Move<kWASD[0][0], kWASD[0][1]>();
-template CREATURE_EXPORT void Creature::Move<kWASD[1][0], kWASD[1][1]>();
-template CREATURE_EXPORT void Creature::Move<kWASD[2][0], kWASD[2][1]>();
-template CREATURE_EXPORT void Creature::Move<kWASD[3][0], kWASD[3][1]>();
-template CREATURE_EXPORT void Creature::Gather<kWASD[0][0], kWASD[0][1]>();
-template CREATURE_EXPORT void Creature::Gather<kWASD[1][0], kWASD[1][1]>();
-template CREATURE_EXPORT void Creature::Gather<kWASD[2][0], kWASD[2][1]>();
-template CREATURE_EXPORT void Creature::Gather<kWASD[3][0], kWASD[3][1]>();
 template CREATURE_EXPORT void Creature::Perform<kWASD[0][0], kWASD[0][1]>(
     const Action&);
 template CREATURE_EXPORT void Creature::Perform<kWASD[1][0], kWASD[1][1]>(
@@ -93,12 +74,18 @@ template CREATURE_EXPORT void Creature::Perform<kWASD[3][0], kWASD[3][1]>(
 CREATURE_EXPORT Creature_ref Creature::Create() {
   return Creature_ref(new Creature());
 }
+CREATURE_EXPORT void Creature::Obtain(const Item& item) {
+  items_.push_back(item);
+}
+CREATURE_EXPORT void Creature::SetPosition(const MapPoint& pos) {
+  position_ = pos;
+}
 CREATURE_EXPORT void Creature::Teleport(const Map_ref& map,
                                         const MapPoint& pos) {
-  if (map_) map_->Unlink();
   map->Link();
+  if (map_) map_->Unlink();
   map_ = map;
-  set_position(pos);
+  SetPosition(pos);
 }
 CREATURE_EXPORT const Map_ref& Creature::map() const {return map_;}
 CREATURE_EXPORT const MapPoint& Creature::position() const {return position_;}

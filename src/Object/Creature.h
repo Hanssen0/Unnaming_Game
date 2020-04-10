@@ -18,7 +18,6 @@
 #include <map>
 #include <memory>
 #include <vector>
-#include "./Action.h"
 #include "../Item/Item.h"
 #include "../Map/Space.h"
 #include "../Map/Map.h"
@@ -27,6 +26,7 @@ class Creature;
 typedef std::shared_ptr< Creature > Creature_ref;
 class Creature {
  public:
+  class Action;
   struct Memory {
     MapPoint left_top;
     MapPoint right_bottom;
@@ -43,11 +43,11 @@ class Creature {
   void SetViewDis(const size_t& d);
   ~Creature();
   bool is_viewable(const MapPoint& pos) const;
-  template<int, int> void Gather();
-  template<int, int> void Move();
   template<int, int> void Perform(const Action&);
   Memory& GetMemory();
   void Interact();
+  void Obtain(const Item&);
+  void SetPosition(const MapPoint&);
   void Teleport(const Map_ref&, const MapPoint&);
   void UpdateViewable();
 
@@ -69,7 +69,6 @@ class Creature {
   } information_;
   std::list<Item> items_;
   std::map<size_t, Memory> memories_;
-  void set_position(const MapPoint&);
   bool is_valid(const MapPoint& pos) const;
   void set_viewable(const MapPoint& pos);
   int get_cost(const MapPoint& pos);
