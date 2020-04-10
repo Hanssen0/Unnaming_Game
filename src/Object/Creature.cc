@@ -22,9 +22,6 @@
 #include "../Map/Map.h"
 #include "../Map/Space.h"
 size_t Creature::kCreatureSize = 0;
-CREATURE_NO_EXPORT void Creature::set_position(const MapPoint& pos) {
-  position_ = pos;
-}
 template<int x, int y> void Creature::Perform(const Action& action) {
   MapPoint des = position();
   des += IntPoint(x, y);
@@ -80,12 +77,15 @@ CREATURE_EXPORT Creature_ref Creature::Create() {
 CREATURE_EXPORT void Creature::Obtain(const Item& item) {
   items_.push_back(item);
 }
+CREATURE_EXPORT void Creature::SetPosition(const MapPoint& pos) {
+  position_ = pos;
+}
 CREATURE_EXPORT void Creature::Teleport(const Map_ref& map,
                                         const MapPoint& pos) {
-  if (map_) map_->Unlink();
   map->Link();
+  if (map_) map_->Unlink();
   map_ = map;
-  set_position(pos);
+  SetPosition(pos);
 }
 CREATURE_EXPORT const Map_ref& Creature::map() const {return map_;}
 CREATURE_EXPORT const MapPoint& Creature::position() const {return position_;}

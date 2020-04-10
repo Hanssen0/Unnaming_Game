@@ -9,10 +9,12 @@ class CreatureMoveAction::Implementation
       Creature* const creature) const override {
     if (place->has(location) &&
         place->GroundIn(location).CostMove(*creature) >= 0) {
-      creature->Teleport(place, location);
+      creature->SetPosition(location);
     }
   }
 };
+CREATURE_EXPORT CreatureMoveAction::CreatureMoveAction()
+    : impl_(std::make_shared<Implementation>()) {}
 CREATURE_EXPORT void CreatureMoveAction::Perform(
     const Map_ref& map, const MapPoint& pos,
     Creature* const creature) const {impl_->Perform(map, pos, creature);}

@@ -10,6 +10,8 @@ class CreatureDestroyAction::Implementation
     if (place->has(location)) place->DestroyGroundIn(location);
   }
 };
+CREATURE_EXPORT CreatureDestroyAction::CreatureDestroyAction()
+    : impl_(std::make_shared<Implementation>()) {}
 CREATURE_EXPORT void CreatureDestroyAction::Perform(
     const Map_ref& map, const MapPoint& pos,
     Creature* const creature) const {impl_->Perform(map, pos, creature);}

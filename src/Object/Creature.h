@@ -47,6 +47,7 @@ class Creature {
   Memory& GetMemory();
   void Interact();
   void Obtain(const Item&);
+  void SetPosition(const MapPoint&);
   void Teleport(const Map_ref&, const MapPoint&);
   void UpdateViewable();
 
@@ -68,7 +69,6 @@ class Creature {
   } information_;
   std::list<Item> items_;
   std::map<size_t, Memory> memories_;
-  void set_position(const MapPoint&);
   bool is_valid(const MapPoint& pos) const;
   void set_viewable(const MapPoint& pos);
   int get_cost(const MapPoint& pos);

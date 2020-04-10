@@ -19,6 +19,7 @@
 class CreatureMoveAction {
  public:
   class Implementation;
+  CreatureMoveAction();
   void Perform(const Map_ref&, const MapPoint&, Creature* const) const;
   operator Creature::Action() const;
 
