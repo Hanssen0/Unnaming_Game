@@ -7,8 +7,7 @@ class CreatureDestroyAction::Implementation
   void Perform(
       const Map_ref& place, const MapPoint& location,
       Creature* const) const override {
-    assert(place->has(location));
-    place->DestroyGroundIn(location);
+    if (place->has(location)) place->DestroyGroundIn(location);
   }
 };
 CREATURE_EXPORT void CreatureDestroyAction::Perform(
