@@ -43,10 +43,10 @@ class Creature {
   void SetViewDis(const size_t& d);
   ~Creature();
   bool is_viewable(const MapPoint& pos) const;
-  template<int, int> void Gather();
   template<int, int> void Perform(const Action&);
   Memory& GetMemory();
   void Interact();
+  void Obtain(const Item&);
   void Teleport(const Map_ref&, const MapPoint&);
   void UpdateViewable();
 

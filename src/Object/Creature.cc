@@ -25,9 +25,6 @@ size_t Creature::kCreatureSize = 0;
 CREATURE_NO_EXPORT void Creature::set_position(const MapPoint& pos) {
   position_ = pos;
 }
-template<int x, int y> void Creature::Gather() {
-  items_.push_back(Item(map()));
-}
 template<int x, int y> void Creature::Perform(const Action& action) {
   MapPoint des = position();
   des += IntPoint(x, y);
@@ -69,10 +66,6 @@ CREATURE_NO_EXPORT int Creature::get_cost(const MapPoint& pos) {
 constexpr int kWASD[4][2] = {{0, -1}, {-1, 0}, {0, 1}, {1, 0}};
 //   W         UP
 // A S D Left Down Right
-template CREATURE_EXPORT void Creature::Gather<kWASD[0][0], kWASD[0][1]>();
-template CREATURE_EXPORT void Creature::Gather<kWASD[1][0], kWASD[1][1]>();
-template CREATURE_EXPORT void Creature::Gather<kWASD[2][0], kWASD[2][1]>();
-template CREATURE_EXPORT void Creature::Gather<kWASD[3][0], kWASD[3][1]>();
 template CREATURE_EXPORT void Creature::Perform<kWASD[0][0], kWASD[0][1]>(
     const Action&);
 template CREATURE_EXPORT void Creature::Perform<kWASD[1][0], kWASD[1][1]>(
@@ -83,6 +76,9 @@ template CREATURE_EXPORT void Creature::Perform<kWASD[3][0], kWASD[3][1]>(
     const Action&);
 CREATURE_EXPORT Creature_ref Creature::Create() {
   return Creature_ref(new Creature());
+}
+CREATURE_EXPORT void Creature::Obtain(const Item& item) {
+  items_.push_back(item);
 }
 CREATURE_EXPORT void Creature::Teleport(const Map_ref& map,
                                         const MapPoint& pos) {
