@@ -6,4 +6,4 @@ CREATURE_EXPORT Creature::Action::Action(
     : impl_(impl) {}
 CREATURE_EXPORT void Creature::Action::Perform(
     const Map_ref& map, const MapPoint& pos,
-    const Creature* const creature) const {impl_->Perform(map, pos, creature);}
+    Creature* const creature) const {impl_->Perform(map, pos, creature);}

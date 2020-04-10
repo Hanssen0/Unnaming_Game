@@ -6,14 +6,14 @@ class CreatureDestroyAction::Implementation
  public:
   void Perform(
       const Map_ref& place, const MapPoint& location,
-      const Creature* const) const override {
+      Creature* const) const override {
     assert(place->has(location));
     place->DestroyGroundIn(location);
   }
 };
 CREATURE_EXPORT void CreatureDestroyAction::Perform(
     const Map_ref& map, const MapPoint& pos,
-    const Creature* const creature) const {impl_->Perform(map, pos, creature);}
+    Creature* const creature) const {impl_->Perform(map, pos, creature);}
 CREATURE_EXPORT CreatureDestroyAction::operator Creature::Action() const {
   return Creature::Action(impl_);
 }

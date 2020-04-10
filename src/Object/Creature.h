@@ -44,7 +44,6 @@ class Creature {
   ~Creature();
   bool is_viewable(const MapPoint& pos) const;
   template<int, int> void Gather();
-  template<int, int> void Move();
   template<int, int> void Perform(const Action&);
   Memory& GetMemory();
   void Interact();

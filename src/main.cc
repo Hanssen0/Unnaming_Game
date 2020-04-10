@@ -18,6 +18,7 @@
 #include "Map/Map.h"
 #include "Logic/MapBuilder.h"
 #include "Object/Action/CreatureDestroyAction.h"
+#include "Object/Action/CreatureMoveAction.h"
 #include "Object/Creature.h"
 #include "FrontEnd/CinInput.h"
 #include "Graphic/Renderer.h"
@@ -31,6 +32,7 @@ BaseBuilding empty;
 BaseBuilding portal;
 // TODO(handsome0hell): Move Abilities to better place
 CreatureDestroyAction destroy;
+CreatureDestroyAction move;
 void Init(Creature* role) {
   wall.SetDestroy(ground);
   portal.AddFoundation(path);
@@ -90,10 +92,10 @@ int main() {
       CinInput::CreateCinInput([&null_status](){null_status.set_status();});
   AutoResetStatus quit_status;
   AutoResetStatus render_memory_status;
-  input->BindKey('w', [&main_role](){main_role->Move< 0, -1 >();});
-  input->BindKey('a', [&main_role](){main_role->Move< -1, 0 >();});
-  input->BindKey('s', [&main_role](){main_role->Move< 0, 1 >();});
-  input->BindKey('d', [&main_role](){main_role->Move< 1, 0 >();});
+  input->BindKey('w', [&main_role](){main_role->Perform< 0, -1 >(move);});
+  input->BindKey('a', [&main_role](){main_role->Perform< -1, 0 >(move);});
+  input->BindKey('s', [&main_role](){main_role->Perform< 0, 1 >(move);});
+  input->BindKey('d', [&main_role](){main_role->Perform< 1, 0 >(move);});
   input->BindKey('i', [&main_role](){main_role->Perform< 0, -1 >(destroy);});
   input->BindKey('j', [&main_role](){main_role->Perform< -1, 0 >(destroy);});
   input->BindKey('k', [&main_role](){main_role->Perform< 0, 1 >(destroy);});

@@ -19,6 +19,6 @@ class Creature::Action::Implementation {
  public:
   virtual void Perform(
       const Map_ref&, const MapPoint&,
-      const Creature* const) const = 0;
+      Creature* const) const = 0;
 };
 #endif  // UNNAMING_GAME_SRC_OBJECT_ACTION_CREATURE_ACTION_IMPLEMENTATION_H_

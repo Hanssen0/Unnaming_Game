@@ -10,22 +10,19 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-#ifndef UNNAMING_GAME_SRC_OBJECT_ACTION_CREATUREACTION_H_
-#define UNNAMING_GAME_SRC_OBJECT_ACTION_CREATUREACTION_H_
-#include <cmath>
-#include <list>
+#ifndef UNNAMING_GAME_SRC_OBJECT_ACTION_CREATUREMOVEACTION_H_
+#define UNNAMING_GAME_SRC_OBJECT_ACTION_CREATUREMOVEACTION_H_
 #include <memory>
+#include "./CreatureAction.h"
 #include "../Creature.h"
-#include "../../Common/Point.h"
-#include "../../Map/Building/Building.h"
 #include "../../Map/Map.h"
-class Creature::Action {
+class CreatureMoveAction {
  public:
   class Implementation;
-  explicit Action(const std::shared_ptr<Implementation>&);
   void Perform(const Map_ref&, const MapPoint&, Creature* const) const;
+  operator Creature::Action() const;
 
  private:
   std::shared_ptr<Implementation> impl_;
 };
-#endif  // UNNAMING_GAME_SRC_OBJECT_ACTION_CREATUREACTION_H_
+#endif  // UNNAMING_GAME_SRC_OBJECT_ACTION_CREATUREMOVEACTION_H_

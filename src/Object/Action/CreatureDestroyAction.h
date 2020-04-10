@@ -19,7 +19,7 @@
 class CreatureDestroyAction {
  public:
   class Implementation;
-  void Perform(const Map_ref&, const MapPoint&, const Creature* const) const;
+  void Perform(const Map_ref&, const MapPoint&, Creature* const) const;
   operator Creature::Action() const;
 
  private:
