@@ -32,7 +32,7 @@ BaseBuilding empty;
 BaseBuilding portal;
 // TODO(handsome0hell): Move Abilities to better place
 CreatureDestroyAction destroy;
-CreatureDestroyAction move;
+CreatureMoveAction move;
 void Init(Creature* role) {
   wall.SetDestroy(ground);
   portal.AddFoundation(path);
