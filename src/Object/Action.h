@@ -10,8 +10,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-#ifndef UNNAMING_GAME_SRC_OBJECT_ABILITY_H_
-#define UNNAMING_GAME_SRC_OBJECT_ABILITY_H_
+#ifndef UNNAMING_GAME_SRC_OBJECT_ACTION_H_
+#define UNNAMING_GAME_SRC_OBJECT_ACTION_H_
 #include <cmath>
 #include <list>
 #include "../Common/Point.h"
@@ -33,4 +33,4 @@ class DestroyAction : public Action {
     place->DestroyGroundIn(location);
   }
 };
-#endif  // UNNAMING_GAME_SRC_OBJECT_ABILITY_H_
+#endif  // UNNAMING_GAME_SRC_OBJECT_ACTION_H_
